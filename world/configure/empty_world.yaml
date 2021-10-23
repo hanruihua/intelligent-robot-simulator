@@ -2,14 +2,15 @@
 world_height: 20
 world_width: 20
 step_time: 0.1
+
 # world_map: 'ir_env/world/map_image/map_100_100.png'
 xy_resolution: 0.5 # meter
 yaw_resolution: 5 # degree
 
 # circle obstacle
 obstacle_circle_number: 2
-obstacle_circle_pos_list: [[2, 3], [4, 5]]
-obstacle_circle_radius_list: [0.2, 0.4]
+  obstacle_circle_pos_list: [[2, 3], [4, 5]]
+  obstacle_circle_radius_list: [0.2, 0.4]
 
 # line obstacle
 obstacle_line_list: [ [3, 2, 3, 5], [4, 2, 4, 5] ] # two point
