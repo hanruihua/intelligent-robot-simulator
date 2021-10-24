@@ -1,0 +1,10 @@
+# world
+world:
+  world_height: 10
+  world_width: 10
+  step_time: 0.1
+  xy_resolution: 0.01 # meter
+  yaw_resolution: 5 # degree
+  
+# world_map: 'ir_env/world/map_image/map_100_100.png'
+
