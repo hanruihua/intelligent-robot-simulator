@@ -10,24 +10,14 @@ from math import cos, sin, pi
 from pathlib import Path
 
 class env_plot:
-    def __init__(self, width=10, height=10, robot_num = 1, obs_num=0, robot_list=[], obs_cir_list=[], car_list=[], obs_line_list=[], resolution=1, full=False, keep_path=False, map_matrix=None, **kwargs):
+    def __init__(self, width=10, height=10, component_list=[], full=False, keep_path=False, **kwargs):
     
         self.fig, self.ax = plt.subplots()
         
         self.width = width
         self.height = height
-        self.res = resolution
-        
-        self.robot_num = robot_num
-        self.obs_num = obs_num
 
-        self.robot_list = robot_list
-        self.obs_cir_list = obs_cir_list
-        self.car_list=car_list
-        self.obs_line_list = obs_line_list
         self.color_list = ['g', 'b', 'r', 'c', 'm', 'y', 'k', 'w']
-
-        self.map_matrix = map_matrix
 
         self.keep_path=keep_path
 
