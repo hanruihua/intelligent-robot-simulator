@@ -9,6 +9,7 @@ setup(
         'matplotlib',
         'numpy',
         'scipy',
+        'pyyaml',
     ],
     description="A simple 2D simulator for the intelligent mobile robots",
     author="Han Ruihua",
