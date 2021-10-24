@@ -10,17 +10,17 @@ from math import cos, sin, pi
 from pathlib import Path
 
 class env_plot:
-    def __init__(self, width=10, height=10,  full=False, keep_path=False, map_matrix=None, **kwargs):
+    def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, **kwargs):
     
         self.fig, self.ax = plt.subplots()
         
         self.width = width
         self.height = height
         self.color_list = ['g', 'b', 'r', 'c', 'm', 'y', 'k', 'w']
-
-        self.map_matrix = map_matrix
+        self.components = components
 
         self.keep_path=keep_path
+        self.map_matrix = map_matrix
 
         self.init_plot()
 
@@ -39,22 +39,29 @@ class env_plot:
     # draw ax
     def init_plot(self, **kwargs):
         self.ax.set_aspect('equal')
-        self.ax.set_xlim(-1, self.width)
-        self.ax.set_ylim(-1, self.height)
+        self.ax.set_xlim(0, self.width)
+        self.ax.set_ylim(0, self.height)
         # self.ax.legend(loc='upper right')
         self.ax.set_xlabel("x [m]")
         self.ax.set_ylabel("y [m]")
 
-        self.draw_obs_line_list()
-        self.draw_obs_cir_list()
+        self.draw_components()    
 
-        if self.map_matrix is not None:
-            # self.ax.imshow(np.flipud(self.map_matrix.T), cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
-            self.ax.imshow(self.map_matrix.T, cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
+        # if self.map_matrix is not None:
+        #     # self.ax.imshow(np.flipud(self.map_matrix.T), cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
+        #     self.ax.imshow(self.map_matrix.T, cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
         
         return self.ax.patches + self.ax.texts + self.ax.artists
 
     # draw components
+    def draw_components(self):
+        robot_list = self.components.get('robots', [])
+        map_matrix = self.components.get('map_matrix', None)
+
+        if map_matrix is not None:
+            self.ax.imshow(map_matrix.T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height])
+
+
     def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', **kwargs):
         
         x = robot.state[0][0]
