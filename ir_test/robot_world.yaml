@@ -1,4 +1,3 @@
-# world
 world:
   world_height: 10
   world_width: 10
@@ -7,14 +6,14 @@ world:
   yaw_resolution: 5 # degree
   world_map: 'map_100_100.png'
 
-robots: 
-  
+robots:
+  number: 1
+  type: 'omni'  # omni or diff
+  init_mode: 0 # 0 custom, 2, random, 3 circle
+  init_pos: [1, 1, 0]
+  goal: [9, 9, 0]
+
+
 cars:
 
 obstacles:
-
-
-
-
-
-
