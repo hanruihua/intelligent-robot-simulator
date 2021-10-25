@@ -4,7 +4,7 @@ from ir_world import motion_diff, motion_omni
 
 class mobile_robot():
 
-    def __init__(self, id, mode = 'diff', init_state=np.zeros((3, 1)), vel_diff = np.zeros((2, 1)), vel_omni = np.zeros((2, 1)), vel_max = 2* np.ones((2, 1)), goal = np.zeros((2, 1)), goal_threshold = 0.2, radius = 0.2, step_time = 0.1, **kwargs):
+    def __init__(self, id, mode = 'diff', init_state=np.zeros((3, 1)), vel_diff = np.zeros((2, 1)), vel_omni = np.zeros((2, 1)), vel_max = 2* np.ones((2, 1)), goal = np.zeros((2, 1)), goal_threshold = 0.1, radius = 0.2, step_time = 0.1, **kwargs):
 
         self.id = int(id)
         self.mode = mode

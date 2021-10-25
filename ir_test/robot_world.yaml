@@ -16,8 +16,3 @@ robots:
   vel_max: [1.5, 1.5]
   radius_exp: 0.1
 
-
-
-cars:
-
-obstacles:
