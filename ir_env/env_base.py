@@ -83,15 +83,20 @@ class env_base:
         self.world_plot.com_cla()
         self.world_plot.draw_dya_components(**kwargs)
         self.world_plot.pause(time)
-        
+    
+    def save_fig(self, path, i):
+        self.world_plot.save_gif_figure(path, i)
+    
+    def save_ani(self, image_path, ani_path):
+        self.world_plot.create_animate(image_path, ani_path)
+
     def show(self):
         self.world_plot.show()
     
     def show_ani(self):
         self.world_plot.show_ani()
     
-    def save_ani(self):
-        self.world_plot.save_ani()
+
 
     
 
