@@ -79,6 +79,11 @@ class env_base:
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
     
+    def step(self):
+        pass
+
+
+
     def render(self, time=0.05, **kwargs):
         self.world_plot.com_cla()
         self.world_plot.draw_dya_components(**kwargs)
