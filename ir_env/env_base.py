@@ -84,7 +84,6 @@ class env_base:
         self.world_plot.draw_dya_components(**kwargs)
         self.world_plot.pause(time)
         
-
     def show(self):
         self.world_plot.show()
     
