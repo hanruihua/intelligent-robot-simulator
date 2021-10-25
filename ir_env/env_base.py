@@ -1,9 +1,9 @@
 import yaml
 import numpy as np
-from ir_world import env_plot
+from ir_world import env_plot, mobile_robot, car_robot
+from ir_env.env_robot import env_robot
 from PIL import Image
 import sys
-from ir_world import mobile_robot, car_robot
 
 class env_base:
 
@@ -15,21 +15,21 @@ class env_base:
             with open(world_name) as file:
                 com_list = yaml.load(file, Loader=yaml.FullLoader)
 
-                world = com_list['world']
-                self.height = world.get('world_height', 10)
-                self.width = world.get('world_width', 10)
-                self.step_time = world.get('step_time', 0.1)
-                self.world_map = sys.path[0] + '/' + world.get('world_map', None)
-                self.xy_reso = world.get('xy_resolution', 1)
-                self.yaw_reso = world.get('yaw_resolution', 5)
+                world_args = com_list['world']
+                self.__height = world_args.get('world_height', 10)
+                self.__width = world_args.get('world_width', 10)
+                self.__step_time = world_args.get('step_time', 0.1)
+                self.world_map =  world_args.get('world_map', None)
+                self.xy_reso = world_args.get('xy_resolution', 1)
+                self.yaw_reso = world_args.get('yaw_resolution', 5)
 
-                robots = com_list.get('robots', None)
+                self.robots_args = com_list.get('robots', None)
 
-                if robots != None:
-                    self.robot_number = robots.get('number', 0)
+                if self.robots_args != None:
+                    self.robot_number = self.robots_args.get('number', 0)
                 else:
                     self.robot_number = 0
-                    
+
                 cars = com_list.get('cars', None)
 
                 if cars != None:
@@ -37,9 +37,9 @@ class env_base:
                 else:
                     self.car_number = 0      
         else:
-            self.height = kwargs.get('world_height', 10)
-            self.width = kwargs.get('world_width', 10)
-            self.step_time = kwargs.get('step_time', 0.1)
+            self.__height = kwargs.get('world_height', 10)
+            self.__width = kwargs.get('world_width', 10)
+            self.__step_time = kwargs.get('step_time', 0.1)
             self.world_map = kwargs.get('world_map', None)
             self.xy_reso = kwargs.get('xy_resolution', 1)
             self.yaw_reso = kwargs.get('yaw_resolution', 5)
@@ -51,11 +51,13 @@ class env_base:
     def init_environment(self, robot_class=mobile_robot, car_class=car_robot, **kwargs):
 
         # world
-        px = int(self.width / self.xy_reso)
-        py = int(self.height / self.xy_reso)
+        px = int(self.__width / self.xy_reso)
+        py = int(self.__height / self.xy_reso)
 
         if self.world_map != None:
-            img = Image.open(self.world_map).convert('L')
+            
+            world_map_path = sys.path[0] + '/' + self.world_map
+            img = Image.open(world_map_path).convert('L')
             img = img.resize( (px, py), Image.NEAREST)
             map_matrix = np.array(img)
             map_matrix = 255 - map_matrix
@@ -65,27 +67,23 @@ class env_base:
         else:
             self.map_matrix = np.zeros([px, py])
 
-
-
-        if self.car_number > 0:
-            for i in range(self.car_number):
-                pass
-        else:
-          self.cars = []  
-
-        
         self.components['map_matrix'] = self.map_matrix
-        # self.components['robots'] = self.map_matrix
+
+        if self.robot_number != 0:
+            temp = {**self.robots_args, **kwargs}
+            robots = env_robot(robot_class=robot_class, step_time=self.__step_time, **temp)
+            self.components['robots'] = robots
+        else:
+            self.components['robots'] = None
 
         if self.plot:
-            self.world_plot = env_plot(self.width, self.height, self.components, **kwargs)
+            self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
     
-
-
-    def step(self):
-        pass
-
-
+    def render(self, time=0.05, **kwargs):
+        self.world_plot.com_cla()
+        self.world_plot.draw_dya_components(**kwargs)
+        self.world_plot.pause(time)
+        
 
     def show(self):
         self.world_plot.show()

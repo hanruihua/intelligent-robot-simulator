@@ -3,34 +3,33 @@ from math import pi, cos, sin
 import numpy as np
 
 class env_robot:
-    def __init__(self, robot_num=1, init_mode = 0, **kwargs):
+    def __init__(self, robot_class=mobile_robot,  robot_num=1, robot_mode='omni', init_mode = 0, step_time=0.1, **kwargs):
+
+        self.robot_class = robot_class
         self.robot_num = robot_num
-
-
-
-
-    def initialization(self, init_mode=1, **kwargs):
-
+        self.init_mode = init_mode
+        self.robot_list = []
+        self.cur_mode = init_mode
         # init_mode: 0 manually initialize
         #            1 single row
         #            2 random
         #            3 circular 
         # kwargs: random_bear random radius
-        # 
-        if init_mode == 0:
-            if len(self.robot_radius_list) < self.robot_num:
-                print('wrong number of robots')
-        else:
-            self.init_state_list, self.goal_list, self.robot_radius_list = self.init_state_distribute(init_mode, **kwargs)
-        
-        self.cur_mode = init_mode
 
+        if self.init_mode == 0:
+            assert 'radius_list' in kwargs.keys() and 'init_state_list' in kwargs.keys() and 'goal_list' in kwargs.keys()
+            radius_list = kwargs['radius_list']
+            init_state_list = kwargs['init_state_list']
+            goal_list = kwargs['goal_list']
+        else:
+            init_state_list, goal_list, radius_list = self.init_state_distribute(init_mode, **kwargs)
+    
         # robot
         for i in range(self.robot_num):
-            robot = mobile_robot(id=i, mode=self.robot_mode, radius=self.robot_radius_list[i], init_state=self.init_state_list[i], goal=self.goal_list[i], vel_max = self.robot_vel_max, step_time=self.step_time, radius_exp=self.radius_exp, **kwargs)
+            robot = self.robot_class(id=i, mode=robot_mode, radius=radius_list[i], init_state=init_state_list[i], goal=goal_list[i], step_time=step_time, **kwargs)
             self.robot_list.append(robot)
             self.robot = robot if i == 0 else None 
-    
+        
     def init_state_distribute(self, init_mode=1, interval=1, radius=0.2, square=[0, 0, 10, 10], circular=[5, 5, 4],  **kwargs):
         # init_mode: 1 single row
         #            2 random
@@ -226,43 +225,43 @@ class env_robot:
     def robot_reset(self, id=0):
         self.robot_list[id].reset(self.random_bear)
 
-    # states
-    def total_states(self, env_train=True):
+    # # states
+    # def total_states(self, env_train=True):
         
-        robot_state_list = list(map(lambda r: np.squeeze( r.omni_state(env_train)), self.robot_list))
-        nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state(env_train)), self.robot_list))
-        obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state(env_train) ), self.obs_cir_list))
-        obs_line_list = self.obs_line_list
+    #     robot_state_list = list(map(lambda r: np.squeeze( r.omni_state(env_train)), self.robot_list))
+    #     nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state(env_train)), self.robot_list))
+    #     obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state(env_train) ), self.obs_cir_list))
+    #     obs_line_list = self.obs_line_list
         
-        return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
+    #     return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
         
-    def render(self, time=0.1, save=False, path=None, i = 0, **kwargs):
+    # def render(self, time=0.1, save=False, path=None, i = 0, **kwargs):
         
-        self.world_plot.draw_robot_diff_list(**kwargs)
-        self.world_plot.draw_obs_cir_list()
-        self.world_plot.pause(time)
+    #     self.world_plot.draw_robot_diff_list(**kwargs)
+    #     self.world_plot.draw_obs_cir_list()
+    #     self.world_plot.pause(time)
 
-        if save == True:
-            self.world_plot.save_gif_figure(path, i)
+    #     if save == True:
+    #         self.world_plot.save_gif_figure(path, i)
 
-        self.world_plot.com_cla()
+    #     self.world_plot.com_cla()
 
     
-    def seg_dis(self, segment, point):
+    # def seg_dis(self, segment, point):
         
-        point = np.squeeze(point[0:2])
-        sp = np.array(segment[0:2])
-        ep = np.array(segment[2:4])
+    #     point = np.squeeze(point[0:2])
+    #     sp = np.array(segment[0:2])
+    #     ep = np.array(segment[2:4])
 
-        l2 = (ep - sp) @ (ep - sp)
+    #     l2 = (ep - sp) @ (ep - sp)
 
-        if (l2 == 0.0):
-            return np.linalg.norm(point - sp)
+    #     if (l2 == 0.0):
+    #         return np.linalg.norm(point - sp)
 
-        t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
+    #     t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
 
-        projection = sp + t * (ep-sp)
+    #     projection = sp + t * (ep-sp)
 
-        distance = np.linalg.norm(point - projection) 
+    #     distance = np.linalg.norm(point - projection) 
 
-        return distance
+    #     return distance
