@@ -8,9 +8,10 @@ for i in range(300):
     for robot in env.components['robots'].robot_list:
         des_vel = robot.cal_des_vel()
         robot.move_forward(des_vel)
-
+        
     env.render()
 
+    
 
 
 
