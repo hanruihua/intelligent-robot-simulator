@@ -8,10 +8,14 @@ world:
 
 robots:
   number: 1
-  type: 'omni'  # omni or diff
-  init_mode: 0 # 0 custom, 2, random, 3 circle
-  init_pos: [1, 1, 0]
-  goal: [9, 9, 0]
+  robot_mode: 'omni'  # omni or diff
+  init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
+  init_state_list: [[1, 1, 0]]
+  goal_list: [[7, 7, 0]]
+  radius_list: [0.2]
+  vel_max: [1.5, 1.5]
+  radius_exp: 0.1
+
 
 
 cars:
