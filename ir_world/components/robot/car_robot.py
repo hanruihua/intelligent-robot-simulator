@@ -1,7 +1,7 @@
 import numpy as np
-from math import pi, sin, cos, tan
-from ir_env import motion_ackermann, motion_acker_pre
-from ir_utils import relative, wraptopi
+from math import pi, sin, cos, tan, atan2
+from ir_world import motion_ackermann, motion_acker_pre
+
 
 class car_robot:
     def __init__(self, id=0, shape = [1.5, 1, 1, 1], init_state=np.zeros((4, 1)), goal = np.zeros((3, 1)), goal_threshold = 0.2, vel_limit=2, vel_ang_limit=2, psi_limit=pi/4, step_time=0.1, global_path=[], trajectory=[], **kwargs):
@@ -107,20 +107,20 @@ class car_robot:
         self.wheel_position = rotation_matrix @ wheel_point + transition_matrix
 
     def arrive(self):
-        dis, radian = relative(self.state[0:2], self.goal[0:2])
+        dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
 
         if dis < self.goal_th:
             return True
     
     def cal_des_vel(self, tolerance=0.12):
 
-        dis, radian = relative(self.state[0:2], self.goal[0:2])
+        dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
         car_radian = self.state[2, 0] + self.state[3, 0]
 
         v_max = self.v_l
         w_max = self.w_l
 
-        diff_radian = wraptopi( radian - car_radian )
+        diff_radian = car_robot.wraptopi( radian - car_radian )
 
         if diff_radian > tolerance:
             w_opti = w_max
@@ -141,4 +141,25 @@ class car_robot:
 
         return np.array([[v_opti], [w_opti]])
 
+    @staticmethod
+    def relative(state1, state2):
+        
+        dif = state2[0:2] - state1[0:2]
+
+        dis = np.linalg.norm(dif)
+        radian = atan2(dif[1, 0], dif[0, 0])
+        
+        return dis, radian
+
+    @staticmethod
+    def wraptopi(radian):
+
+        if radian > pi:
+            radian = radian - 2 * pi
+        elif radian < -pi:
+            radian = radian + 2 * pi
+        
+        return radian
+
+    
     
