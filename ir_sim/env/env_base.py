@@ -1,7 +1,8 @@
 import yaml
 import numpy as np
-from ir_world import env_plot, mobile_robot, car_robot
-from ir_env.env_robot import env_robot
+from ir_sim.world import env_plot, mobile_robot, car_robot
+from ir_sim.env.env_robot import env_robot
+from ir_sim.env.env_car import env_car
 from PIL import Image
 import sys
 
@@ -30,10 +31,10 @@ class env_base:
                 else:
                     self.robot_number = 0
 
-                cars = com_list.get('cars', None)
+                self.cars_args = com_list.get('cars', None)
 
-                if cars != None:
-                    self.car_number = cars.get('number', 0)
+                if self.cars_args != None:
+                    self.car_number = self.cars_args.get('number', 0)
                 else:
                     self.car_number = 0      
         else:
@@ -76,18 +77,25 @@ class env_base:
         else:
             self.components['robots'] = None
 
+        if self.car_number != 0:
+            temp = {**self.cars_args, **kwargs}
+            cars = env_car(car_class=car_class, step_time=self.__step_time, **temp)
+            self.components['cars'] = cars
+        else:
+            self.components['cars'] = None
+
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
     
     def step(self):
         pass
 
-
-
     def render(self, time=0.05, **kwargs):
         self.world_plot.com_cla()
-        self.world_plot.draw_dya_components(**kwargs)
+        self.world_plot.draw_dyna_components(**kwargs)
         self.world_plot.pause(time)
+        
+        
     
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)

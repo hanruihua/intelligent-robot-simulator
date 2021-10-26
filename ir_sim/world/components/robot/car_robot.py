@@ -1,16 +1,17 @@
 import numpy as np
 from math import pi, sin, cos, tan, atan2
-from ir_world import motion_ackermann, motion_acker_pre
-
+from ir_sim.world import motion_ackermann
 
 class car_robot:
-    def __init__(self, id=0, shape = [1.5, 1, 1, 1], init_state=np.zeros((4, 1)), goal = np.zeros((3, 1)), goal_threshold = 0.2, vel_limit=2, vel_ang_limit=2, psi_limit=pi/4, step_time=0.1, global_path=[], trajectory=[], **kwargs):
+    def __init__(self, id=0, shape = [1.5, 1, 1, 1], init_state=np.zeros((4, 1)), goal = np.zeros((3, 1)), goal_threshold = 0.2, limit=[2, 2], psi_limit = pi/4, step_time=0.1, **kwargs):
 
         # state: 0, x
         #        1, y
         #        2, phi, heading direction
         #        3, psi, steering angle
         # shape: length, width, wheelbase, wheelbase_w
+        # limit: vel_limit, vel_ang_limit
+
         if isinstance(init_state, list): 
             init_state = np.array(init_state, ndmin=2).T
 
@@ -25,33 +26,35 @@ class car_robot:
         self.wheelbase=shape[2]
         self.wheelbase_w= shape[3]
         
+        self.v_l = limit[0]
+        self.w_l = limit[1]
+        self.psi_limit = psi_limit
+
         self.min_radius= self.wheelbase / tan(psi_limit)
     
         self.state=init_state
         self.angular_pos()
+
         self.goal=goal
         self.goal_th = goal_threshold
         self.pre_state = init_state
         self.vel = np.zeros((2, 1))
 
-        self.step_time = step_time
-        self.v_l = vel_limit
-        self.w_l = vel_ang_limit
-        self.psi_limit = psi_limit
+        self.arrive_flag = False
+        self.collision_flag = False
 
-        self.g_path = global_path
-        self.traj = trajectory 
+        self.step_time = step_time
 
     def move_forward(self, vel=np.zeros((2, 1)), stop=True):
 
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
 
-        if stop and self.arrive():
-            vel = np.zeros((2, 1))
+        if stop:
+            if self.arrive_flag or self.collision_flag:
+                vel = np.zeros((2, 1))
 
         self.vel = np.clip(vel, np.array([ [-self.v_l], [-self.w_l] ]), np.array([ [self.v_l], [self.w_l] ]))
-
         self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time)
         self.angular_pos()
     
@@ -60,10 +63,10 @@ class car_robot:
         self.state = state
         self.angular_pos()
 
-    def state_pre(self, pre_time = 1): 
-        psi = self.state[3, 0]
-        vel = self.vel[0, 0]
-        self.pre_state = motion_acker_pre(self.state, self.wheelbase, vel, psi, self.psi_limit, pre_time, self.step_time)
+    # def state_pre(self, pre_time = 1): 
+    #     psi = self.state[3, 0]
+    #     vel = self.vel[0, 0]
+    #     self.pre_state = motion_acker_pre(self.state, self.wheelbase, vel, psi, self.psi_limit, pre_time, self.step_time)
 
     def angular_pos(self): 
         # coordinates transform
@@ -110,7 +113,11 @@ class car_robot:
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
 
         if dis < self.goal_th:
+            self.arrive_flag = True
             return True
+        else:
+            self.arrive_flag = False
+            return False
     
     def cal_des_vel(self, tolerance=0.12):
 

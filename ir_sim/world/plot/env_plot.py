@@ -55,21 +55,43 @@ class env_plot:
 
     # draw components
     def draw_components(self, **kwargs):
-        robots = self.components.get('robots', [])
+        robots = self.components.get('robots', None)
         map_matrix = self.components.get('map_matrix', None)
+        cars = self.components.get('cars', None)
 
         if map_matrix is not None:
             self.ax.imshow(map_matrix.T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height])
+            # self.ax.spy(map_matrix, markersize=2)
+        
+        if robots is not None:
+            self.draw_robots(robots, **kwargs)
 
-        self.draw_robots(robots, **kwargs)
+        if cars is not None:
+            self.draw_cars(cars, **kwargs)
+        
 
-    def draw_dya_components(self, **kwargs):
-        robots = self.components.get('robots', [])
-        self.draw_robots(robots, **kwargs)
+    def draw_dyna_components(self, **kwargs):
+        robots = self.components.get('robots', None)
+        cars = self.components.get('cars', None) 
+
+        if robots is not None:
+            self.draw_robots(robots, **kwargs)
+        
+        if cars is not None:
+            self.draw_cars(cars, **kwargs)
 
     def draw_robots(self, robots, **kwargs):
         for robot in robots.robot_list:
             self.draw_robot_diff(robot, **kwargs)
+
+    def draw_cars(self, cars, **kwargs):
+        
+        if len(cars.car_list) > 1:
+            for car, color in zip(self.car_list, self.color_list):
+                self.draw_car(car, car_color=color, text=True, **kwargs)
+        else:
+            for car in cars.car_list:
+                self.draw_car(car, **kwargs)
 
     def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', **kwargs):
         
@@ -108,6 +130,8 @@ class env_plot:
         gdx = goal_l*cos(car.goal[2, 0])
         gdy = goal_l*sin(car.goal[2, 0])
 
+        self.car_line_list = []
+
         for i in range(4):
 
             if 0 < i < 3:
@@ -120,7 +144,7 @@ class env_plot:
                 lx1 = wx - line_length * cos(line_rad_f) / 2
                 ly1 = wy - line_length * sin(line_rad_f) / 2
                 
-                self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')
+                self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')) 
 
             else:
                 wx = car.wheel_position[0, i]
@@ -131,9 +155,9 @@ class env_plot:
 
                 lx1 = wx - line_length * cos(line_rad_b) / 2
                 ly1 = wy - line_length * sin(line_rad_b) / 2
-                
-                self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')
 
+                self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-'))
+                
         car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.width, height=car.length, angle=r_phi_ang, edgecolor=car_color, fill=False)
         goal_arrow = mpl.patches.Arrow(x=gx, y=gy, dx=gdx, dy=gdy, color=goal_color)
 
@@ -147,14 +171,6 @@ class env_plot:
         if pre_state:
             self.point_arrow_plot(car.pre_state)
 
-    def draw_car_list(self, **kwargs):
-        
-        if len(self.car_list) > 1:
-            for car, color in zip(self.car_list, self.color_list):
-                self.draw_car(car, car_color=color, text=True, **kwargs)
-        else:
-            for car in self.car_list:
-                self.draw_car(car, **kwargs)
 
     def draw_obs_cir_list(self):
 
@@ -178,7 +194,10 @@ class env_plot:
     def com_cla(self):
         self.ax.patches = []
         self.ax.texts=[]
-        # self.ax.lines=[]
+
+        for line in self.car_line_list:
+            line.pop(0).remove()
+
 
     # animation method 1
     def animate(self):

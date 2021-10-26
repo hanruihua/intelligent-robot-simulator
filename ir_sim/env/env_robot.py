@@ -1,4 +1,4 @@
-from ir_world import mobile_robot
+from ir_sim.world import mobile_robot
 from math import pi, cos, sin
 import numpy as np
 
@@ -17,7 +17,7 @@ class env_robot:
         # kwargs: random_bear random radius
 
         if self.init_mode == 0:
-            assert 'radius_list' in kwargs.keys() and 'init_state_list' in kwargs.keys() and 'goal_list' in kwargs.keys()
+            assert 'radius_list' and 'init_state_list' and 'goal_list' in kwargs.keys()
             radius_list = kwargs['radius_list']
             init_state_list = kwargs['init_state_list']
             goal_list = kwargs['goal_list']

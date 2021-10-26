@@ -1,6 +1,6 @@
 import numpy as np
 from math import sin, cos, atan2, pi, sqrt
-from ir_world import motion_diff, motion_omni
+from ir_sim.world import motion_diff, motion_omni
 
 class mobile_robot():
 
@@ -41,6 +41,7 @@ class mobile_robot():
         self.radius = radius
         self.radius_collision = round(radius + kwargs.get('radius_exp', 0.1), 2)
         self.arrive_flag = False
+        self.collision_flag = False
 
         self.__noise = kwargs.get('noise', False)
         self.__alpha = kwargs.get('alpha', [0.01, 0, 0, 0.01, 0, 0])
@@ -66,8 +67,9 @@ class mobile_robot():
 
         vel = np.clip(vel, -self.vel_max, self.vel_max)
         
-        if stop and self.arrive():
-            vel = np.zeros((2, 1))
+        if stop:
+            if self.arrive_flag or self.collision_flag:
+                vel = np.zeros((2, 1))
 
         assert self.mode == 'omni' or self.mode == 'diff'
 
@@ -224,6 +226,7 @@ class mobile_robot():
             self.arrive_flag = True
             return True
         else:
+            self.arrive_flag = False
             return False 
 
     @staticmethod
