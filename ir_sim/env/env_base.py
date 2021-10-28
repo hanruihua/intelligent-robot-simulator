@@ -74,6 +74,7 @@ class env_base:
             temp = {**self.robots_args, **kwargs}
             robots = env_robot(robot_class=robot_class, step_time=self.__step_time, **temp)
             self.components['robots'] = robots
+            self.robot = robots.robot_list[0]
         else:
             self.components['robots'] = None
 
@@ -81,6 +82,7 @@ class env_base:
             temp = {**self.cars_args, **kwargs}
             cars = env_car(car_class=car_class, step_time=self.__step_time, **temp)
             self.components['cars'] = cars
+            self.car = cars.car_list[0]
         else:
             self.components['cars'] = None
 
