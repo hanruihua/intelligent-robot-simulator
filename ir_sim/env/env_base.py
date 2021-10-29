@@ -36,7 +36,16 @@ class env_base:
                 if self.cars_args != None:
                     self.car_number = self.cars_args.get('number', 0)
                 else:
-                    self.car_number = 0      
+                    self.car_number = 0 
+
+                # obs_cir
+                self.obs_cirs_args = com_list.get('obs_cirs', None)
+                if self.obs_cirs_args != None:
+                    self.obs_cir_number = self.obs_cirs_args.get('number', 0)
+                else:
+                    self.obs_cir_number = 0 
+                
+
         else:
             self.__height = kwargs.get('world_height', 10)
             self.__width = kwargs.get('world_width', 10)
@@ -49,7 +58,7 @@ class env_base:
         self.components = dict()
         self.init_environment(**kwargs)
 
-    def init_environment(self, robot_class=mobile_robot, car_class=car_robot, **kwargs):
+    def init_environment(self, robot_class=mobile_robot, car_class=car_robot,  **kwargs):
 
         # world
         px = int(self.__width / self.xy_reso)
@@ -85,6 +94,15 @@ class env_base:
             self.car = cars.car_list[0]
         else:
             self.components['cars'] = None
+
+        if self.obs_cir_number != 0:
+            pass
+        else:
+            self.components['obs_cir'] = None
+        # if self.
+
+
+
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)

@@ -1,0 +1,25 @@
+world:
+  world_height: 10
+  world_width: 10
+  step_time: 0.1
+  xy_resolution: 0.01 # meter
+  yaw_resolution: 5 # degree
+  world_map: 'map_100_100.png'
+
+robots:
+  number: 1
+  robot_mode: 'omni'  # omni or diff
+  init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
+  init_state_list: [[1, 1, 0]]
+  goal_list: [[7, 7, 0]]
+  radius_list: [0.2]
+  vel_max: [1.5, 1.5]
+  radius_exp: 0.1
+
+obs_cirs:
+  number: 2
+  motion_mode: 'static'
+
+obs_lines:
+  number: 2
+
