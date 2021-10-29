@@ -4,7 +4,6 @@ A simple 2D simulator for the mobile robots to perform the navigation algorithm,
 
 ## Prerequisite
 
-Python3.8
 Test platform: Ubuntu20.04, windows10
 
 ## Installation
@@ -24,5 +23,5 @@ pip install -e .
 
 ## Usage
 
-The examples are in the /intelligent-robot-simulator/usage
+The examples are in the ir-sim/usage
 
