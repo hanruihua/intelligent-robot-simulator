@@ -22,6 +22,8 @@ class env_plot:
         self.keep_path=keep_path
         self.map_matrix = map_matrix
 
+        self.car_line_list = []
+
         self.init_plot(**kwargs)
 
         if full:

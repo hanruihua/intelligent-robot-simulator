@@ -81,6 +81,8 @@ class mobile_robot():
 
         elif self.mode == 'omni':
             self.move_with_omni(vel, self.__noise, self.__control_std)
+
+        self.arrive()
         
     def move_with_diff(self, vel_diff, noise = False, alpha = [0.01, 0, 0, 0.01, 0, 0]):
          # vel_diff: np.array([[vx], [vy]])
