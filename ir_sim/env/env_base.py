@@ -1,8 +1,9 @@
 import yaml
 import numpy as np
-from ir_sim.world import env_plot, mobile_robot, car_robot
+from ir_sim.world import env_plot, mobile_robot, car_robot, obs_circle
 from ir_sim.env.env_robot import env_robot
 from ir_sim.env.env_car import env_car
+from ir_sim.env.env_obs_cir import env_obs_cir
 from PIL import Image
 import sys
 
@@ -58,7 +59,7 @@ class env_base:
         self.components = dict()
         self.init_environment(**kwargs)
 
-    def init_environment(self, robot_class=mobile_robot, car_class=car_robot,  **kwargs):
+    def init_environment(self, robot_class=mobile_robot, car_class=car_robot, obs_cir_class=obs_circle,  **kwargs):
 
         # world
         px = int(self.__width / self.xy_reso)
@@ -81,7 +82,7 @@ class env_base:
 
         if self.robot_number != 0:
             temp = {**self.robots_args, **kwargs}
-            robots = env_robot(robot_class=robot_class, step_time=self.__step_time, **temp)
+            robots = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.__step_time, **temp)
             self.components['robots'] = robots
             self.robot = robots.robot_list[0]
         else:
@@ -96,13 +97,13 @@ class env_base:
             self.components['cars'] = None
 
         if self.obs_cir_number != 0:
-            pass
+            temp = {**self.obs_cirs_args, **kwargs}
+            obs_cirs = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.__step_time, **temp)
+            self.components['obs_cirs'] = obs_cirs
         else:
-            self.components['obs_cir'] = None
+            self.components['obs_cirs'] = None
+
         # if self.
-
-
-
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
@@ -114,7 +115,6 @@ class env_base:
         self.world_plot.com_cla()
         self.world_plot.draw_dyna_components(**kwargs)
         self.world_plot.pause(time)
-        
         
     
     def save_fig(self, path, i):
