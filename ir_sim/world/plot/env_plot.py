@@ -22,7 +22,9 @@ class env_plot:
         self.keep_path=keep_path
         self.map_matrix = map_matrix
 
+        self.car_plot_list = []
         self.car_line_list = []
+        self.robot_plot_list = []
 
         self.init_plot(**kwargs)
 
@@ -60,6 +62,7 @@ class env_plot:
         robots = self.components.get('robots', None)
         map_matrix = self.components.get('map_matrix', None)
         cars = self.components.get('cars', None)
+        obs_cirs = self.components.get('obs_cirs', None)
 
         if map_matrix is not None:
             self.ax.imshow(map_matrix.T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height])
@@ -70,6 +73,9 @@ class env_plot:
 
         if cars is not None:
             self.draw_cars(cars, **kwargs)
+        
+        if obs_cirs is not None:
+            self.draw_obs_cirs(obs_cirs, **kwargs)
         
 
     def draw_dyna_components(self, **kwargs):
@@ -95,6 +101,11 @@ class env_plot:
             for car in cars.car_list:
                 self.draw_car(car, **kwargs)
 
+    def draw_obs_cirs(self, obs_cirs, **kwargs):
+
+        for obs_cir in obs_cirs.obs_cir_list:
+            self.draw_obs_cir(obs_cir, **kwargs)
+
     def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', **kwargs):
         
         x = robot.state[0][0]
@@ -117,6 +128,10 @@ class env_plot:
         self.ax.add_patch(arrow)
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
 
+        self.robot_plot_list.append(robot_circle)
+        self.robot_plot_list.append(goal_circle)
+        self.robot_plot_list.append(arrow)
+
     def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
 
         x = car.angular_position[0, 0]
@@ -131,9 +146,7 @@ class env_plot:
         gy = car.goal[1, 0]
         gdx = goal_l*cos(car.goal[2, 0])
         gdy = goal_l*sin(car.goal[2, 0])
-
         self.car_line_list = []
-
         for i in range(4):
 
             if 0 < i < 3:
@@ -163,6 +176,9 @@ class env_plot:
         car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.width, height=car.length, angle=r_phi_ang, edgecolor=car_color, fill=False)
         goal_arrow = mpl.patches.Arrow(x=gx, y=gy, dx=gdx, dy=gdy, color=goal_color)
 
+        self.car_plot_list.append(car_rect)
+        self.car_plot_list.append(goal_arrow)
+
         self.ax.add_patch(car_rect)
         self.ax.add_patch(goal_arrow)
 
@@ -173,16 +189,16 @@ class env_plot:
         if pre_state:
             self.point_arrow_plot(car.pre_state)
 
+    def draw_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
 
-    def draw_obs_cir_list(self):
+        x = obs_cir.pos[0,0]
+        y = obs_cir.pos[1,0]
+        
+        obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = obs_cir_color)
+        obs_circle.set_zorder(2)
+        self.ax.add_patch(obs_circle)
 
-        for obs_cir in self.obs_cir_list:
-            x = obs_cir.pos[0, 0]
-            y = obs_cir.pos[1, 0]
 
-            obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = 'k')
-            self.ax.add_patch(obs_circle)
-    
     def draw_obs_line_list(self, **kwargs):
         
         for line in self.obs_line_list:
@@ -194,12 +210,20 @@ class env_plot:
         self.ax.add_patch(arrow)
 
     def com_cla(self):
-        self.ax.patches = []
+        # self.ax.patches = []
         self.ax.texts=[]
+
+        for robot_plot in self.robot_plot_list:
+            robot_plot.remove()
+
+        for car_plot in self.car_plot_list:
+            car_plot.remove()
 
         for line in self.car_line_list:
             line.pop(0).remove()
-
+        
+        self.car_plot_list = []
+        self.robot_plot_list = []
 
     # animation method 1
     def animate(self):
