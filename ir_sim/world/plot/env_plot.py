@@ -59,23 +59,11 @@ class env_plot:
 
     # draw components
     def draw_components(self, **kwargs):
-        robots = self.components.get('robots', None)
-        map_matrix = self.components.get('map_matrix', None)
-        cars = self.components.get('cars', None)
-        obs_cirs = self.components.get('obs_cirs', None)
-
-        if map_matrix is not None:
-            self.ax.imshow(map_matrix.T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height])
-            # self.ax.spy(map_matrix, markersize=2)
-        
-        if robots is not None:
-            self.draw_robots(robots, **kwargs)
-
-        if cars is not None:
-            self.draw_cars(cars, **kwargs)
-        
-        if obs_cirs is not None:
-            self.draw_obs_cirs(obs_cirs, **kwargs)
+   
+        self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height]) 
+        self.draw_robots(self.components['robots'], **kwargs)
+        self.draw_cars(self.components['cars'], **kwargs)
+        self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
         
 
     def draw_dyna_components(self, **kwargs):

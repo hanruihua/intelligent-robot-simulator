@@ -32,7 +32,7 @@ class env_base:
                 else:
                     self.robot_number = 0
 
-                self.cars_args = com_list.get('cars', None)
+                self.cars_args = com_list.get('cars', dict())
 
                 if self.cars_args != None:
                     self.car_number = self.cars_args.get('number', 0)
@@ -79,35 +79,26 @@ class env_base:
             self.map_matrix = np.zeros([px, py])
 
         self.components['map_matrix'] = self.map_matrix
+        self.components['xy_reso'] = self.xy_reso
 
-        if self.robot_number != 0:
-            temp = {**self.robots_args, **kwargs}
-            robots = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.__step_time, **temp)
-            self.components['robots'] = robots
-            self.robot = robots.robot_list[0]
-        else:
-            self.components['robots'] = None
+        self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.__step_time, **{**self.robots_args, **kwargs})
 
-        if self.car_number != 0:
-            temp = {**self.cars_args, **kwargs}
-            cars = env_car(car_class=car_class, step_time=self.__step_time, **temp)
-            self.components['cars'] = cars
-            self.car = cars.car_list[0]
-        else:
-            self.components['cars'] = None
+        self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.__step_time, **{**self.cars_args, **kwargs})
 
-        if self.obs_cir_number != 0:
-            temp = {**self.obs_cirs_args, **kwargs}
-            obs_cirs = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.__step_time, **temp)
-            self.components['obs_cirs'] = obs_cirs
-        else:
-            self.components['obs_cirs'] = None
-
-        # if self.
+        self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.__step_time, **{**self.obs_cirs_args, **kwargs})
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
     
+    def collision_check(self):
+        collision = False
+        for robot in self.components['robots'].robot_list: 
+            if robot.collision_check(self.components):
+                collision = True
+
+        return collision
+
+        
     def step(self):
         pass
 
@@ -116,7 +107,6 @@ class env_base:
         self.world_plot.draw_dyna_components(**kwargs)
         self.world_plot.pause(time)
         
-    
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)
     
