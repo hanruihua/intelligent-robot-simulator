@@ -16,7 +16,7 @@ class env_robot:
         #            3 circular 
         # kwargs: random_bear random radius
 
-        if self.init_mode == 0:
+        if self.init_mode == 0 and self.robot_num>0:
             assert 'radius_list' and 'init_state_list' and 'goal_list' in kwargs.keys()
             radius_list = kwargs['radius_list']
             init_state_list = kwargs['init_state_list']

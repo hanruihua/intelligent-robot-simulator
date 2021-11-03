@@ -235,8 +235,7 @@ class mobile_robot():
 
     def collision_check(self, components):
         circle = namedtuple('circle', 'x y r')
-        rectangle = namedtuple('rectangle', 'a b c d')
-
+        
         self_circle = circle(self.state[0, 0], self.state[1, 0], self.radius)
         
         if self.collision_flag == True:
