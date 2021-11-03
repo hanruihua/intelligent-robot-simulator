@@ -22,7 +22,5 @@ obs_cirs:
   obs_model: 'static' # static, dynamic
   obs_state_list: [[3, 4], [5, 6]]
   obs_radius_list: [0.2, 0.5]
-
-obs_lines:
-  number: 2
+  
 

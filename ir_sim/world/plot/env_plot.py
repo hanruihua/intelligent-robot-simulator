@@ -64,6 +64,7 @@ class env_plot:
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
         self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_obs_lines(self.components['obs_lines'], **kwargs)
         
 
     def draw_dyna_components(self, **kwargs):
@@ -93,6 +94,10 @@ class env_plot:
 
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_obs_cir(obs_cir, **kwargs)
+
+    def draw_obs_lines(self, obs_lines, **kwargs):
+        for obs_line in obs_lines.line_states:
+            self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
     def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', **kwargs):
         

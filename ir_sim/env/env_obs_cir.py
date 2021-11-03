@@ -11,7 +11,7 @@ class env_obs_cir:
         self.mode = obs_cir_mode
         self.obs_cir_list = []
 
-        if self.mode == 0:
+        if self.mode == 0 and self.num > 0:
             assert 'obs_radius_list' and 'obs_state_list' in kwargs.keys()
             obs_radius_list = kwargs['obs_radius_list']
             obs_state_list = kwargs['obs_state_list']

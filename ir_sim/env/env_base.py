@@ -4,6 +4,7 @@ from ir_sim.world import env_plot, mobile_robot, car_robot, obs_circle
 from ir_sim.env.env_robot import env_robot
 from ir_sim.env.env_car import env_car
 from ir_sim.env.env_obs_cir import env_obs_cir
+from ir_sim.env.env_obs_line import env_obs_line
 from PIL import Image
 import sys
 
@@ -25,27 +26,22 @@ class env_base:
                 self.xy_reso = world_args.get('xy_resolution', 1)
                 self.yaw_reso = world_args.get('yaw_resolution', 5)
 
-                self.robots_args = com_list.get('robots', None)
-
-                if self.robots_args != None:
-                    self.robot_number = self.robots_args.get('number', 0)
-                else:
-                    self.robot_number = 0
-
-                self.cars_args = com_list.get('cars', dict())
-
-                if self.cars_args != None:
-                    self.car_number = self.cars_args.get('number', 0)
-                else:
-                    self.car_number = 0 
-
-                # obs_cir
-                self.obs_cirs_args = com_list.get('obs_cirs', None)
-                if self.obs_cirs_args != None:
-                    self.obs_cir_number = self.obs_cirs_args.get('number', 0)
-                else:
-                    self.obs_cir_number = 0 
+                self.robots_args = com_list.get('robots', dict())
+                self.robot_number = self.robots_args.get('number', 0)
                 
+                self.cars_args = com_list.get('cars', dict())
+                self.car_number = self.cars_args.get('number', 0)
+            
+                # obs_cir
+                self.obs_cirs_args = com_list.get('obs_cirs', dict())
+                self.obs_cir_number = self.obs_cirs_args.get('number', 0)
+                
+                # obs line
+                self.obs_lines_args = com_list.get('obs_lines', dict())
+                # if self.obs_lines_args != None:
+                #     self.obs_line_number = self.obs_lines_args.get('number', 0)
+                # else:
+                #     self.obs_line_number = 0
 
         else:
             self.__height = kwargs.get('world_height', 10)
@@ -87,6 +83,8 @@ class env_base:
 
         self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.__step_time, **{**self.obs_cirs_args, **kwargs})
 
+        self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
+
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
     
@@ -96,9 +94,12 @@ class env_base:
             if robot.collision_check(self.components):
                 collision = True
 
+        for car in self.components['cars'].car_list: 
+            if car.collision_check(self.components):
+                collision =True
+
         return collision
 
-        
     def step(self):
         pass
 

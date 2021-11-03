@@ -148,6 +148,11 @@ class car_robot:
 
         return np.array([[v_opti], [w_opti]])
 
+    def collision_check(self, components):
+        pass
+
+
+
     @staticmethod
     def relative(state1, state2):
         

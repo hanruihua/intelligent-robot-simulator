@@ -263,7 +263,15 @@ class mobile_robot():
         # check collision with map
         if self.collision_matrix(self_circle, components['map_matrix'], components['xy_reso']):
             self.collision_flag = True
+            print('collisions between obstacles')
             return True
+        
+        for segment in components['obs_lines'].line_states:
+            if self.collision_segment(self_circle, segment):
+                self.collision_flag = True
+                print('collisions between obstacles')
+                return True
+
 
     def collision_circle(self, circle1, circle2):
         dis = sqrt( (circle2.x - circle1.x)**2 + (circle2.y - circle1.y)**2 )
@@ -287,9 +295,28 @@ class mobile_robot():
             if matrix[index_x, index_y]:
                 return True
 
-    def collision_rect(self, circle, rectangle):
-        pass
+    def collision_segment(self, circle, segment):
+        
+        point = np.array([circle.x, circle.y])
+        sp = np.array([segment[0], segment[1]])
+        ep = np.array([segment[2], segment[3]])
 
+        l2 = (ep - sp) @ (ep - sp)
+
+        if (l2 == 0.0):
+            distance = np.linalg.norm(point - sp)
+            if distance < circle.r:
+                return True
+
+        t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
+
+        projection = sp + t * (ep-sp)
+        relative = projection - point
+
+        distance = np.linalg.norm(relative) 
+        # angle = atan2( relative[1], relative[0] )
+        if distance < circle.r:
+            return True
 
     @staticmethod
     def relative(state1, state2):
