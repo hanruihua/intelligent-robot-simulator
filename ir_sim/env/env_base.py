@@ -38,10 +38,7 @@ class env_base:
                 
                 # obs line
                 self.obs_lines_args = com_list.get('obs_lines', dict())
-                # if self.obs_lines_args != None:
-                #     self.obs_line_number = self.obs_lines_args.get('number', 0)
-                # else:
-                #     self.obs_line_number = 0
+
 
         else:
             self.__height = kwargs.get('world_height', 10)

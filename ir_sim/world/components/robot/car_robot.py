@@ -149,7 +149,10 @@ class car_robot:
         return np.array([[v_opti], [w_opti]])
 
     def collision_check(self, components):
+        line1 = [self.angular_position[:, 0], self.angular_position[:, 1]]
         line_list = []
+        
+
 
 
 

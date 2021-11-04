@@ -271,6 +271,17 @@ class mobile_robot():
                 print('collisions between obstacles')
                 return True
 
+    def reset(self, random_bear=False):
+
+        self.state[:] = self.init_state[:]
+        self.vel_omni = np.zeros((2, 1))
+        self.vel_diff = np.zeros((2, 1))
+        self.arrive_flag = False
+        self.collision_flag = False
+
+        if random_bear:
+            self.state[2, 0] = np.random.uniform(low = -pi, high = pi)
+
 
     def collision_circle(self, circle1, circle2):
         dis = sqrt( (circle2.x - circle1.x)**2 + (circle2.y - circle1.y)**2 )
@@ -316,6 +327,8 @@ class mobile_robot():
         # angle = atan2( relative[1], relative[0] )
         if distance < circle.r:
             return True
+
+
 
     @staticmethod
     def relative(state1, state2):
