@@ -9,7 +9,7 @@ world:
 cars:
   number: 1
   car_shape_list: [[4.6, 1.6, 3, 1.6]]  # length, width, wheelbase, wheelbase_width
-  car_state_list: [[1, 1, 0, 0]]
+  car_state_list: [[10, 10, 0, 0]]
   car_goal_list: [[40, 40, 0]]
   limit: [2, 2]
 
@@ -17,9 +17,9 @@ obs_cirs:
   number: 2
   obs_cir_mode: 0
   obs_model: 'static' # static, dynamic
-  obs_state_list: [[3, 4], [5, 6]]
-  obs_radius_list: [0.2, 0.5]
+  obs_state_list: [[20, 30], [35, 16]]
+  obs_radius_list: [0.9, 1.5]
 
 obs_lines:
-  obs_line_states: [[15, 33, 27, 14]]
+  obs_line_states: [[15, 33, 27, 33]]
 

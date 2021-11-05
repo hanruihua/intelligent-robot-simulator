@@ -84,6 +84,14 @@ class env_base:
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
+        
+        self.time = 0
+
+        if self.robot_number > 0:
+            self.robot = self.components['robots'].robot_list[0]
+        
+        if self.car_number > 0:
+            self.car = self.components['cars'].car_list[0]
     
     def collision_check(self):
         collision = False
@@ -97,13 +105,25 @@ class env_base:
 
         return collision
 
-    def step(self):
+    def step(self, vel_list, **kwargs):
+        # if not isinstance(vel_list, list):
+        #     self.robot.move_forward(**kwargs)
+        # else:
+        #     pass
+        
+        # for robot in self.components['robots'].robot_list:
+        #     pass
         pass
 
+    
     def render(self, time=0.05, **kwargs):
-        self.world_plot.com_cla()
-        self.world_plot.draw_dyna_components(**kwargs)
-        self.world_plot.pause(time)
+
+        if self.plot:
+            self.world_plot.com_cla()
+            self.world_plot.draw_dyna_components(**kwargs)
+            self.world_plot.pause(time)
+        
+        self.time = self.time + 1
         
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)

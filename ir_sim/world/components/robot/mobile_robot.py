@@ -264,8 +264,10 @@ class mobile_robot():
             self.collision_flag = True
             print('collisions between obstacles')
             return True
-        
-        for segment in components['obs_lines'].line_states:
+
+        # check collision with line obstacles
+        for line in components['obs_lines'].line_states:
+            segment = [np.array([line[0], line[1]]), np.array([line[2], line[3]])]
             if self.collision_segment(self_circle, segment):
                 self.collision_flag = True
                 print('collisions between obstacles')
@@ -308,8 +310,8 @@ class mobile_robot():
     def collision_segment(self, circle, segment):
         
         point = np.array([circle.x, circle.y])
-        sp = np.array([segment[0], segment[1]])
-        ep = np.array([segment[2], segment[3]])
+        sp = segment[0]
+        ep = segment[1]
 
         l2 = (ep - sp) @ (ep - sp)
 

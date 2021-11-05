@@ -127,8 +127,8 @@ class env_plot:
 
     def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
 
-        x = car.angular_position[0, 0]
-        y = car.angular_position[1, 0]
+        x = car.ang_pos[0, 0]
+        y = car.ang_pos[1, 0]
         r_phi=car.state[2, 0] - pi/2
         r_phi_ang = 180*r_phi/pi
 
@@ -143,8 +143,8 @@ class env_plot:
         for i in range(4):
 
             if 0 < i < 3:
-                wx = car.wheel_position[0, i]
-                wy = car.wheel_position[1, i]
+                wx = car.wheel_pos[0, i]
+                wy = car.wheel_pos[1, i]
 
                 lx0 = wx + line_length * cos(line_rad_f) / 2
                 ly0 = wy + line_length * sin(line_rad_f) / 2
@@ -155,8 +155,8 @@ class env_plot:
                 self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')) 
 
             else:
-                wx = car.wheel_position[0, i]
-                wy = car.wheel_position[1, i]
+                wx = car.wheel_pos[0, i]
+                wy = car.wheel_pos[1, i]
 
                 lx0 = wx + line_length * cos(line_rad_b) / 2
                 ly0 = wy + line_length * sin(line_rad_b) / 2
