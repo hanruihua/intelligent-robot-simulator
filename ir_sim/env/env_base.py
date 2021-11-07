@@ -116,7 +116,7 @@ class env_base:
         pass
 
     
-    def render(self, time=0.05, **kwargs):
+    def render(self, time=0.01, **kwargs):
 
         if self.plot:
             self.world_plot.com_cla()

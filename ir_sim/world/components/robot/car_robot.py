@@ -2,6 +2,7 @@ import numpy as np
 from math import pi, sin, cos, tan, atan2
 from ir_sim.world import motion_ackermann
 from collections import namedtuple
+from ir_sim.util import collision_cir_seg, collision_seg_matrix, collision_seg_seg
 
 class car_robot:
     def __init__(self, id=0, shape = [1.5, 1, 1, 1], init_state=np.zeros((4, 1)), goal = np.zeros((3, 1)), goal_threshold = 0.2, limit=[2, 2], psi_limit = pi/4, step_time=0.1, **kwargs):
@@ -152,149 +153,38 @@ class car_robot:
     def collision_check(self, components):
 
         circle = namedtuple('circle', 'x y r')
+        point = namedtuple('point', 'x y')
 
-        segment1 = [self.ang_pos[:, 0], self.ang_pos[:, 1]]
-        segment2 = [self.ang_pos[:, 1], self.ang_pos[:, 2]]
-        segment3 = [self.ang_pos[:, 2], self.ang_pos[:, 3]]
-        segment4 = [self.ang_pos[:, 3], self.ang_pos[:, 0]]
+        segment1 = [point(self.ang_pos[0, 0], self.ang_pos[1, 0]), point(self.ang_pos[0, 1], self.ang_pos[1, 1])]
+        segment2 = [point(self.ang_pos[0, 1], self.ang_pos[1, 1]), point(self.ang_pos[0, 2], self.ang_pos[1, 2])]
+        segment3 = [point(self.ang_pos[0, 2], self.ang_pos[1, 2]), point(self.ang_pos[0, 3], self.ang_pos[1, 3])]
+        segment4 = [point(self.ang_pos[0, 3], self.ang_pos[1, 3]), point(self.ang_pos[0, 0], self.ang_pos[1, 0])]
 
         segment_list = [segment1, segment2, segment3, segment4]
 
         # check collision with obstacles
         for obs_cir in components['obs_cirs'].obs_cir_list:
             temp_circle = circle(obs_cir.pos[0, 0], obs_cir.pos[1, 0], obs_cir.radius)
-
             for segment in segment_list:
-                if self.collision_circle(segment, temp_circle):
+                if collision_cir_seg(temp_circle, segment):
                     self.collision_flag = True
                     print('collisions with obstacles')
                     return True
         
         # check collision with map
         for segment in segment_list:
-            if self.collision_matrix(segment, components['map_matrix'], components['xy_reso']):
+            if collision_seg_matrix(segment, components['map_matrix'], components['xy_reso']):
                 self.collision_flag = True
                 print('collisions between obstacle map')
                 return True
 
         # check collision with line obstacles:
         for line in components['obs_lines'].line_states:
-            segment = [np.array([line[0], line[1]]), np.array([line[2], line[3]])]
-            for seg in segment_list:
-                if self.collision_segment(segment, seg):
+            seg1 = [point(line[0], line[1]), point(line[2], line[3])]
+            for seg2 in segment_list:
+                if collision_seg_seg(seg1, seg2):
                     print('collisions with line obstacle')
                     return True
-
-    def collision_circle(self, segment, circle):
-        
-        point = np.array([circle.x, circle.y])
-        sp = segment[0]
-        ep = segment[1]
-
-        l2 = (ep - sp) @ (ep - sp)
-
-        if (l2 == 0.0):
-            distance = np.linalg.norm(point - sp)
-            if distance < circle.r:
-                return True
-
-        t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
-
-        projection = sp + t * (ep-sp)
-        relative = projection - point
-
-        distance = np.linalg.norm(relative) 
-        # angle = atan2( relative[1], relative[0] )
-        if distance < circle.r:
-            return True 
-
-    def collision_matrix(self, segment, matrix, reso):
-
-        init_point = segment[0]
-        len_seg = np.linalg.norm(segment[1] - segment[0])
-
-        slope_cos = (segment[1] - segment[0])[0] / len_seg
-        slope_sin = (segment[1] - segment[0])[1] / len_seg
-
-        point_step = reso
-        cur_len = 0
-
-        while cur_len <= len_seg:
-
-            cur_point_x = init_point[0] + cur_len * slope_cos
-            cur_point_y = init_point[1] + cur_len * slope_sin
-
-            cur_len = cur_len + point_step
-            
-            index_x = int(cur_point_x / reso)
-            index_y = int(cur_point_y / reso)
-            if matrix[index_x, index_y]:
-                return True    
-    
-    def collision_segment(self, segment1, segment2):
-        # reference https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/; https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-
-        point = namedtuple('point', 'x y')
-
-        p1 = point(segment1[0][0], segment1[0][1])
-        p2 = point(segment1[1][0], segment1[1][1])
-        q1 = point(segment2[0][0], segment2[0][1])
-        q2 = point(segment2[1][0], segment2[1][1])
-
-        o1 = car_robot.orientation(p1, q1, q2)
-        o2 = car_robot.orientation(p2, q1, q2)
-        o3 = car_robot.orientation(p1, p2, q1)
-        o4 = car_robot.orientation(p1, p2, q2)
-
-        # general case
-        if o1 != o2 and o3 != o4:
-            return True
-
-        # special case
-        if o1 == 0 and car_robot.onSegment(p1, q1, p2):
-             return True
- 
-        # p1, q1 and q2 are collinear and q2 lies on segment p1q1
-        if (o2 == 0 and car_robot.onSegment(p1, q2, p2)):
-            return True
- 
-        # p2, q2 and p1 are collinear and p1 lies on segment p2q2
-        if (o3 == 0 and car_robot.onSegment(q1, p1, q2)):
-            return True
-
-        # p2, q2 and q1 are collinear and q1 lies on segment p2q2
-        if (o4 == 0 and car_robot.onSegment(q1, p2, q2)):
-            return True
- 
-        return False
-
-
-    @staticmethod
-    def onSegment(p, q, r):
-
-        if (q.x <= max(p.x, r.x) and q.x >= min(p.x, r.x) and q.y <= max(p.y, r.y) and q.y >= min(p.y, r.y)):
-            return True
-        
-        return False
-
-    @staticmethod
-    def orientation(p, q, r):
-
-        # # val = (q.y - p.y) * (r.x - p.x) - (q.x - p.x) * (r.y - q.y)
-        # val = (r.y - p.y) * (q.x-p.x) - (q.y - p.y) * (r.x-p.x)
-        val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
-
-        if val > 0:
-            return 1
-        elif val < 0:
-            return 2
-        else:
-            return 0
-        
-        # 0 collinear 
-        # 1 counterclockwise 
-        # 2 clockwise
-
 
     @staticmethod
     def relative(state1, state2):

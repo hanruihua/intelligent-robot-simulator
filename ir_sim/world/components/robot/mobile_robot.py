@@ -2,6 +2,7 @@ import numpy as np
 from math import sin, cos, atan2, pi, sqrt
 from ir_sim.world import motion_diff, motion_omni
 from collections import namedtuple
+from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg
 
 class mobile_robot():
 
@@ -235,6 +236,7 @@ class mobile_robot():
 
     def collision_check(self, components):
         circle = namedtuple('circle', 'x y r')
+        point = namedtuple('point', 'x y')
         
         self_circle = circle(self.state[0, 0], self.state[1, 0], self.radius)
         
@@ -245,7 +247,8 @@ class mobile_robot():
         for robot in components['robots'].robot_list:
             if not robot.collision_flag:
                 temp_circle = circle(robot.state[0, 0], robot.state[1, 0], robot.radius)
-                if self.collision_circle(self_circle, temp_circle):
+                if collision_cir_cir(self_circle, temp_circle):
+                    
                     robot.collision_flag = True
                     self.collision_flag = True
                     print('collisions between robots')
@@ -254,21 +257,21 @@ class mobile_robot():
         # check collision with obstacles
         for obs_cir in components['obs_cirs'].obs_cir_list:
             temp_circle = circle(obs_cir.pos[0, 0], obs_cir.pos[1, 0], obs_cir.radius)
-            if self.collision_circle(self_circle, temp_circle):
+            if collision_cir_cir(self_circle, temp_circle):
                 self.collision_flag = True
-                print('collisions between obstacles')
+                print('collisions with obstacles')
                 return True
         
         # check collision with map
-        if self.collision_matrix(self_circle, components['map_matrix'], components['xy_reso']):
+        if collision_cir_matrix(self_circle, components['map_matrix'], components['xy_reso']):
             self.collision_flag = True
-            print('collisions between obstacles')
+            print('collisions with map obstacles')
             return True
 
         # check collision with line obstacles
         for line in components['obs_lines'].line_states:
-            segment = [np.array([line[0], line[1]]), np.array([line[2], line[3]])]
-            if self.collision_segment(self_circle, segment):
+            segment = [point(line[0], line[1]), point(line[2], line[3])]
+            if collision_cir_seg(self_circle, segment):
                 self.collision_flag = True
                 print('collisions between obstacles')
                 return True
@@ -283,52 +286,6 @@ class mobile_robot():
 
         if random_bear:
             self.state[2, 0] = np.random.uniform(low = -pi, high = pi)
-
-
-    def collision_circle(self, circle1, circle2):
-        dis = sqrt( (circle2.x - circle1.x)**2 + (circle2.y - circle1.y)**2 )
-        
-        if dis != 0 and dis <= circle1.r + circle2.r:
-            return True
-
-        return False
-
-    def collision_matrix(self, circle, matrix, reso):
-
-        rad_step = 0.1
-        cur_rad = 0
-        
-        while cur_rad <= 2*pi:
-            crx = circle.x + circle.r * cos(cur_rad)
-            cry = circle.y + circle.r * sin(cur_rad)
-            cur_rad = cur_rad + rad_step
-            index_x = int(crx / reso)
-            index_y = int(cry / reso)
-            if matrix[index_x, index_y]:
-                return True
-
-    def collision_segment(self, circle, segment):
-        
-        point = np.array([circle.x, circle.y])
-        sp = segment[0]
-        ep = segment[1]
-
-        l2 = (ep - sp) @ (ep - sp)
-
-        if (l2 == 0.0):
-            distance = np.linalg.norm(point - sp)
-            if distance < circle.r:
-                return True
-
-        t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
-
-        projection = sp + t * (ep-sp)
-        relative = projection - point
-
-        distance = np.linalg.norm(relative) 
-        # angle = atan2( relative[1], relative[0] )
-        if distance < circle.r:
-            return True
 
 
 
