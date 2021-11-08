@@ -13,9 +13,10 @@ for i in range(300):
     env.render()
     
     if env.collision_check():
+        print('all collisions')
         break
 
-env.show()
+# env.show()
     
     
 

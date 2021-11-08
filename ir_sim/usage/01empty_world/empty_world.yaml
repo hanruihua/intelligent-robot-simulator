@@ -7,11 +7,6 @@ world:
   yaw_resolution: 5 # degree
   world_map: 'map_100_100.png'
 
-robots: 
-  
-cars:
-
-obstacles:
 
 
 

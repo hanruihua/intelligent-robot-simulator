@@ -136,5 +136,7 @@ def orientation(p, q, r):
     else:
         return 0
     
+    
+    
    
 

@@ -7,11 +7,11 @@ world:
   world_map: 'map_100_100.png'
 
 robots:
-  number: 1
+  number: 2
   robot_mode: 'diff'  # omni or diff
   init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
   init_state_list: [[1, 1, 0], [6, 3, 0]]
-  goal_list: [[6, 7, 0], [5, 4, 0]]
+  goal_list: [[6, 7, 0], [5, 6, 0]]
   radius_list: [0.2, 0.2]
   vel_max: [1.5, 1.5]
   radius_exp: 0.1

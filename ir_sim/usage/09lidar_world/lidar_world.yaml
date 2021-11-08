@@ -28,5 +28,17 @@ obs_lines:
 
 sensor: 
   type: 'lidar2d'
+  robot_id: 0
+  ins_pos: [0, 0, 0]
+  range_min: 0
+  range_max: 10
+  angle_min: 0 
+  angle_max: 3.1415926
+  angle_inc: 0.0873
+  scan_time: 0.1
+  noise=True: 
+  std: 0.2
+  
+  
   
   

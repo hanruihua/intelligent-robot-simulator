@@ -94,14 +94,14 @@ class env_base:
             self.car = self.components['cars'].car_list[0]
     
     def collision_check(self):
-        collision = False
+        collision = True
         for robot in self.components['robots'].robot_list: 
-            if robot.collision_check(self.components):
-                collision = True
+            if not robot.collision_check(self.components):
+                collision = False
 
         for car in self.components['cars'].car_list: 
-            if car.collision_check(self.components):
-                collision =True
+            if not car.collision_check(self.components):
+                collision =False
 
         return collision
 
