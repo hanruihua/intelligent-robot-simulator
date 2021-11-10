@@ -1,73 +1,91 @@
 import numpy as np
 from math import sqrt, pi, cos, sin
 
+# point: np(2,)
+# segment: [point1, point2]
+# circle: np(2,)
+# r: 1
+
 def range_seg_matrix(segment, matrix, reso):
 
     init_point = segment[0]
-    dif_x = segment[1].x - segment[0].x
-    dif_y = segment[1].y - segment[0].y
+    diff = segment[1] - segment[0]
+    len_seg = np.linalg.norm(diff)
 
-    len_seg = sqrt( dif_x**2 + dif_y**2 )
+    slope = diff / len_seg
 
-    slope_cos = dif_x / len_seg
-    slope_sin = dif_y / len_seg
-
-    point_step = 2*reso
+    point_step = 5*reso
     cur_len = 0
 
     while cur_len <= len_seg:
 
-        cur_point_x = init_point.x + cur_len * slope_cos
-        cur_point_y = init_point.y + cur_len * slope_sin
+        cur_point = init_point + cur_len * slope
 
         cur_len = cur_len + point_step
         
-        index_x = int(cur_point_x / reso)
-        index_y = int(cur_point_y / reso)
+        index = cur_point / reso
 
-        if matrix[index_x, index_y]:
-            int_point = np.array([cur_point_x, cur_point_y])
-            lrange = np.linalg.norm( int_point -  init_point)
+        if index[0] < 0 or index[0] > matrix.shape[0] or index[1] < 0 or index[1] > matrix.shape[1]:
+            lrange = np.linalg.norm( cur_point -  init_point)
+            return True, cur_point, lrange
 
-            return True, int_point, lrange
-    
+        elif matrix[int(index[0]), int(index[1])]:
+            lrange = np.linalg.norm( cur_point -  init_point)
+
+            return True, cur_point, lrange
+
     return False, None, None
 
 
-def range_cir_seg(circle, segment):
-    
+def range_cir_seg(circle, r, segment,):
     # reference: https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+
+    sp = segment[0]
+    ep = segment[1]
+
+    d = ep - sp
+    f = sp - circle
+
+    a = d @ d
+    b = 2* f@d
+    c = f@f - r ** 2
+
+    discriminant = b**2 - 4 * a * c
+
+    if discriminant < 0:
+        return False, None, None
     
-    point = np.array([circle.x, circle.y])
-    sp = np.array([segment[0].x, segment[0].y])
-    ep = np.array([segment[1].x, segment[1].y])
+    else:
+        t1 = (-b - sqrt(discriminant)) / (2*a)
+        t2 = (-b + sqrt(discriminant)) / (2*a)
+
+        # 3x HIT cases:
+        #          -o->             --|-->  |            |  --|->
+        # Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit), 
+
+        # 3x MISS cases:
+        #       ->  o                     o ->              | -> |
+        # FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+        if t1 >=0 and t1<=1:
+            int_point = sp + t1 * d
+            lrange = np.linalg.norm(int_point - sp)
+
+            return True, int_point, lrange
+
+        # if t2 >= 0 and t2 <=1:
+           #  ExitWound(t1<0, t2 hit), 
+        return False, None, None
+
     
-    l2 = (ep - sp) @ (ep - sp)
-
-    if (l2 == 0.0):
-        lrange = np.linalg.norm(point - sp)
-        if lrange <= circle.r:
-            return True, sp, lrange
-
-    t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
-
-    int_point = sp + t * (ep-sp)
-    relative = int_point - point
-
-    lrange = np.linalg.norm(relative) 
-    # angle = atan2( relative[1], relative[0] )
-    if lrange <= circle.r:
-        return True, int_point, lrange
-
-
 def range_seg_seg(segment1, segment2):
     # reference https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
     # p, p+r, q, q+s
 
-    p = np.array([segment1[0].x, segment1[0].y])
-    r = np.array([segment1[1].x - segment1[0].x, segment1[1].y - segment1[0].y])
-    q = np.array([segment2[0].x, segment2[0].y])
-    s = np.array([segment2[1].x - segment2[0].x, segment2[1].y - segment2[0].y])
+    p = segment1[0]
+    r = segment1[1] - segment1[0]
+    q = segment2[0]
+    s = segment2[1] - segment2[0]
 
     temp1 = np.cross(r, s)
     temp2 = np.cross(q-p, r)
@@ -93,6 +111,7 @@ def range_seg_seg(segment1, segment2):
     elif temp1 == 0 and temp2 != 0:
         # parallel and non-intersecting
         return False, None, None
+
     elif temp1 != 0:
 
         t = np.cross( q-p, s) / np.cross(r, s)
@@ -103,9 +122,12 @@ def range_seg_seg(segment1, segment2):
             int_point = p + t*r
             lrange = np.linalg.norm(int_point - p)
             return True, int_point, lrange
+        else: 
+            return False, None, None
+
     else:
         # not parallel and not intersect
-        False, None, None
+        return False, None, None
 
 
 

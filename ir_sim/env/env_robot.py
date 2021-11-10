@@ -1,6 +1,7 @@
 from ir_sim.world import mobile_robot
 from math import pi, cos, sin
 import numpy as np
+from ir_sim.world import lidar2d
 
 class env_robot:
     def __init__(self, robot_class=mobile_robot,  robot_num=1, robot_mode='omni', init_mode = 0, step_time=0.1, **kwargs):
@@ -23,7 +24,7 @@ class env_robot:
             goal_list = kwargs['goal_list']
         else:
             init_state_list, goal_list, radius_list = self.init_state_distribute(init_mode, **kwargs)
-    
+
         # robot
         for i in range(self.robot_num):
             robot = self.robot_class(id=i, mode=robot_mode, radius=radius_list[i], init_state=init_state_list[i], goal=goal_list[i], step_time=step_time, **kwargs)

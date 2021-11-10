@@ -25,6 +25,7 @@ class env_plot:
         self.car_plot_list = []
         self.car_line_list = []
         self.robot_plot_list = []
+        self.lidar_line_list = []
 
         self.init_plot(**kwargs)
 
@@ -99,7 +100,7 @@ class env_plot:
         for obs_line in obs_lines.line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
-    def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', **kwargs):
+    def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, **kwargs):
         
         x = robot.state[0][0]
         y = robot.state[1][0]
@@ -121,6 +122,13 @@ class env_plot:
         self.ax.add_patch(arrow)
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
 
+        for point in robot.lidar.inter_points[:, :]:
+            
+            x_value = [x, point[0]]
+            y_value = [y, point[1]]
+
+            self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
+            
         self.robot_plot_list.append(robot_circle)
         self.robot_plot_list.append(goal_circle)
         self.robot_plot_list.append(arrow)
@@ -214,9 +222,13 @@ class env_plot:
 
         for line in self.car_line_list:
             line.pop(0).remove()
+
+        for lidar_line in self.lidar_line_list:
+            lidar_line.pop(0).remove()
         
         self.car_plot_list = []
         self.robot_plot_list = []
+        self.lidar_line_list = []
 
     # animation method 1
     def animate(self):

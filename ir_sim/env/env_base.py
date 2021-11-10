@@ -39,7 +39,6 @@ class env_base:
                 # obs line
                 self.obs_lines_args = com_list.get('obs_lines', dict())
 
-
         else:
             self.__height = kwargs.get('world_height', 10)
             self.__width = kwargs.get('world_width', 10)
@@ -81,6 +80,7 @@ class env_base:
         self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.__step_time, **{**self.obs_cirs_args, **kwargs})
 
         self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
+        
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
@@ -105,17 +105,17 @@ class env_base:
 
         return collision
 
-    def step(self, vel_list, **kwargs):
-        # if not isinstance(vel_list, list):
-        #     self.robot.move_forward(**kwargs)
-        # else:
-        #     pass
-        
-        # for robot in self.components['robots'].robot_list:
-        #     pass
-        pass
+    def robot_step(self, vel_list, **kwargs):
 
-    
+        if not isinstance(vel_list, list):
+            self.robot.move_forward(vel_list, **kwargs)
+        else:
+            for i, robot in enumerate(self.components['robots'].robot_list):
+                robot.move_forward(vel_list[i], **kwargs)
+        
+        for robot in self.components['robots'].robot_list:
+            robot.cal_lidar_range(self.components)
+        
     def render(self, time=0.01, **kwargs):
 
         if self.plot:

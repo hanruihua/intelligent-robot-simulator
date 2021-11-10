@@ -1,6 +1,6 @@
 import numpy as np
 from math import sin, cos, atan2, pi, sqrt
-from ir_sim.world import motion_diff, motion_omni
+from ir_sim.world import motion_diff, motion_omni, lidar2d
 from collections import namedtuple
 from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg
 
@@ -45,6 +45,13 @@ class mobile_robot():
         self.arrive_flag = False
         self.collision_flag = False
 
+        lidar_args = kwargs.get('lidar2d', None)
+
+        if lidar_args is not None:
+            self.lidar = lidar2d(**lidar_args)
+        else:
+            self.lidar = None
+        
         self.__noise = kwargs.get('noise', False)
         self.__alpha = kwargs.get('alpha', [0.01, 0, 0, 0.01, 0, 0])
         self.__control_std = kwargs.get('control_std', [0.01, 0.01])
@@ -85,8 +92,14 @@ class mobile_robot():
             self.move_with_omni(vel, self.__noise, self.__control_std)
 
         self.arrive()
+
         # self.collision_check()
-  
+    def cal_lidar_range(self, components):
+        if self.lidar is not None:
+            self.lidar.cal_range(self.state, components)
+            
+
+
     def move_with_diff(self, vel_diff, noise = False, alpha = [0.01, 0, 0, 0.01, 0, 0]):
          # vel_diff: np.array([[vx], [vy]])
         next_state = motion_diff(self.state, vel_diff, self.step_time, noise, alpha)
