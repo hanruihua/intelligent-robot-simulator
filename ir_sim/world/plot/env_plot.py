@@ -5,9 +5,14 @@ import matplotlib.animation as animation
 import imageio
 import platform
 import shutil
+from matplotlib import image
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 from math import cos, sin, pi
 from pathlib import Path
+import sys
+import os
+import inspect
 
 class env_plot:
     def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, **kwargs):
@@ -182,6 +187,23 @@ class env_plot:
 
         self.ax.add_patch(car_rect)
         self.ax.add_patch(goal_arrow)
+        
+        # car_image_path = Path('__file__').parent / 'car0.png'
+        # t1 = Path('../').parent / 'car0.png'
+        # print(t1)
+        # # temp = sys.path[0]
+        # # print(car_image_path)
+        # # print(temp)
+        # b = image.imread('./plot/car0.png')
+
+        current_file_frame = inspect.getfile(inspect.currentframe())
+        car_image_path = Path(current_file_frame).parent / 'car0.png'
+        im = image.imread(car_image_path) 
+
+        oim = OffsetImage(im)
+        
+        # im.resize(int(car.width), int(car.length), image.ANTIALIAS)
+        # self.ax.imshow(im)
 
         if text:
             self.ax.text(x - 0.5, y, 'c'+ str(car.id), fontsize = 10, color = 'k')
