@@ -16,7 +16,7 @@ for i in range(300):
         print('all collisions')
         break
 
-# env.show()
+env.show()
     
     
 

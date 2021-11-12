@@ -10,9 +10,9 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 from math import cos, sin, pi
 from pathlib import Path
-import sys
-import os
 import inspect
+from scipy.ndimage.interpolation import rotate
+import matplotlib.transforms as mtransforms
 
 class env_plot:
     def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, **kwargs):
@@ -31,6 +31,7 @@ class env_plot:
         self.car_line_list = []
         self.robot_plot_list = []
         self.lidar_line_list = []
+        self.car_img_show_list = []
 
         self.init_plot(**kwargs)
 
@@ -55,8 +56,13 @@ class env_plot:
         self.ax.set_xlabel("x [m]")
         self.ax.set_ylabel("y [m]")
 
-        self.draw_components(**kwargs)    
+         # car image
+        current_file_frame = inspect.getfile(inspect.currentframe())
+        car_image_path = Path(current_file_frame).parent / 'car0.png'
+        self.init_car_img = image.imread(car_image_path) 
 
+        self.draw_components(**kwargs)    
+         
         # if self.map_matrix is not None:
         #     # self.ax.imshow(np.flipud(self.map_matrix.T), cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
         #     self.ax.imshow(self.map_matrix.T, cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
@@ -127,12 +133,13 @@ class env_plot:
         self.ax.add_patch(arrow)
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
 
-        for point in robot.lidar.inter_points[:, :]:
-            
-            x_value = [x, point[0]]
-            y_value = [y, point[1]]
+        if robot.lidar is not None:
+            for point in robot.lidar.inter_points[:, :]:
+                
+                x_value = [x, point[0]]
+                y_value = [y, point[1]]
 
-            self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
+                self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
             
         self.robot_plot_list.append(robot_circle)
         self.robot_plot_list.append(goal_circle)
@@ -140,70 +147,69 @@ class env_plot:
 
     def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
 
-        x = car.ang_pos[0, 0]
-        y = car.ang_pos[1, 0]
-        r_phi=car.state[2, 0] - pi/2
-        r_phi_ang = 180*r_phi/pi
+        x = car.ang_pos[0, 3]
+        y = car.ang_pos[1, 3]
+        r_phi=car.state[2, 0]
+        # r_phi_ang = 180*r_phi/pi
 
-        line_rad_f = car.state[3, 0] + car.state[2, 0]
-        line_rad_b = car.state[2, 0]
+        # line_rad_f = car.state[3, 0] + car.state[2, 0]
+        # line_rad_b = car.state[2, 0]
 
         gx = car.goal[0, 0]
         gy = car.goal[1, 0]
         gdx = goal_l*cos(car.goal[2, 0])
         gdy = goal_l*sin(car.goal[2, 0])
         self.car_line_list = []
-        for i in range(4):
+        self.car_img_show_list = []
 
-            if 0 < i < 3:
-                wx = car.wheel_pos[0, i]
-                wy = car.wheel_pos[1, i]
+        # for i in range(4):
 
-                lx0 = wx + line_length * cos(line_rad_f) / 2
-                ly0 = wy + line_length * sin(line_rad_f) / 2
+        #     if 0 < i < 3:
+        #         wx = car.wheel_pos[0, i]
+        #         wy = car.wheel_pos[1, i]
 
-                lx1 = wx - line_length * cos(line_rad_f) / 2
-                ly1 = wy - line_length * sin(line_rad_f) / 2
+        #         lx0 = wx + line_length * cos(line_rad_f) / 2
+        #         ly0 = wy + line_length * sin(line_rad_f) / 2
+
+        #         lx1 = wx - line_length * cos(line_rad_f) / 2
+        #         ly1 = wy - line_length * sin(line_rad_f) / 2
                 
-                self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')) 
+        #         self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')) 
 
-            else:
-                wx = car.wheel_pos[0, i]
-                wy = car.wheel_pos[1, i]
+        #     else:
+        #         wx = car.wheel_pos[0, i]
+        #         wy = car.wheel_pos[1, i]
 
-                lx0 = wx + line_length * cos(line_rad_b) / 2
-                ly0 = wy + line_length * sin(line_rad_b) / 2
+        #         lx0 = wx + line_length * cos(line_rad_b) / 2
+        #         ly0 = wy + line_length * sin(line_rad_b) / 2
 
-                lx1 = wx - line_length * cos(line_rad_b) / 2
-                ly1 = wy - line_length * sin(line_rad_b) / 2
+        #         lx1 = wx - line_length * cos(line_rad_b) / 2
+        #         ly1 = wy - line_length * sin(line_rad_b) / 2
 
-                self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-'))
+        #         self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-'))
                 
-        car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.width, height=car.length, angle=r_phi_ang, edgecolor=car_color, fill=False)
+        # car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.length, height=car.width, angle=r_phi_ang, edgecolor=car_color, fill=False)
         goal_arrow = mpl.patches.Arrow(x=gx, y=gy, dx=gdx, dy=gdy, color=goal_color)
 
-        self.car_plot_list.append(car_rect)
+        # self.car_plot_list.append(car_rect)
         self.car_plot_list.append(goal_arrow)
 
-        self.ax.add_patch(car_rect)
+        # self.ax.add_patch(car_rect)
         self.ax.add_patch(goal_arrow)
         
-        # car_image_path = Path('__file__').parent / 'car0.png'
-        # t1 = Path('../').parent / 'car0.png'
-        # print(t1)
-        # # temp = sys.path[0]
-        # # print(car_image_path)
-        # # print(temp)
-        # b = image.imread('./plot/car0.png')
-
-        current_file_frame = inspect.getfile(inspect.currentframe())
-        car_image_path = Path(current_file_frame).parent / 'car0.png'
-        im = image.imread(car_image_path) 
-
-        oim = OffsetImage(im)
+        # car image show
         
-        # im.resize(int(car.width), int(car.length), image.ANTIALIAS)
-        # self.ax.imshow(im)
+        
+        # min_x = np.min(car.ang_pos[0, :])
+        # max_x = np.max(car.ang_pos[0, :]) 
+        # min_y = np.min(car.ang_pos[1, :])
+        # max_y = np.max(car.ang_pos[1, :]) 
+
+        car_img = self.ax.imshow(self.init_car_img, extent=[x, x+car.length, y, y+car.width])
+        degree = car.state[2, 0] * 180 / pi
+        trans_data = mtransforms.Affine2D().rotate_deg_around(x, y, degree) + self.ax.transData
+        car_img.set_transform(trans_data)
+        self.car_img_show_list.append(car_img)
 
         if text:
             self.ax.text(x - 0.5, y, 'c'+ str(car.id), fontsize = 10, color = 'k')
@@ -248,9 +254,13 @@ class env_plot:
         for lidar_line in self.lidar_line_list:
             lidar_line.pop(0).remove()
         
+        for car_img in self.car_img_show_list:
+            car_img.remove()
+
         self.car_plot_list = []
         self.robot_plot_list = []
         self.lidar_line_list = []
+        self.car_img_show_list=[]
 
     # animation method 1
     def animate(self):
