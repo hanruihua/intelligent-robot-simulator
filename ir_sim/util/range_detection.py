@@ -6,7 +6,7 @@ from math import sqrt, pi, cos, sin
 # circle: np(2,)
 # r: 1
 
-def range_seg_matrix(segment, matrix, reso):
+def range_seg_matrix(segment, matrix, reso, point_step_weight=2):
 
     init_point = segment[0]
     diff = segment[1] - segment[0]
@@ -14,7 +14,7 @@ def range_seg_matrix(segment, matrix, reso):
 
     slope = diff / len_seg
 
-    point_step = 5*reso
+    point_step = point_step_weight*reso
     cur_len = 0
 
     while cur_len <= len_seg:

@@ -78,6 +78,10 @@ def collision_seg_matrix(segment, matrix, reso):
         
         index_x = int(cur_point_x / reso)
         index_y = int(cur_point_y / reso)
+
+        if index_x < 0 or index_x > matrix.shape[0] or index_y < 0 or index_y > matrix.shape[1]:
+            return True
+
         if matrix[index_x, index_y]:
             return True    
 
