@@ -12,16 +12,8 @@ gif_path = Path(__file__).parent / 'gif'
 
 for i in range(300):
 
-    for robot in env.components['robots'].robot_list:
-
-        if robot.arrive_flag:
-            break
-
-        des_vel = robot.cal_des_vel()
-        robot.move_forward(des_vel)
-
-    if all([r.arrive_flag for r in env.components['robots'].robot_list]):
-        break
+    des_vel = env.robot.cal_des_vel()
+    env.robot_step(des_vel)
 
     env.save_fig(image_path, i) 
     env.render()

@@ -13,16 +13,11 @@ for i in range(300):
     des_vel = env.car.cal_des_vel()
     env.car.move_forward(des_vel)
 
-    # env.render()
     env.render()
     
     if env.collision_check():
         break
 
-    # env.save_fig(image_path, i) 
-    
-
-# env.save_ani(image_path, gif_path)
 env.show()
 
 
