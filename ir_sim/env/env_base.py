@@ -115,7 +115,18 @@ class env_base:
         
         for robot in self.components['robots'].robot_list:
             robot.cal_lidar_range(self.components)
+
+    def car_step(self, vel_list, **kwargs):
+
+        if not isinstance(vel_list, list):
+            self.car.move_forward(vel_list, **kwargs)
+        else:
+            for i, robot in enumerate(self.components['cars'].car_list):
+                robot.move_forward(vel_list[i], **kwargs)
         
+        for car in self.components['cars'].car_list:
+            car.cal_lidar_range(self.components)
+
     def render(self, time=0.01, **kwargs):
 
         if self.plot:

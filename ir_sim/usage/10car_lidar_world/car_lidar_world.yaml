@@ -1,0 +1,42 @@
+world:
+  world_height: 50
+  world_width: 50
+  step_time: 0.1
+  xy_resolution: 0.1 # meter
+  yaw_resolution: 5 # degree
+  world_map: 'cave.png'
+
+cars:
+  number: 1
+  car_shape_list: [[4.6, 1.6, 3, 1.6]]  # length, width, wheelbase, wheelbase_width
+  car_state_list: [[10, 10, 0, 0]]
+  car_goal_list: [[30, 50, 0]]
+  limit: [4, 2]
+
+  lidar2d:
+    install_pos: [0, 0, 0]
+    range_min: 0
+    range_max: 10
+    angle_min: 0 
+    angle_max: 3.1415926
+    number: 50
+    scan_time: 0.1
+    noise: True 
+    std: 0.2
+
+obs_cirs:
+  number: 2
+  obs_cir_mode: 0
+  obs_model: 'static' # static, dynamic
+  obs_state_list: [[40, 15], [35, 16]]
+  obs_radius_list: [0.9, 1.5]
+  
+
+obs_lines:
+  obs_line_states: [[20, 20, 27, 33]]
+
+
+  
+  
+  
+  
