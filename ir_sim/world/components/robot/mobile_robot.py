@@ -89,16 +89,15 @@ class mobile_robot():
                 self.move_from_omni(vel, self.__noise, self.__alpha, **kwargs) 
 
         elif self.mode == 'omni':
-            self.move_with_omni(vel, self.__noise, self.__control_std)
+            self.move_with_omni(vel, self.__noise, self.__alpha)
 
         self.arrive()
 
-        # self.collision_check()
+    
     def cal_lidar_range(self, components):
         if self.lidar is not None:
             self.lidar.cal_range(self.state, components)
             
-
 
     def move_with_diff(self, vel_diff, noise = False, alpha = [0.01, 0, 0, 0.01, 0, 0]):
          # vel_diff: np.array([[vx], [vy]])
@@ -162,9 +161,9 @@ class mobile_robot():
 
         return vel_diff
 
-    def move_with_omni(self, vel_omni):
+    def move_with_omni(self, vel_omni, noise, std):
         # vel_omni: np.array([[vx], [vy]])
-        next_state = motion_omni(self.state, vel_omni, self.step_time, self.__noise, self.__control_std)
+        next_state = motion_omni(self.state, vel_omni, self.step_time, noise, std)
         
         self.state = next_state
         self.vel_omni = vel_omni

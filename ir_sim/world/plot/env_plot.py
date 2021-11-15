@@ -91,7 +91,7 @@ class env_plot:
 
     def draw_robots(self, robots, **kwargs):
         for robot in robots.robot_list:
-            self.draw_robot_diff(robot, **kwargs)
+            self.draw_robot(robot, **kwargs)
 
     def draw_cars(self, cars, **kwargs):
         
@@ -111,12 +111,12 @@ class env_plot:
         for obs_line in obs_lines.line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
-    def draw_robot_diff(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, **kwargs):
+    def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, **kwargs):
         
         x = robot.state[0][0]
         y = robot.state[1][0]
-        theta = robot.state[2][0]
         
+    
         goal_x = int(robot.goal[0, 0])
         goal_y = int(robot.goal[1, 0])
 
@@ -124,13 +124,13 @@ class env_plot:
         robot_circle.set_zorder(2)
         goal_circle = mpl.patches.Circle(xy=(goal_x, goal_y), radius = robot.radius, color=goal_color, alpha=0.5)
         goal_circle.set_zorder(1)
-        arrow = mpl.patches.Arrow(x, y, 0.5*cos(theta), 0.5*sin(theta), width = 0.6)
+        
 
         self.ax.add_patch(goal_circle)
         self.ax.text(goal_x + 0.3, goal_y, 'g'+ str(robot.id), fontsize = 12, color = 'k')
 
         self.ax.add_patch(robot_circle)
-        self.ax.add_patch(arrow)
+        
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
 
         if robot.lidar is not None:
@@ -140,11 +140,16 @@ class env_plot:
                 y_value = [y, point[1]]
 
                 self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
-            
+        
+        if robot.mode == 'diff':
+            theta = robot.state[2][0]
+            arrow = mpl.patches.Arrow(x, y, 0.5*cos(theta), 0.5*sin(theta), width = 0.6)
+            self.ax.add_patch(arrow)
+            self.robot_plot_list.append(arrow)
+
         self.robot_plot_list.append(robot_circle)
         self.robot_plot_list.append(goal_circle)
-        self.robot_plot_list.append(arrow)
-
+        
     def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
 
         x = car.ang_pos[0, 3]
@@ -215,8 +220,13 @@ class env_plot:
             self.ax.text(x - 0.5, y, 'c'+ str(car.id), fontsize = 10, color = 'k')
             self.ax.text(car.goal[0, 0] + 0.3, car.goal[1, 0], 'cg'+ str(car.id), fontsize = 12, color = 'k')
 
-        if pre_state:
-            self.point_arrow_plot(car.pre_state)
+        if car.lidar is not None:
+            for point in car.lidar.inter_points[:, :]:
+                
+                x_value = [car.state[0, 0], point[0]]
+                y_value = [car.state[1, 0], point[1]]
+
+                self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
 
     def draw_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
 

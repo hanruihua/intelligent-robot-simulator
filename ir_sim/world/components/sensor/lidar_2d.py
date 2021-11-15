@@ -7,7 +7,7 @@ import random
 
 class lidar2d:
 
-    def __init__(self, range_min=0, range_max=10, angle_min=0, angle_max=pi, number=36, scan_time=0.1, noise=True, std=0.2, install_pos=np.zeros(3,)):
+    def __init__(self, range_min=0, range_max=10, angle_min=0, angle_max=pi, number=36, scan_time=0.1, noise=True, std=0.2, install_pos=np.zeros(3,), **kwargs):
         
         self.range_min = range_min
         self.range_max = range_max 
@@ -24,6 +24,7 @@ class lidar2d:
         self.inter_points = np.zeros((self.data_num, 2))
 
         self.install_pos = install_pos
+        self.point_step_weight = kwargs.get('point_step_weight', 2)
 
     def cal_range(self, state, components):
 
@@ -77,7 +78,7 @@ class lidar2d:
                 min_int_point = int_point
                 collision_flag = True
 
-        flag, int_point, lrange = range_seg_matrix(segment, components['map_matrix'], components['xy_reso'])
+        flag, int_point, lrange = range_seg_matrix(segment, components['map_matrix'], components['xy_reso'], self.point_step_weight)
 
         if flag and lrange < min_lrange:
             min_lrange = lrange

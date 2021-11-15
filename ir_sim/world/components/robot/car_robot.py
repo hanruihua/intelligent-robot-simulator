@@ -1,6 +1,6 @@
 import numpy as np
 from math import pi, sin, cos, tan, atan2
-from ir_sim.world import motion_ackermann
+from ir_sim.world import motion_ackermann, lidar2d
 from collections import namedtuple
 from ir_sim.util import collision_cir_seg, collision_seg_matrix, collision_seg_seg
 
@@ -46,6 +46,13 @@ class car_robot:
         self.collision_flag = False
 
         self.step_time = step_time
+
+        lidar_args = kwargs.get('lidar2d', None)
+
+        if lidar_args is not None:
+            self.lidar = lidar2d(**lidar_args)
+        else:
+            self.lidar = None
 
     def move_forward(self, vel=np.zeros((2, 1)), stop=True):
 
@@ -185,6 +192,10 @@ class car_robot:
                 if collision_seg_seg(seg1, seg2):
                     print('collisions with line obstacle')
                     return True
+    
+    def cal_lidar_range(self, components):
+        if self.lidar is not None:
+            self.lidar.cal_range(self.state, components)
 
     @staticmethod
     def relative(state1, state2):
