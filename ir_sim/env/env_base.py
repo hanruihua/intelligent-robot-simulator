@@ -46,7 +46,10 @@ class env_base:
             self.world_map = kwargs.get('world_map', None)
             self.xy_reso = kwargs.get('xy_resolution', 1)
             self.yaw_reso = kwargs.get('yaw_resolution', 5)
-                    
+        
+        if kwargs.get('teleop_key', False):
+            pass
+
         self.plot = plot
         self.components = dict()
         self.init_environment(**kwargs)
@@ -127,14 +130,14 @@ class env_base:
         for car in self.components['cars'].car_list:
             car.cal_lidar_range(self.components)
 
-    def render(self, time=0.01, **kwargs):
+    def render(self, time=0.05, **kwargs):
 
         if self.plot:
             self.world_plot.com_cla()
             self.world_plot.draw_dyna_components(**kwargs)
             self.world_plot.pause(time)
         
-        self.time = self.time + 1
+        self.time = self.time + time
         
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)
