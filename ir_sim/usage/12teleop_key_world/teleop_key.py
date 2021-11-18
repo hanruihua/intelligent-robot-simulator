@@ -14,6 +14,7 @@ for i in range(300):
     
     env.collision_check()
 
+env.show()
 
 
 
