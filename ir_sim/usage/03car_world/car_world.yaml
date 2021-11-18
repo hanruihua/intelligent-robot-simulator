@@ -11,7 +11,7 @@ cars:
   car_shape_list: [[4.6, 1.6, 3, 1.6]]  # length, width, wheelbase, wheelbase_width
   car_state_list: [[1, 1, 0, 0]]
   car_goal_list: [[40, 40, 0]]
-  limit: [2, 2]
+  limit: [5, 2]
 
 
   

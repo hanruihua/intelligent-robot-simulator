@@ -71,7 +71,9 @@ class env_base:
             print('start to keyboard control')
             print('w: forward', 's: backforward', 'a: turn left', 'd: turn right', 
                   'q: decrease linear velocity', 'e: increase linear velocity',
-                  'z: decrease angular velocity', 'c: increase angular velocity')
+                  'z: decrease angular velocity', 'c: increase angular velocity',
+                  'alt+num: change current control robot id')
+                  
 
             listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
             listener.start()
