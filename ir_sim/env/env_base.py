@@ -8,6 +8,9 @@ from ir_sim.env.env_obs_line import env_obs_line
 from PIL import Image
 import sys
 
+from pynput import keyboard
+import matplotlib.pyplot as plt
+
 class env_base:
 
     def __init__(self, world_name=None, plot=True, **kwargs):
@@ -47,12 +50,26 @@ class env_base:
             self.xy_reso = kwargs.get('xy_resolution', 1)
             self.yaw_reso = kwargs.get('yaw_resolution', 5)
         
-        if kwargs.get('teleop_key', False):
-            pass
-
         self.plot = plot
         self.components = dict()
         self.init_environment(**kwargs)
+
+        if kwargs.get('teleop_key', False):
+            
+            self.key_lv_max = 2
+            self.key_ang_max = 2
+            self.key_lv = 0
+            self.key_ang = 0
+            self.key_id = 1
+            self.alt_flag = 0
+
+            plt.rcParams['keymap.save'].remove('s')
+            plt.rcParams['keymap.quit'].remove('q')
+            
+            self.key_vel = np.zeros(2,)
+
+            listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
+            listener.start()
 
     def init_environment(self, robot_class=mobile_robot, car_class=car_robot, obs_cir_class=obs_circle,  **kwargs):
 
@@ -108,14 +125,18 @@ class env_base:
 
         return collision
 
-    def robot_step(self, vel_list, **kwargs):
+    def robot_step(self, vel_list, robot_id = None, **kwargs):
 
-        if not isinstance(vel_list, list):
-            self.robot.move_forward(vel_list, **kwargs)
+        if robot_id == None:
+
+            if not isinstance(vel_list, list):
+                self.robot.move_forward(vel_list, **kwargs)
+            else:
+                for i, robot in enumerate(self.components['robots'].robot_list):
+                    robot.move_forward(vel_list[i], **kwargs)
         else:
-            for i, robot in enumerate(self.components['robots'].robot_list):
-                robot.move_forward(vel_list[i], **kwargs)
-        
+            self.components['robots'].robot_list[robot_id-1].move_forward(vel_list, **kwargs)
+
         for robot in self.components['robots'].robot_list:
             robot.cal_lidar_range(self.components)
 
@@ -138,6 +159,65 @@ class env_base:
             self.world_plot.pause(time)
         
         self.time = self.time + time
+
+    def on_press(self, key):
+
+        try:
+
+            if key.char.isdigit() and self.alt_flag:
+
+                if int(key.char) > self.robot_number:
+                    print('out of number of robots')
+                else:
+                    self.key_id = int(key.char)
+
+            if key.char == 'w':
+                self.key_lv = self.key_lv_max
+            if key.char == 's':
+                self.key_lv = - self.key_lv_max
+            if key.char == 'a':
+                self.key_ang = self.key_ang_max
+            if key.char == 'd':
+                self.key_ang = -self.key_ang_max
+            
+            self.key_vel = np.array([self.key_lv, self.key_ang])
+
+        except AttributeError:
+            
+            if key == keyboard.Key.alt:
+                self.alt_flag = 1
+    
+    def on_release(self, key):
+        
+        try:
+            if key.char == 'w':
+                self.key_lv = 0
+            if key.char == 's':
+                self.key_lv = 0
+            if key.char == 'a':
+                self.key_ang = 0
+            if key.char == 'd':
+                self.key_ang = 0
+            if key.char == 'q':
+                self.key_lv_max = self.key_lv_max - 0.2
+                print('current lv ', self.key_lv_max)
+            if key.char == 'e':
+                self.key_lv_max = self.key_lv_max + 0.2
+                print('current lv ', self.key_lv_max)
+            
+            if key.char == 'z':
+                self.key_ang_max = self.key_ang_max - 0.2
+                print('current ang ', self.key_ang_max)
+            if key.char == 'c':
+                self.key_ang_max = self.key_ang_max + 0.2
+                print('current ang ', self.key_ang_max)
+            
+            self.key_vel = np.array([self.key_lv, self.key_ang])
+
+        except AttributeError:
+            if key == keyboard.Key.alt:
+                self.alt_flag = 0
+
         
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)
