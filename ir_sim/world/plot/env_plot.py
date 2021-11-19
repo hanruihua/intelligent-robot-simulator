@@ -62,7 +62,7 @@ class env_plot:
         self.init_car_img = image.imread(car_image_path) 
 
         self.draw_components(**kwargs)    
-         
+        
         # if self.map_matrix is not None:
         #     # self.ax.imshow(np.flipud(self.map_matrix.T), cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
         #     self.ax.imshow(self.map_matrix.T, cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
@@ -248,6 +248,21 @@ class env_plot:
         arrow = mpl.patches.Arrow(x, y, dx, dy, width=0.2, color=color) 
         self.ax.add_patch(arrow)
 
+    def draw_trajectory(self, traj, label='line', style='g-'):
+
+        path_x_list = [p[0, 0] for p in traj]
+        path_y_list = [p[1, 0] for p in traj]
+        line = self.ax.plot(path_x_list, path_y_list, style, label=label)
+        # self.ax.legend()
+        return line
+    
+    def draw_point(self, point, label='point', markersize=2, color='k'):
+
+        point = self.ax.plot(point[0], point[1], marker='o', markersize=markersize, color=color, label=label)
+        # self.ax.legend()
+        return point
+        
+        
     def com_cla(self):
         # self.ax.patches = []
         self.ax.texts=[]
@@ -323,19 +338,8 @@ class env_plot:
 
         if rm_fig_path:
             shutil.rmtree(image_path)
-    
-    # plot path
-    def path_plot(self, path_list, path_color=None, show_point=False):
-        
-        path_x_list = list(map(lambda x: x[0, 0], path_list))
-        path_y_list = list(map(lambda y: y[1, 0], path_list))
 
-        self.ax.plot(path_x_list, path_y_list, color=path_color)
-
-        if show_point:
-            for point in path_list:
-                self.point_plot(point)
-                
+    # old             
     def point_arrow_plot(self, point, length=0.5, width=0.3, color='r'):
 
         px = point[0, 0]

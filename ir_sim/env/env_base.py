@@ -164,7 +164,7 @@ class env_base:
             self.world_plot.com_cla()
             self.world_plot.draw_dyna_components(**kwargs)
             self.world_plot.pause(time)
-        
+
         self.time = self.time + time
 
     def on_press(self, key):

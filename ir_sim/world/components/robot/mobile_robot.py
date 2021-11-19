@@ -53,7 +53,7 @@ class mobile_robot():
             self.lidar = None
         
         self.__noise = kwargs.get('noise', False)
-        self.__alpha = kwargs.get('alpha', [0.01, 0, 0, 0.01, 0, 0])
+        self.__alpha = kwargs.get('alpha', [0.03, 0, 0, 0.03, 0, 0])
         self.__control_std = kwargs.get('control_std', [0.01, 0.01])
 
     def update_info(self, state, vel):
@@ -66,7 +66,7 @@ class mobile_robot():
         # default: robot mode: diff, no noise, vel_type: diff
         # vel_type: diff: np.array([[linear], [angular]])
         #           omni: np.array([[x], [y]])
-        # kwargs: guarantee_time = 0.2, tolerance = 0.1, mini_speed=0.02
+        # kwargs: guarantee_time = 0.2, tolerance = 0.1, mini_speed=0.02, 
     
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
@@ -89,7 +89,7 @@ class mobile_robot():
                 self.move_from_omni(vel, self.__noise, self.__alpha, **kwargs) 
 
         elif self.mode == 'omni':
-            self.move_with_omni(vel, self.__noise, self.__alpha)
+            self.move_with_omni(vel, self.__noise, self.__control_std)
 
         self.arrive()
 
