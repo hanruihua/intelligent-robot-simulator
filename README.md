@@ -2,6 +2,10 @@
 
 A simple 2D simulator for the mobile robots to perform the robotics algorithm.  
 
+![car](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/car.gif)
+![robot](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/robot.gif)
+
+
 ## Prerequisite
 
 Test platform: Ubuntu20.04, windows10
