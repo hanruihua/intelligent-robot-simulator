@@ -10,6 +10,7 @@ Features:
     - Including collision check with environment;
     - Equipped with Lidar sensor;
     - Support keyboard controller;
+    - Easy to extend for your own project.
 
 Robot             |  Car
 :-------------------------:|:-------------------------:
