@@ -131,6 +131,19 @@ class env_base:
                 collision =False
 
         return collision
+    
+    def arrive_check(self):
+        arrive=True
+
+        for robot in self.components['robots'].robot_list: 
+            if not robot.arrive_flag:
+                arrive = False
+
+        for car in self.components['cars'].car_list: 
+            if not car.arrive_flag:
+                arrive = False
+
+        return arrive
 
     def robot_step(self, vel_list, robot_id = None, **kwargs):
 
@@ -147,13 +160,16 @@ class env_base:
         for robot in self.components['robots'].robot_list:
             robot.cal_lidar_range(self.components)
 
-    def car_step(self, vel_list, **kwargs):
+    def car_step(self, vel_list, car_id=None, **kwargs):
 
-        if not isinstance(vel_list, list):
-            self.car.move_forward(vel_list, **kwargs)
+        if car_id == None:
+            if not isinstance(vel_list, list):
+                self.car.move_forward(vel_list, **kwargs)
+            else:
+                for i, car in enumerate(self.components['cars'].car_list):
+                    car.move_forward(vel_list[i], **kwargs)
         else:
-            for i, robot in enumerate(self.components['cars'].car_list):
-                robot.move_forward(vel_list[i], **kwargs)
+            self.components['cars'].car_list[car_id-1].move_forward(vel_list, **kwargs)
         
         for car in self.components['cars'].car_list:
             car.cal_lidar_range(self.components)
