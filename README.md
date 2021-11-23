@@ -2,7 +2,7 @@
 
 A simple 2D simulator for the mobile robots to perform the robotics algorithm with Python.  
 
-Features:
+- Features:  
     - Simple and easy to run with python;  
     - All the models and parameters can be set directly in the yaml configure file;  
     - Environment can be built easily by line, circle model and png images;  
