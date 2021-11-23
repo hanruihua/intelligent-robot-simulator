@@ -58,6 +58,8 @@ class car_robot:
 
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
+        if vel.shape == (2,):
+            vel = vel[:, np.newaxis]
 
         if stop:
             if self.arrive_flag or self.collision_flag:
