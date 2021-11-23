@@ -2,6 +2,10 @@
 
 A simple 2D simulator for the mobile robots to perform the robotics algorithm with Python.  
 
+Robot             |  Car
+:-------------------------:|:-------------------------:
+![robot](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/robot.gif)  |  ![car](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/car.gif)
+
 - Features:  
     - Simple and easy to run with python;  
     - All the models and parameters can be set directly in the yaml configure file;  
@@ -11,10 +15,6 @@ A simple 2D simulator for the mobile robots to perform the robotics algorithm wi
     - Equipped with Lidar sensor;  
     - Support keyboard controller;  
     - Easy to extend for your own project.  
-
-Robot             |  Car
-:-------------------------:|:-------------------------:
-![robot](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/robot.gif)  |  ![car](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/car.gif)
 
 ## Prerequisite
 
