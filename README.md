@@ -1,6 +1,6 @@
 # intelligent-robot-simulator
 
-A simple 2D simulator for the mobile robots to perform the navigation algorithm, which is used in the [intelligent-robot](https://github.com/hanruihua/intelligent-robot) repository.
+A simple 2D simulator for the mobile robots to perform the robotics algorithm.  
 
 ## Prerequisite
 
