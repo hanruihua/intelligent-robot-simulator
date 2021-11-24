@@ -245,8 +245,8 @@ class env_base:
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)
     
-    def save_ani(self, image_path, ani_path):
-        self.world_plot.create_animate(image_path, ani_path)
+    def save_ani(self, image_path, ani_path, ani_name='animated', **kwargs):
+        self.world_plot.create_animate(image_path, ani_path, ani_name=ani_name, **kwargs)
 
     def show(self):
         self.world_plot.show()
