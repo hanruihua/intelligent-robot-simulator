@@ -6,7 +6,10 @@ from math import sqrt, pi, cos, sin
 # circle: np(2,)
 # r: 1
 
-def range_seg_matrix(segment, matrix, reso, point_step_weight=2):
+def range_seg_matrix(segment, matrix, reso, point_step_weight=2, offset=np.zeros(2,)):
+
+    if matrix is None:
+        return False, None, None
 
     init_point = segment[0]
     diff = segment[1] - segment[0]
@@ -23,7 +26,8 @@ def range_seg_matrix(segment, matrix, reso, point_step_weight=2):
 
         cur_len = cur_len + point_step
         
-        index = cur_point / reso
+
+        index = (cur_point - offset) / reso
 
         if index[0] < 0 or index[0] > matrix.shape[0] or index[1] < 0 or index[1] > matrix.shape[1]:
             lrange = np.linalg.norm( cur_point -  init_point)

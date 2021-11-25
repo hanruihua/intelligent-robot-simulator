@@ -78,7 +78,7 @@ class lidar2d:
                 min_int_point = int_point
                 collision_flag = True
 
-        flag, int_point, lrange = range_seg_matrix(segment, components['map_matrix'], components['xy_reso'], self.point_step_weight)
+        flag, int_point, lrange = range_seg_matrix(segment, components['map_matrix'], components['xy_reso'], self.point_step_weight, components['offset'])
 
         if flag and lrange < min_lrange:
             min_lrange = lrange

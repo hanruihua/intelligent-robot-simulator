@@ -15,12 +15,15 @@ from scipy.ndimage.interpolation import rotate
 import matplotlib.transforms as mtransforms
 
 class env_plot:
-    def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, **kwargs):
+    def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, offset_x = 0, offset_y=0, **kwargs):
     
         self.fig, self.ax = plt.subplots()
         
         self.width = width
         self.height = height
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+
         self.color_list = ['g', 'b', 'r', 'c', 'm', 'y', 'k', 'w']
         self.components = components
 
@@ -50,8 +53,8 @@ class env_plot:
     # draw ax
     def init_plot(self, **kwargs):
         self.ax.set_aspect('equal')
-        self.ax.set_xlim(0, self.width)
-        self.ax.set_ylim(0, self.height)
+        self.ax.set_xlim(self.offset_x, self.offset_x + self.width)
+        self.ax.set_ylim(self.offset_y, self.offset_y + self.height)
         # self.ax.legend(loc='upper right')
         self.ax.set_xlabel("x [m]")
         self.ax.set_ylabel("y [m]")
@@ -71,8 +74,10 @@ class env_plot:
 
     # draw components
     def draw_components(self, **kwargs):
-   
-        self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[0, self.width, 0, self.height]) 
+
+        if self.components['map_matrix'] is not None:
+            self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.min_y, self.min_y+self.height]) 
+            
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
         self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
@@ -133,7 +138,7 @@ class env_plot:
         
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
 
-        if robot.lidar is not None:
+        if robot.lidar is not None and show_lidar:
             for point in robot.lidar.inter_points[:, :]:
                 
                 x_value = [x, point[0]]

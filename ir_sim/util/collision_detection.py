@@ -16,7 +16,10 @@ def collision_cir_cir(circle1, circle2):
     
     return False
 
-def collision_cir_matrix(circle, matrix, reso):
+def collision_cir_matrix(circle, matrix, reso, offset=np.zeros(2,)):
+
+    if matrix is None:
+        return False
 
     rad_step = 0.1
     cur_rad = 0
@@ -25,8 +28,8 @@ def collision_cir_matrix(circle, matrix, reso):
         crx = circle.x + circle.r * cos(cur_rad)
         cry = circle.y + circle.r * sin(cur_rad)
         cur_rad = cur_rad + rad_step
-        index_x = int(crx / reso)
-        index_y = int(cry / reso)
+        index_x = int( (crx - offset[0]) / reso)
+        index_y = int( (cry - offset[1]) / reso)
         if matrix[index_x, index_y]:
             return True
 
@@ -55,7 +58,10 @@ def collision_cir_seg(circle, segment):
     if distance < circle.r:
         return True
 
-def collision_seg_matrix(segment, matrix, reso):
+def collision_seg_matrix(segment, matrix, reso, offset=np.zeros(2,)):
+
+    if matrix is None:
+        return False
 
     init_point = segment[0]
     dif_x = segment[1].x - segment[0].x
@@ -76,8 +82,8 @@ def collision_seg_matrix(segment, matrix, reso):
 
         cur_len = cur_len + point_step
         
-        index_x = int(cur_point_x / reso)
-        index_y = int(cur_point_y / reso)
+        index_x = int(cur_point_x - offset[0] / reso)
+        index_y = int(cur_point_y - offset[1] / reso)
 
         if index_x < 0 or index_x > matrix.shape[0] or index_y < 0 or index_y > matrix.shape[1]:
             return True

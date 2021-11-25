@@ -46,8 +46,9 @@ class mobile_robot():
         self.collision_flag = False
 
         lidar_args = kwargs.get('lidar2d', None)
+        id_list = lidar_args['id_list']
 
-        if lidar_args is not None:
+        if lidar_args is not None and self.id in id_list:
             self.lidar = lidar2d(**lidar_args)
         else:
             self.lidar = None
@@ -275,7 +276,7 @@ class mobile_robot():
                 return True
         
         # check collision with map
-        if collision_cir_matrix(self_circle, components['map_matrix'], components['xy_reso']):
+        if collision_cir_matrix(self_circle, components['map_matrix'], components['xy_reso'], components['offset']):
             self.collision_flag = True
             print('collisions with map obstacles')
             return True

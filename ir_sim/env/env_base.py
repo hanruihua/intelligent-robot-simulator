@@ -24,10 +24,13 @@ class env_base:
                 world_args = com_list['world']
                 self.__height = world_args.get('world_height', 10)
                 self.__width = world_args.get('world_width', 10)
+                self.offset_x = world_args.get('offset_x', 0)
+                self.offset_y = world_args.get('offset_y', 0)
                 self.step_time = world_args.get('step_time', 0.1)
                 self.world_map =  world_args.get('world_map', None)
                 self.xy_reso = world_args.get('xy_resolution', 1)
                 self.yaw_reso = world_args.get('yaw_resolution', 5)
+                self.offset = np.array([self.offset_x, self.offset_y])
 
                 self.robots_args = com_list.get('robots', dict())
                 self.robot_number = self.robots_args.get('number', 0)
@@ -95,10 +98,11 @@ class env_base:
             map_matrix[map_matrix<255/2] = 0
             self.map_matrix = np.fliplr(map_matrix.T)
         else:
-            self.map_matrix = np.zeros([px, py])
+            self.map_matrix = None
 
         self.components['map_matrix'] = self.map_matrix
         self.components['xy_reso'] = self.xy_reso
+        self.components['offset'] = np.array([self.offset_x, self.offset_y])
 
         self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.step_time, **{**self.robots_args, **kwargs})
 
@@ -110,7 +114,7 @@ class env_base:
         
 
         if self.plot:
-            self.world_plot = env_plot(self.__width, self.__height, self.components, **kwargs)
+            self.world_plot = env_plot(self.__width, self.__height, self.components, offset_x=self.offset_x, offset_y=self.offset_y, **kwargs)
         
         self.time = 0
 

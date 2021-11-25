@@ -19,6 +19,7 @@ robots:
   radius_exp: 0.1
 
   lidar2d:
+    id_list: [0]  # only the robot id in this list will be equipped with lidar
     install_pos: [0, 0, 0]
     range_min: 0
     range_max: 4

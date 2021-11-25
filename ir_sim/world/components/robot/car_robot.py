@@ -182,7 +182,7 @@ class car_robot:
         
         # check collision with map
         for segment in segment_list:
-            if collision_seg_matrix(segment, components['map_matrix'], components['xy_reso']):
+            if collision_seg_matrix(segment, components['map_matrix'], components['xy_reso'], components['offset']):
                 self.collision_flag = True
                 print('collisions between obstacle map')
                 return True

@@ -15,6 +15,11 @@ class env_obs_cir:
             assert 'obs_radius_list' and 'obs_state_list' in kwargs.keys()
             obs_radius_list = kwargs['obs_radius_list']
             obs_state_list = kwargs['obs_state_list']
+
+            if len(obs_radius_list) < self.num:
+                temp_end = obs_radius_list[-1]
+                obs_radius_list += [temp_end for i in range(self.num - len(obs_radius_list))]
+
         else:
             obs_state_list, obs_radius_list = self.obs_state_dis(self.mode, **kwargs)
 
