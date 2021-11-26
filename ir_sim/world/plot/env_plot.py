@@ -76,7 +76,7 @@ class env_plot:
     def draw_components(self, **kwargs):
 
         if self.components['map_matrix'] is not None:
-            self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.min_y, self.min_y+self.height]) 
+            self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
             
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
@@ -116,7 +116,7 @@ class env_plot:
         for obs_line in obs_lines.line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
-    def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, **kwargs):
+    def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, show_goal=True, **kwargs):
         
         x = robot.state[0][0]
         y = robot.state[1][0]
@@ -130,13 +130,14 @@ class env_plot:
         goal_circle = mpl.patches.Circle(xy=(goal_x, goal_y), radius = robot.radius, color=goal_color, alpha=0.5)
         goal_circle.set_zorder(1)
         
-
-        self.ax.add_patch(goal_circle)
-        self.ax.text(goal_x + 0.3, goal_y, 'g'+ str(robot.id), fontsize = 12, color = 'k')
+        if show_goal:
+            self.ax.add_patch(goal_circle)
+            self.ax.text(goal_x + 0.3, goal_y, 'g'+ str(robot.id), fontsize = 12, color = 'k')
+            self.robot_plot_list.append(goal_circle)
 
         self.ax.add_patch(robot_circle)
-        
         self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
+        self.robot_plot_list.append(robot_circle)
 
         if robot.lidar is not None and show_lidar:
             for point in robot.lidar.inter_points[:, :]:
@@ -152,9 +153,7 @@ class env_plot:
             self.ax.add_patch(arrow)
             self.robot_plot_list.append(arrow)
 
-        self.robot_plot_list.append(robot_circle)
-        self.robot_plot_list.append(goal_circle)
-        
+           
     def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
 
         x = car.ang_pos[0, 3]

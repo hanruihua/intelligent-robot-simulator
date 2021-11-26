@@ -1,16 +1,18 @@
 from ir_sim.world import mobile_robot
 from math import pi, cos, sin
 import numpy as np
-from ir_sim.world import lidar2d
+from collections import namedtuple
+from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg
 
 class env_robot:
-    def __init__(self, robot_class=mobile_robot,  robot_num=1, robot_mode='omni', init_mode = 0, step_time=0.1, **kwargs):
+    def __init__(self, robot_class=mobile_robot,  robot_num=1, robot_mode='omni', init_mode = 0, step_time=0.1, components=[], **kwargs):
 
         self.robot_class = robot_class
         self.robot_num = robot_num
         self.init_mode = init_mode
         self.robot_list = []
         self.cur_mode = init_mode
+        self.components = components
         # init_mode: 0 manually initialize
         #            1 single row
         #            2 random
@@ -116,7 +118,7 @@ class env_robot:
 
             new_point = np.random.uniform(low = square[0:2]+[-pi], high = square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.obs_line_list, interval):
+            if not self.check_collision(new_point, random_list, self.components, interval):
                 random_list.append(new_point)
 
         start_list = random_list[0 : num]
@@ -136,7 +138,7 @@ class env_robot:
 
             new_point = np.random.uniform(low = square[0:2]+[-pi], high = square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.obs_line_list, interval):
+            if not self.check_collision(new_point, random_list, self.components, interval):
                 random_list.append(new_point)
 
         goal_temp_list = random_list[:]
@@ -150,16 +152,31 @@ class env_robot:
         diff = point2[0:2] - point1[0:2]
         return np.linalg.norm(diff)
 
-    def check_collision(self, check_point, point_list, line_list, range):
+    def check_collision(self, check_point, point_list, components, range):
+
+        circle = namedtuple('circle', 'x y r')
+        point = namedtuple('point', 'x y')
+        self_circle = circle(check_point[0, 0], check_point[1, 0], range/2)
+
+        for obs_cir in components['obs_cirs'].obs_cir_list:
+            temp_circle = circle(obs_cir.pos[0, 0], obs_cir.pos[1, 0], obs_cir.radius)
+            if collision_cir_cir(self_circle, temp_circle):
+                return True
+        
+        # check collision with map
+        if collision_cir_matrix(self_circle, components['map_matrix'], components['xy_reso'], components['offset']):
+            return True
+
+        # check collision with line obstacles
+        for line in components['obs_lines'].line_states:
+            segment = [point(line[0], line[1]), point(line[2], line[3])]
+            if collision_cir_seg(self_circle, segment):
+                return True
 
         for point in point_list:
             if self.distance(check_point, point) < range:
                 return True
-            
-            for segment in line_list:
-                if self.seg_dis(segment, check_point) < range:
-                    return True
-        
+                
         return False
 
 

@@ -104,14 +104,13 @@ class env_base:
         self.components['xy_reso'] = self.xy_reso
         self.components['offset'] = np.array([self.offset_x, self.offset_y])
 
-        self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.step_time, **{**self.robots_args, **kwargs})
-
-        self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.step_time, **{**self.cars_args, **kwargs})
-
         self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, **{**self.obs_cirs_args, **kwargs})
 
         self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
         
+        self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.step_time, components=self.components, **{**self.robots_args, **kwargs})
+
+        self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.step_time, **{**self.cars_args, **kwargs})
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, offset_x=self.offset_x, offset_y=self.offset_y, **kwargs)
