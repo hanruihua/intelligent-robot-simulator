@@ -11,16 +11,16 @@ for i in range(300):
 
     # des_vel = env.car.cal_des_vel()
 
-    env.car_step(env.key_vel)
+    env.car_step(env.key_vel, ack_mode='steer')
     # env.robot_step(env.key_vel)
     env.render()
 
-    env.save_fig(image_path, i) 
+    # env.save_fig(image_path, i) 
 
     if env.collision_check() or env.arrive_check():
         break
 
-env.save_ani(image_path, gif_path)
+# env.save_ani(image_path, gif_path)
 env.show()
 
 
