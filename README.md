@@ -4,7 +4,7 @@ A simple 2D simulator for the mobile robots to perform the robotics algorithm wi
 
 Robot             |  Car
 :-------------------------:|:-------------------------:
-![robot](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/robot.gif)  |  ![car](https://github.com/hanruihua/intelligent-robot-simulator/blob/main/ir_sim/usage/13assemblage/gif/car.gif)
+![robot](ir_sim/usage/gif/robot.gif)  |  ![car](ir_sim/usage/gif/car.gif)
 
 - Features:  
     - Simple and easy to run with python;  
