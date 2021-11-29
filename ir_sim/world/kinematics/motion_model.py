@@ -54,24 +54,39 @@ def motion_omni(current_state, vel, sampletime, noise = False, control_std = [0.
 
 
 # reference: Modern Robotics: Mechanics, Planning, and Control[book], 13.3.1.3 car-like robot
-def motion_ackermann(state, wheelbase=1, vel=np.zeros((2, 1)), steer_limit=pi/4, step_time=0.1):
+def motion_ackermann(state, wheelbase=1, vel=np.zeros((2, 1)), steer_limit=pi/2, step_time=0.1, ack_mode='default'):
     
     # l: wheel base
-    # vel: linear velocity, angular velocity
     # state: 0, x
     #        1, y
     #        2, phi, heading direction
     #        3, psi, steering angle
-    phi = state[2, 0] 
+    # motion_mode: default: vel: linear velocity, angular velocity of steer
+    #              steer:   vel：linear velocity, steer angle
+    #              simplify: vel: linear velocity, rotation rate, do not consider the steer angle    
+    
+    phi = state[2, 0]  
     psi = state[3, 0] 
     
-    co_matrix = np.array([ [cos(phi), 0],  [sin(phi), 0], [tan(psi) / wheelbase, 0], [0, 1] ])
-    d_state = co_matrix @ vel
+    if ack_mode == 'default':
+        co_matrix = np.array([ [cos(phi), 0],  [sin(phi), 0], [tan(psi) / wheelbase, 0], [0, 1] ])
+        d_state = co_matrix @ vel
+        new_state = state + d_state * step_time
+    
+    elif ack_mode == 'steer':
+        co_matrix = np.array([ [cos(phi), 0],  [sin(phi), 0], [tan(psi) / wheelbase, 0], [0, 0] ])
+        d_state = co_matrix @ vel
+        new_state = state + d_state * step_time
+        new_state[3, 0] = np.clip(vel[1, 0], -steer_limit, steer_limit)
 
-    new_state = state + d_state * step_time
+    elif ack_mode == 'simplify':
+
+        new_state = np.zeros((4, 1))
+        co_matrix = np.array([ [cos(phi), 0],  [sin(phi), 0], [0, 1] ])
+        d_state = co_matrix @ vel
+        new_state[0:3] = state[0:3] + d_state * step_time
 
     new_state[2, 0] = wraptopi(new_state[2, 0]) 
-
     new_state[3, 0] = np.clip(new_state[3, 0], -steer_limit, steer_limit) 
 
     return new_state

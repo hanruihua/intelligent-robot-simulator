@@ -54,7 +54,7 @@ class car_robot:
         else:
             self.lidar = None
 
-    def move_forward(self, vel=np.zeros((2, 1)), stop=True):
+    def move_forward(self, vel=np.zeros((2, 1)), stop=True, **kwargs):
 
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
@@ -66,7 +66,7 @@ class car_robot:
                 vel = np.zeros((2, 1))
 
         self.vel = np.clip(vel, np.array([ [-self.v_l], [-self.w_l] ]), np.array([ [self.v_l], [self.w_l] ]))
-        self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time)
+        self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time, **kwargs)
         self.angular_pos()
     
     def update_state(self, state):
