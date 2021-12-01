@@ -16,6 +16,21 @@ robots:
   vel_max: [1.5, 1.5]
   radius_exp: 0.1
 
+  lidar2d:
+    id_list: [0]
+    install_pos: [0, 0, 0]
+    range_min: 0
+    range_max: 4
+    angle_min: 0 
+    angle_max: 3.1415926
+    # angle_inc: 0.0873
+    # angle_inc: 0.0523
+    number: 50
+    scan_time: 0.1
+    noise: True 
+    std: 0.2
+
+
 obs_cirs:
   number: 2
   obs_cir_mode: 0

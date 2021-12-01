@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 world_name = 'teleop_key.yaml'
 env = env_base(world_name = world_name, plot=True, teleop_key=True)
 
-
 for i in range(300):
 
     # print(env.key_vel)
