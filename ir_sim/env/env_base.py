@@ -78,8 +78,8 @@ class env_base:
                   'alt+num: change current control robot id')
                   
 
-            listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
-            listener.start()
+            self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
+            self.listener.start()
 
     def init_environment(self, robot_class=mobile_robot, car_class=car_robot, obs_cir_class=obs_circle,  **kwargs):
 

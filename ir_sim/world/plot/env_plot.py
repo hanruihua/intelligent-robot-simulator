@@ -154,7 +154,7 @@ class env_plot:
             self.robot_plot_list.append(arrow)
 
            
-    def draw_car(self, car, car_color='g', goal_color='c', goal_l=2, text=False, line_length=0.3, pre_state=False, **kwargs):
+    def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', **kwargs):
 
         x = car.ang_pos[0, 3]
         y = car.ang_pos[1, 3]
@@ -208,12 +208,6 @@ class env_plot:
         
         # car image show
         
-        
-        # min_x = np.min(car.ang_pos[0, :])
-        # max_x = np.max(car.ang_pos[0, :]) 
-        # min_y = np.min(car.ang_pos[1, :])
-        # max_y = np.max(car.ang_pos[1, :]) 
-
         car_img = self.ax.imshow(self.init_car_img, extent=[x, x+car.length, y, y+car.width])
         degree = car.state[2, 0] * 180 / pi
         trans_data = mtransforms.Affine2D().rotate_deg_around(x, y, degree) + self.ax.transData
@@ -224,7 +218,13 @@ class env_plot:
             self.ax.text(x - 0.5, y, 'c'+ str(car.id), fontsize = 10, color = 'k')
             self.ax.text(car.goal[0, 0] + 0.3, car.goal[1, 0], 'cg'+ str(car.id), fontsize = 12, color = 'k')
 
-        if car.lidar is not None:
+        if show_traj:
+            x_list = [car.previous_state[0, 0], car.state[0, 0]]  
+            y_list = [car.previous_state[1, 0], car.state[1, 0]]   
+            
+            self.ax.plot(x_list, y_list, traj_type)
+
+        if car.lidar is not None and show_lidar:
             for point in car.lidar.inter_points[:, :]:
                 
                 x_value = [car.state[0, 0], point[0]]

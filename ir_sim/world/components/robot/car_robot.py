@@ -39,13 +39,15 @@ class car_robot:
 
         self.goal=goal
         self.goal_th = goal_threshold
-        self.pre_state = init_state
+        self.previous_state = init_state
         self.vel = np.zeros((2, 1))
 
         self.arrive_flag = False
         self.collision_flag = False
 
         self.step_time = step_time
+
+        self.state_list = []
 
         lidar_args = kwargs.get('lidar2d', None)
 
@@ -54,20 +56,27 @@ class car_robot:
         else:
             self.lidar = None
 
-    def move_forward(self, vel=np.zeros((2, 1)), stop=True, **kwargs):
+    def move_forward(self, vel=np.zeros((2, 1)), stop=True, keep=False, **kwargs):
 
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
         if vel.shape == (2,):
             vel = vel[:, np.newaxis]
+        
+        assert vel.shape == (2, 1)
 
         if stop:
             if self.arrive_flag or self.collision_flag:
                 vel = np.zeros((2, 1))
 
+        if keep:
+            self.state_list.append(self.state)
+
+        self.previous_state = self.state
         self.vel = np.clip(vel, np.array([ [-self.v_l], [-self.w_l] ]), np.array([ [self.v_l], [self.w_l] ]))
         self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time, **kwargs)
         self.angular_pos()
+        
     
     def update_state(self, state):
 
