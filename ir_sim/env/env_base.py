@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 class env_base:
 
-    def __init__(self, world_name=None, plot=True, **kwargs):
+    def __init__(self, world_name=None, plot=True,  **kwargs):
 
         if world_name != None:
             world_name = sys.path[0] + '/' + world_name
@@ -52,6 +52,15 @@ class env_base:
             self.world_map = kwargs.get('world_map', None)
             self.xy_reso = kwargs.get('xy_resolution', 1)
             self.yaw_reso = kwargs.get('yaw_resolution', 5)
+            self.offset_x = kwargs.get('offset_x', 0)
+            self.offset_y = kwargs.get('offset_y', 0)
+            self.robot_number = kwargs.get('robot_number', 0)
+            self.obs_cir_number = kwargs.get('obs_cir_number', 0)
+            self.car_number = kwargs.get('car_number', 0)
+            self.robots_args = kwargs.get('robots', dict())
+            self.obs_cirs_args = kwargs.get('obs_cirs', dict())
+            self.cars_args = kwargs.get('cars', dict())
+            self.obs_lines_args = kwargs.get('obs_lines', dict())
         
         self.plot = plot
         self.components = dict()
