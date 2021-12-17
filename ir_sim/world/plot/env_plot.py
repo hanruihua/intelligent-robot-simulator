@@ -35,6 +35,7 @@ class env_plot:
         self.robot_plot_list = []
         self.lidar_line_list = []
         self.car_img_show_list = []
+        self.line_list = []
 
         self.init_plot(**kwargs)
 
@@ -168,7 +169,7 @@ class env_plot:
         gy = car.goal[1, 0]
         gdx = goal_l*cos(car.goal[2, 0])
         gdy = goal_l*sin(car.goal[2, 0])
-        self.car_line_list = []
+        # self.car_line_list = []
         self.car_img_show_list = []
 
         # for i in range(4):
@@ -241,7 +242,6 @@ class env_plot:
         obs_circle.set_zorder(2)
         self.ax.add_patch(obs_circle)
 
-
     def draw_obs_line_list(self, **kwargs):
         
         for line in self.obs_line_list:
@@ -252,14 +252,27 @@ class env_plot:
         arrow = mpl.patches.Arrow(x, y, dx, dy, width=0.2, color=color) 
         self.ax.add_patch(arrow)
 
-    def draw_trajectory(self, traj, label='line', style='g-'):
+    def draw_trajectory(self, traj, label='line', style='g-', show_direction=False, refresh=False):
 
-        path_x_list = [p[0, 0] for p in traj]
-        path_y_list = [p[1, 0] for p in traj]
+        if isinstance(traj, list):
+            path_x_list = [p[0, 0] for p in traj]
+            path_y_list = [p[1, 0] for p in traj]
+
+        elif isinstance(traj, np.ndarray):
+            # raw*column: points * num
+            path_x_list = [p[0] for p in traj.T]
+            path_y_list = [p[1] for p in traj.T]
+        
         line = self.ax.plot(path_x_list, path_y_list, style, label=label)
-        # self.ax.legend()
-        return line
-    
+
+        if show_direction:
+            u_list = [cos(p[2, 0]) for p in traj]
+            y_list = [sin(p[2, 0]) for p in traj]
+            self.ax.quiver(path_x_list, path_y_list, u_list, y_list)
+
+        if refresh:
+            self.line_list.append(line)
+
     def draw_point(self, point, label='point', markersize=2, color='k'):
 
         point = self.ax.plot(point[0], point[1], marker='o', markersize=markersize, color=color, label=label)
@@ -277,7 +290,9 @@ class env_plot:
         for car_plot in self.car_plot_list:
             car_plot.remove()
 
-        for line in self.car_line_list:
+        # for line in self.car_line_list:
+        #     line.pop(0).remove()
+        for line in self.line_list:
             line.pop(0).remove()
 
         for lidar_line in self.lidar_line_list:
@@ -290,6 +305,7 @@ class env_plot:
         self.robot_plot_list = []
         self.lidar_line_list = []
         self.car_img_show_list=[]
+        self.line_list = []
 
     # animation method 1
     def animate(self):
@@ -356,6 +372,12 @@ class env_plot:
         point_arrow = mpl.patches.Arrow(x=px, y=py, dx=pdx, dy=pdy, color=color, width=width)
 
         self.ax.add_patch(point_arrow)
+
+    def point_list_arrow_plot(self, point_list=[], length=0.5, width=0.3, color='r'):
+
+        for point in point_list:
+            self.point_arrow_plot(point, length=length, width=width, color=color)
+
     
     def point_plot(self, point, markersize=2, color="k"):
         
