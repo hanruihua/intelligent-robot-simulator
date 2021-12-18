@@ -65,7 +65,7 @@ class env_plot:
         car_image_path = Path(current_file_frame).parent / 'car0.png'
         self.init_car_img = image.imread(car_image_path) 
 
-        self.draw_components(**kwargs)    
+        self.draw_static_components(**kwargs)    
         
         # if self.map_matrix is not None:
         #     # self.ax.imshow(np.flipud(self.map_matrix.T), cmap='Greys', origin='lower', extent=[0,self.width,0,self.height])
@@ -83,7 +83,14 @@ class env_plot:
         self.draw_cars(self.components['cars'], **kwargs)
         self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
-        
+    
+    def draw_static_components(self, **kwargs):
+
+        if self.components['map_matrix'] is not None:
+            self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
+            
+        self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_obs_lines(self.components['obs_lines'], **kwargs)
 
     def draw_dyna_components(self, **kwargs):
         robots = self.components.get('robots', None)
@@ -266,8 +273,14 @@ class env_plot:
         line = self.ax.plot(path_x_list, path_y_list, style, label=label)
 
         if show_direction:
-            u_list = [cos(p[2, 0]) for p in traj]
-            y_list = [sin(p[2, 0]) for p in traj]
+
+            if isinstance(traj, list):
+                u_list = [cos(p[2, 0]) for p in traj]
+                y_list = [sin(p[2, 0]) for p in traj]
+            elif isinstance(traj, np.ndarray):
+                u_list = [cos(p[2]) for p in traj.T]
+                y_list = [sin(p[2]) for p in traj.T]
+
             self.ax.quiver(path_x_list, path_y_list, u_list, y_list)
 
         if refresh:

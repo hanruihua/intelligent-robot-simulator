@@ -189,9 +189,9 @@ class env_base:
     def render(self, time=0.05, **kwargs):
 
         if self.plot:
-            self.world_plot.com_cla()
             self.world_plot.draw_dyna_components(**kwargs)
             self.world_plot.pause(time)
+            self.world_plot.com_cla()
 
         self.time = self.time + time
 
