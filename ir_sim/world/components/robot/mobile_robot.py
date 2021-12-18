@@ -46,7 +46,9 @@ class mobile_robot():
         self.collision_flag = False
 
         lidar_args = kwargs.get('lidar2d', None)
-        id_list = lidar_args['id_list']
+
+        if lidar_args is not None:
+            id_list = lidar_args['id_list']
 
         if lidar_args is not None and self.id in id_list:
             self.lidar = lidar2d(**lidar_args)
