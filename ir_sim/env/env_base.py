@@ -192,7 +192,7 @@ class env_base:
             self.world_plot.draw_dyna_components(**kwargs)
             self.world_plot.pause(time)
             self.world_plot.com_cla()
-
+            
         self.time = self.time + time
 
     def on_press(self, key):
@@ -260,7 +260,8 @@ class env_base:
     def save_ani(self, image_path, ani_path, ani_name='animated', **kwargs):
         self.world_plot.create_animate(image_path, ani_path, ani_name=ani_name, **kwargs)
 
-    def show(self):
+    def show(self, **kwargs):
+        self.world_plot.draw_dyna_components(**kwargs)
         self.world_plot.show()
     
     def show_ani(self):
