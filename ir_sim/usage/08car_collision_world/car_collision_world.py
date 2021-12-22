@@ -5,6 +5,7 @@ from pathlib import Path
 world_name = 'car_collision_world.yaml'
 env = env_base(world_name = world_name, plot=True, init_mode=0, robot_mode='diff')
 
+
 # image_path = Path(__file__).parent / 'image'
 # gif_path = Path(__file__).parent / 'gif'
 

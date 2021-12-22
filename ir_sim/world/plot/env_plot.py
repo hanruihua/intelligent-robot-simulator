@@ -36,6 +36,7 @@ class env_plot:
         self.lidar_line_list = []
         self.car_img_show_list = []
         self.line_list = []
+        self.dyna_obs_list = []
 
         self.init_plot(**kwargs)
 
@@ -95,12 +96,17 @@ class env_plot:
     def draw_dyna_components(self, **kwargs):
         robots = self.components.get('robots', None)
         cars = self.components.get('cars', None) 
+        obs_cirs = self.components.get('obs_cirs', None) 
 
         if robots is not None:
             self.draw_robots(robots, **kwargs)
         
         if cars is not None:
             self.draw_cars(cars, **kwargs)
+
+        if obs_cirs is not None:
+            self.draw_dyna_obs_cirs(obs_cirs, **kwargs)
+        
 
     def draw_robots(self, robots, **kwargs):
         for robot in robots.robot_list:
@@ -119,6 +125,11 @@ class env_plot:
 
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_obs_cir(obs_cir, **kwargs)
+
+    def draw_dyna_obs_cirs(self, obs_cirs, **kwargs):
+
+        for obs_cir in obs_cirs.obs_cir_list:
+            self.draw_dyna_obs_cir(obs_cir, **kwargs)
 
     def draw_obs_lines(self, obs_lines, **kwargs):
         for obs_line in obs_lines.line_states:
@@ -249,6 +260,19 @@ class env_plot:
         obs_circle.set_zorder(2)
         self.ax.add_patch(obs_circle)
 
+    def draw_dyna_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
+
+        if obs_cir.obs_model != 'static':
+            x = obs_cir.pos[0,0]
+            y = obs_cir.pos[1,0]
+            
+            obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = obs_cir_color)
+            obs_circle.set_zorder(2)
+            self.ax.add_patch(obs_circle)
+
+            self.dyna_obs_list.append(obs_circle)
+        
+
     def draw_obs_line_list(self, **kwargs):
         
         for line in self.obs_line_list:
@@ -295,7 +319,7 @@ class env_plot:
         
     def com_cla(self):
         # self.ax.patches = []
-        self.ax.texts=[]
+        self.ax.texts.clear()
 
         for robot_plot in self.robot_plot_list:
             robot_plot.remove()

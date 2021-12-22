@@ -113,10 +113,10 @@ class env_base:
         self.components['xy_reso'] = self.xy_reso
         self.components['offset'] = np.array([self.offset_x, self.offset_y])
 
-        self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, **{**self.obs_cirs_args, **kwargs})
-
         self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
-        
+
+        self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, components=self.components, **{**self.obs_cirs_args, **kwargs})
+
         self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.step_time, components=self.components, **{**self.robots_args, **kwargs})
 
         self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.step_time, **{**self.cars_args, **kwargs})
@@ -185,6 +185,15 @@ class env_base:
         
         for car in self.components['cars'].car_list:
             car.cal_lidar_range(self.components)
+
+    def obs_cirs_step(self, vel_list, obs_id=None, **kwargs):
+        
+        if obs_id == None:
+            for i, obs_cir in enumerate(self.components['obs_cirs'].obs_cir_list):
+                obs_cir.move_forward(vel_list[i], **kwargs)
+        else:
+            self.components['cars'].car_list[obs_id-1].move_forward(vel_list, **kwargs)
+
 
     def render(self, time=0.05, **kwargs):
 

@@ -1,17 +1,20 @@
 from ir_sim.world import obs_circle
 from math import pi, cos, sin
 import numpy as np
+from collections import namedtuple
+from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg
 
 
 class env_obs_cir:
-    def __init__(self, obs_cir_class=obs_circle, obs_model='static', obs_cir_num=1, obs_cir_mode = 0, step_time=0.1, **kwargs):
+    def __init__(self, obs_cir_class=obs_circle, obs_model='static', obs_cir_num=1, dist_mode = 0, step_time=0.1, components=[], **kwargs):
 
         self.obs_cir_class = obs_cir_class
         self.num = obs_cir_num
-        self.mode = obs_cir_mode
+        self.dist_mode = dist_mode
         self.obs_cir_list = []
+        self.components = components
 
-        if self.mode == 0 and self.num > 0:
+        if self.dist_mode == 0 and self.num > 0:
             assert 'obs_radius_list' and 'obs_state_list' in kwargs.keys()
             obs_radius_list = kwargs['obs_radius_list']
             obs_state_list = kwargs['obs_state_list']
@@ -21,7 +24,7 @@ class env_obs_cir:
                 obs_radius_list += [temp_end for i in range(self.num - len(obs_radius_list))]
 
         else:
-            obs_state_list, obs_radius_list = self.obs_state_dis(self.mode, **kwargs)
+            obs_state_list, obs_radius_list = self.obs_state_dis(self.dist_mode, **kwargs)
 
         for i in range(self.num):
             obs_cir = self.obs_cir_class(id=i, position=obs_state_list[i], radius=obs_radius_list[i], step_time=step_time, obs_model=obs_model)
@@ -58,15 +61,37 @@ class env_obs_cir:
 
         random_list = []
 
-        while len(random_list) < self.robot_num:
+        while len(random_list) < self.num:
 
             new_point = np.random.uniform(low = square[0:2]+[-pi], high = square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.obs_line_list, interval):
+            if not self.check_collision(new_point, random_list, self.components, interval): 
                 random_list.append(new_point)
 
         start_list = random_list[:]
         
         return start_list
+    
+    def check_collision(self, check_point, point_list, components, range):
+
+        circle = namedtuple('circle', 'x y r')
+        point = namedtuple('point', 'x y')
+        self_circle = circle(check_point[0, 0], check_point[1, 0], range/2)
+ 
+        # check collision with map
+        if collision_cir_matrix(self_circle, components['map_matrix'], components['xy_reso'], components['offset']):
+            return True
+
+        # check collision with line obstacles
+        for line in components['obs_lines'].line_states:
+            segment = [point(line[0], line[1]), point(line[2], line[3])]
+            if collision_cir_seg(self_circle, segment):
+                return True
+
+        for point in point_list:
+            if self.distance(check_point, point) < range:
+                return True
+                
+        return False
 
     

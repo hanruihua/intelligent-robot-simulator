@@ -17,7 +17,7 @@ class obs_circle:
         self.vel = velocity
         self.vel_max = velocity_max
         self.step_time = step_time
-        self.motion_model = obs_model # static, dynamic
+        self.obs_model = obs_model # static, dynamic
 
 
     def move_forward(self, vel, **vel_kwargs):
