@@ -40,7 +40,7 @@ cars:
 
   lidar2d:
     install_pos: [0, 0, 0]
-    range_min: 0
+    range_min: 1
     range_max: 10
     angle_min: 0 
     angle_max: 3.1415926
@@ -50,11 +50,16 @@ cars:
     std: 0.2
 
 obs_cirs:
-  number: 2
+  number: 5
   dist_mode: 2
-  obs_model: 'static' # static, dynamic, wander, 
+  obs_model: 'dynamic' # static, dynamic 
+  obs_step_mode: 'wander' # default, wander
   obs_state_list: [[25, 34], [35, 26]]
-  obs_radius_list: [0.4, 0.4]
+  obs_goal_list: [[45, 24], [15, 36]]
+  obs_radius_list: [1, 0.4]
+  obs_square: [20, 20, 40, 40]
+  obs_interval: 2
+  random_radius: False
 
 
 

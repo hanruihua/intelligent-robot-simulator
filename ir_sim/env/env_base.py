@@ -1,15 +1,16 @@
 import yaml
 import numpy as np
+import sys
+
+import matplotlib.pyplot as plt
+
 from ir_sim.world import env_plot, mobile_robot, car_robot, obs_circle
 from ir_sim.env.env_robot import env_robot
 from ir_sim.env.env_car import env_car
 from ir_sim.env.env_obs_cir import env_obs_cir
 from ir_sim.env.env_obs_line import env_obs_line
 from PIL import Image
-import sys
-
 from pynput import keyboard
-import matplotlib.pyplot as plt
 
 class env_base:
 
@@ -41,7 +42,8 @@ class env_base:
                 # obs_cir
                 self.obs_cirs_args = com_list.get('obs_cirs', dict())
                 self.obs_cir_number = self.obs_cirs_args.get('number', 0)
-                
+                self.obs_step_mode = self.obs_cirs_args.get('obs_step_mode', 0)
+
                 # obs line
                 self.obs_lines_args = com_list.get('obs_lines', dict())
 
@@ -186,14 +188,18 @@ class env_base:
         for car in self.components['cars'].car_list:
             car.cal_lidar_range(self.components)
 
-    def obs_cirs_step(self, vel_list, obs_id=None, **kwargs):
+    def obs_cirs_step(self, vel_list=[], obs_id=None, **kwargs):
         
-        if obs_id == None:
-            for i, obs_cir in enumerate(self.components['obs_cirs'].obs_cir_list):
-                obs_cir.move_forward(vel_list[i], **kwargs)
-        else:
-            self.components['cars'].car_list[obs_id-1].move_forward(vel_list, **kwargs)
+        if self.obs_step_mode == 'default':
+            if obs_id == None:
+                for i, obs_cir in enumerate(self.components['obs_cirs'].obs_cir_list):
+                    obs_cir.move_forward(vel_list[i], **kwargs)
+            else:
+                self.components['obs_cirs'].obs_cir_list[obs_id-1].move_forward(vel_list, **kwargs)
 
+        elif self.obs_step_mode == 'wander':
+            # rvo
+            self.components['obs_cirs'].step_wander(**kwargs)
 
     def render(self, time=0.05, **kwargs):
 

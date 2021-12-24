@@ -36,7 +36,7 @@ class env_plot:
         self.lidar_line_list = []
         self.car_img_show_list = []
         self.line_list = []
-        self.dyna_obs_list = []
+        self.dyna_obs_plot_list = []
 
         self.init_plot(**kwargs)
 
@@ -90,7 +90,7 @@ class env_plot:
         if self.components['map_matrix'] is not None:
             self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
             
-        self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_static_obs_cirs(self.components['obs_cirs'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
 
     def draw_dyna_components(self, **kwargs):
@@ -121,10 +121,10 @@ class env_plot:
             for car in cars.car_list:
                 self.draw_car(car, **kwargs)
 
-    def draw_obs_cirs(self, obs_cirs, **kwargs):
+    def draw_static_obs_cirs(self, obs_cirs, **kwargs):
 
         for obs_cir in obs_cirs.obs_cir_list:
-            self.draw_obs_cir(obs_cir, **kwargs)
+            self.draw_static_obs_cir(obs_cir, **kwargs)
 
     def draw_dyna_obs_cirs(self, obs_cirs, **kwargs):
 
@@ -135,7 +135,7 @@ class env_plot:
         for obs_line in obs_lines.line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
-    def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, show_goal=True, **kwargs):
+    def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, show_goal=True, show_text=True, **kwargs):
         
         x = robot.state[0][0]
         y = robot.state[1][0]
@@ -151,11 +151,15 @@ class env_plot:
         
         if show_goal:
             self.ax.add_patch(goal_circle)
-            self.ax.text(goal_x + 0.3, goal_y, 'g'+ str(robot.id), fontsize = 12, color = 'k')
+            if show_text:
+                self.ax.text(goal_x + 0.3, goal_y, 'g'+ str(robot.id), fontsize = 12, color = 'k')
             self.robot_plot_list.append(goal_circle)
 
         self.ax.add_patch(robot_circle)
-        self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
+
+        if show_text:
+            self.ax.text(x - 0.5, y, 'r'+ str(robot.id), fontsize = 10, color = 'k')
+
         self.robot_plot_list.append(robot_circle)
 
         if robot.lidar is not None and show_lidar:
@@ -251,26 +255,28 @@ class env_plot:
 
                 self.lidar_line_list.append(self.ax.plot(x_value, y_value, color = 'b', alpha=0.5))
 
-    def draw_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
+    def draw_static_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
 
-        x = obs_cir.pos[0,0]
-        y = obs_cir.pos[1,0]
-        
-        obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = obs_cir_color)
-        obs_circle.set_zorder(2)
-        self.ax.add_patch(obs_circle)
+        if obs_cir.obs_model == 'static':
 
-    def draw_dyna_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
-
-        if obs_cir.obs_model != 'static':
-            x = obs_cir.pos[0,0]
-            y = obs_cir.pos[1,0]
+            x = obs_cir.state[0,0]
+            y = obs_cir.state[1,0]
             
             obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = obs_cir_color)
             obs_circle.set_zorder(2)
             self.ax.add_patch(obs_circle)
 
-            self.dyna_obs_list.append(obs_circle)
+    def draw_dyna_obs_cir(self, obs_cir, obs_cir_color='k', **kwargs):
+
+        if obs_cir.obs_model != 'static':
+            x = obs_cir.state[0,0]
+            y = obs_cir.state[1,0]
+            
+            obs_circle = mpl.patches.Circle(xy=(x, y), radius = obs_cir.radius, color = obs_cir_color)
+            obs_circle.set_zorder(2)
+            self.ax.add_patch(obs_circle)
+
+            self.dyna_obs_plot_list.append(obs_circle)
         
 
     def draw_obs_line_list(self, **kwargs):
@@ -338,11 +344,16 @@ class env_plot:
         for car_img in self.car_img_show_list:
             car_img.remove()
 
+        for obs in self.dyna_obs_plot_list:
+            obs.remove()
+            
+
         self.car_plot_list = []
         self.robot_plot_list = []
         self.lidar_line_list = []
         self.car_img_show_list=[]
         self.line_list = []
+        self.dyna_obs_plot_list = []
 
     # animation method 1
     def animate(self):

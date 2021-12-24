@@ -25,7 +25,9 @@ class env_robot:
             init_state_list = kwargs['init_state_list']
             goal_list = kwargs['goal_list']
         else:
-            init_state_list, goal_list, radius_list = self.init_state_distribute(init_mode, **kwargs)
+            
+            radius_list = kwargs.get('radius_list', [0.2])
+            init_state_list, goal_list, radius_list = self.init_state_distribute(init_mode, radius=radius_list[0], **kwargs)
 
         # robot
         for i in range(self.robot_num):
