@@ -3,7 +3,7 @@ from ir_sim.world import motion_omni
 from math import sin, cos, atan2
 
 class obs_circle:
-    def __init__(self, id=0, state=np.zeros((2, 1)), radius=0.2, velocity=np.zeros((2, 1)), velocity_max=2 * np.ones((2, 1)), 
+    def __init__(self, id=0, state=np.zeros((2, 1)), radius=0.2, velocity=np.zeros((2, 1)), vel_max=2 * np.ones((2, 1)), 
      step_time=0.1, obs_model='static', goal=np.zeros((2, 1)), goal_threshold=0.1, **kwargs):
         
         if isinstance(state, list):
@@ -15,12 +15,14 @@ class obs_circle:
         if isinstance(goal, list): 
             goal = np.array(goal, ndmin=2).T
 
+        if isinstance(vel_max, list): 
+            vel_max = np.array(vel_max, ndmin=2).T 
 
         self.id = id
         self.state = state
         self.radius = radius
         self.vel_omni = velocity
-        self.vel_max = velocity_max
+        self.vel_max = vel_max
         self.step_time = step_time
         self.obs_model = obs_model # static, dynamic
         self.goal = goal
@@ -41,6 +43,8 @@ class obs_circle:
                 vel = np.zeros((2, 1))
 
         self.state = motion_omni(self.state, vel, self.step_time, **vel_kwargs)
+        self.vel_omni = vel
+
 
     def omni_obs_state(self):
         

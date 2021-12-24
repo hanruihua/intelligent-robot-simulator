@@ -8,10 +8,10 @@ from time import time
 
 class reciprocal_vel_obs:
 
-    def __init__(self, neighbor_region=5, vxmax = 1.5, vymax = 1.5, acceler = 0.5, **kwargs):
+    def __init__(self, neighbor_region=5, vel_max = [1.5, 1.5], acceler = 0.5, **kwargs):
 
-        self.vxmax = vxmax
-        self.vymax = vymax
+        self.vxmax = vel_max[0]
+        self.vymax = vel_max[1]
         self.acceler = acceler
         self.nr = neighbor_region
 

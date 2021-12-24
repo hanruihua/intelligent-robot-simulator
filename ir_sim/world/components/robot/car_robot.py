@@ -20,6 +20,7 @@ class car_robot:
         if isinstance(goal, list): 
             goal = np.array(goal, ndmin=2).T
 
+
         self.id=id
 
         self.shape = shape

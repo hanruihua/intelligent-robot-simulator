@@ -4,8 +4,6 @@ import numpy as np
 from collections import namedtuple
 from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg, reciprocal_vel_obs
 
-
-
 class env_obs_cir:
     def __init__(self, obs_cir_class=obs_circle, obs_model='static', obs_cir_num=1, dist_mode = 0, step_time=0.1, components=[], **kwargs):
 
@@ -29,14 +27,14 @@ class env_obs_cir:
                 obs_radius_list += [temp_end for i in range(self.obs_num - len(obs_radius_list))]
 
         else:
-            obs_radius_list = kwargs['obs_radius_list']
+            obs_radius_list = kwargs.get('obs_radius_list', [0.2])
             obs_state_list, obs_goal_list, obs_radius_list = self.obs_state_dis(self.dist_mode, radius=obs_radius_list[0],  **kwargs)
 
         if self.obs_model == 'dynamic':
-            self.rvo = reciprocal_vel_obs(**kwargs)
+            self.rvo = reciprocal_vel_obs(vxmax = 1.5, vymax = 1.5, **kwargs)
 
         for i in range(self.obs_num):
-            obs_cir = self.obs_cir_class(id=i, state=obs_state_list[i], radius=obs_radius_list[i], step_time=step_time, obs_model=obs_model, goal=obs_goal_list[i])
+            obs_cir = self.obs_cir_class(id=i, state=obs_state_list[i], radius=obs_radius_list[i], step_time=step_time, obs_model=obs_model, goal=obs_goal_list[i], **kwargs)
             self.obs_cir_list.append(obs_cir)
 
     def step_wander(self, **kwargs):

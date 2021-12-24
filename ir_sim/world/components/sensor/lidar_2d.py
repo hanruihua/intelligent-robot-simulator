@@ -20,7 +20,7 @@ class lidar2d:
         self.std = std
 
         self.data_num = number
-        self.range_data = (range_max - range_min) * np.ones(self.data_num,)
+        self.range_data = range_max * np.ones(self.data_num,)
         self.inter_points = np.zeros((self.data_num, 2))
 
         self.install_pos = install_pos
@@ -35,7 +35,7 @@ class lidar2d:
 
         angle_list = np.linspace(a_min, a_max, num=self.data_num)
 
-        length = self.range_max - self.range_min
+        length = self.range_max
 
         start_point = state[0:2, 0]
 
@@ -45,8 +45,9 @@ class lidar2d:
 
             flag, int_point, lrange = self.seg_components(segment, components)
 
+            lrange = np.clip(lrange, self.range_min, self.range_max)
+
             if flag:
-                
                 if self.noise:
                     self.range_data[i] = round(random.gauss(lrange, self.std), 2)
                 else:
@@ -55,10 +56,11 @@ class lidar2d:
                 self.inter_points[i, :] = int_point[:]
             else:
                 self.inter_points[i, :] = end_point[:]
+                self.range_data[i] = self.range_max
         
     def seg_components(self, segment, components):
         
-        min_lrange = self.range_max - self.range_min
+        min_lrange = self.range_max
         min_int_point = segment[1]
         collision_flag = False
         for robot in components['robots'].robot_list:

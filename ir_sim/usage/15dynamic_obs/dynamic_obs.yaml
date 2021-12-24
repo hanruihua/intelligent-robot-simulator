@@ -60,7 +60,7 @@ obs_cirs:
   obs_square: [20, 20, 40, 40]
   obs_interval: 2
   random_radius: False
-
+  vel_max: [4, 4]
 
 
   
