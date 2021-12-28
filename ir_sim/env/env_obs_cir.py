@@ -16,19 +16,21 @@ class env_obs_cir:
         self.obs_square = kwargs.get('obs_square', [0, 0, 10, 10])   
         self.obs_interval = kwargs.get('obs_interval', 1)  
         
-        if self.dist_mode == 0 and self.obs_num > 0:
-            assert 'obs_radius_list' and 'obs_state_list' in kwargs.keys()
-            obs_radius_list = kwargs['obs_radius_list']
-            obs_state_list = kwargs['obs_state_list']
-            obs_goal_list = kwargs['obs_goal_list']
+        if self.obs_num > 0:
 
-            if len(obs_radius_list) < self.obs_num:
-                temp_end = obs_radius_list[-1]
-                obs_radius_list += [temp_end for i in range(self.obs_num - len(obs_radius_list))]
+            if self.dist_mode == 0:
+                assert 'obs_radius_list' and 'obs_state_list' in kwargs.keys()
+                obs_radius_list = kwargs['obs_radius_list']
+                obs_state_list = kwargs['obs_state_list']
+                obs_goal_list = kwargs.get('obs_goal_list', [0]*self.obs_num)
 
-        else:
-            obs_radius_list = kwargs.get('obs_radius_list', [0.2])
-            obs_state_list, obs_goal_list, obs_radius_list = self.obs_state_dis(self.dist_mode, radius=obs_radius_list[0],  **kwargs)
+                if len(obs_radius_list) < self.obs_num:
+                    temp_end = obs_radius_list[-1]
+                    obs_radius_list += [temp_end for i in range(self.obs_num - len(obs_radius_list))]
+
+            else:
+                obs_radius_list = kwargs.get('obs_radius_list', [0.2])
+                obs_state_list, obs_goal_list, obs_radius_list = self.obs_state_dis(obs_init_mode=self.dist_mode, radius=obs_radius_list[0],  **kwargs)
 
         if self.obs_model == 'dynamic':
             self.rvo = reciprocal_vel_obs(vxmax = 1.5, vymax = 1.5, **kwargs)
@@ -55,7 +57,7 @@ class env_obs_cir:
             for i, obs_cir in enumerate(self.obs_cir_list):
                 obs_cir.goal = goal_list[i]
 
-    def obs_state_dis(self, init_mode=1, radius=0.2, circular=[5, 5, 4], min_radius=0.2, max_radius=1, **kwargs):
+    def obs_state_dis(self, obs_init_mode=1, radius=0.2, circular=[5, 5, 4], min_radius=0.2, max_radius=1, **kwargs):
         # init_mode: 1 single row
         #            2 random
         #            3 circular      
@@ -68,17 +70,17 @@ class env_obs_cir:
         num = self.obs_num
         state_list, goal_list = [], []
 
-        if init_mode == 1:
+        if obs_init_mode == 1:
              # single row
             state_list = [np.array([ [i * self.obs_interval], [self.obs_square[1]]]) for i in range(int(self.obs_square[0]), int(self.obs_square[0])+num)]
             goal_list = [np.array([ [i * self.obs_interval], [self.obs_square[3]] ]) for i in range(int(self.obs_square[0]), int(self.obs_square[0])+num)]
             goal_list.reverse()
 
-        elif init_mode == 2:
+        elif obs_init_mode == 2:
             # random
             state_list, goal_list = self.random_start_goal(**kwargs)
 
-        elif init_mode == 3:
+        elif obs_init_mode == 3:
             # circular
             circle_point = np.array(circular)
             theta_step = 2*pi / num

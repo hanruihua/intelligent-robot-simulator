@@ -50,9 +50,6 @@ cars:
     noise: True 
     std: 0.2
 
-
-
-
 obs_cirs:
   number: 2
   obs_cir_mode: 0
