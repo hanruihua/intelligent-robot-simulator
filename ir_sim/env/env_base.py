@@ -34,7 +34,7 @@ class env_base:
                 self.offset = np.array([self.offset_x, self.offset_y])
 
                 self.robots_args = com_list.get('robots', dict())
-                self.robot_number = self.robots_args.get('number', 0)
+                self.robot_number = self.robots_args.get('robot_number', 0)
                 
                 self.cars_args = com_list.get('cars', dict())
                 self.car_number = self.cars_args.get('number', 0)
@@ -119,7 +119,7 @@ class env_base:
 
         self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, components=self.components, **{**self.obs_cirs_args, **kwargs})
 
-        self.components['robots'] = env_robot(robot_class=robot_class, robot_num=self.robot_number, step_time=self.step_time, components=self.components, **{**self.robots_args, **kwargs})
+        self.components['robots'] = env_robot(robot_class=robot_class, step_time=self.step_time, components=self.components, **{**self.robots_args, **kwargs})
 
         self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.step_time, **{**self.cars_args, **kwargs})
 
@@ -200,6 +200,19 @@ class env_base:
         elif self.obs_step_mode == 'wander':
             # rvo
             self.components['obs_cirs'].step_wander(**kwargs)
+
+    
+    # def total_states(self, env_train=True):
+        
+    #     robot_state_list = list(map(lambda r: np.squeeze( r.omni_state(env_train)), self.robot_list))
+    #     nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state(env_train)), self.robot_list))
+    #     obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state(env_train) ), self.obs_cir_list))
+    #     obs_line_list = self.obs_line_list
+        
+    #     return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
+
+
+
 
     def render(self, time=0.05, **kwargs):
 
