@@ -5,7 +5,7 @@ from collections import namedtuple
 from ir_sim.util import collision_cir_cir, collision_cir_matrix, collision_cir_seg
 
 class env_robot:
-    def __init__(self, robot_class=mobile_robot, robot_number=1, robot_mode='omni', robot_init_mode = 0, step_time=0.1, components=[], **kwargs):
+    def __init__(self, robot_class=mobile_robot, robot_number=0, robot_mode='omni', robot_init_mode = 0, step_time=0.1, components=[], **kwargs):
 
         self.robot_class = robot_class
         self.robot_num = robot_number
@@ -244,11 +244,11 @@ class env_robot:
     def robot_reset(self, id=0):
         self.robot_list[id].reset(self.random_bear)
 
-    def total_states(self, ):
+    def total_states(self):
         robot_state_list = list(map(lambda r: np.squeeze( r.omni_state()), self.robot_list))
         nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state()), self.robot_list))
-        obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state() ), self.com))
-        obs_line_list = self.obs_line_list
+        obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state() ), self.com['obs_cirs'].obs_cir_list))
+        obs_line_list = self.com['obs_lines'].obs_line_states
 
         return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
     # # states

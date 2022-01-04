@@ -45,18 +45,21 @@ class obs_circle:
         self.state = motion_omni(self.state, vel, self.step_time, **vel_kwargs)
         self.vel_omni = vel
 
+    # def omni_obs_state(self):
+        
+    #     x = self.state[0, 0]
+    #     y = self.state[1, 0]
+
+    #     vx = self.vel_omni[0, 0]
+    #     vy = self.vel_omni[1, 0]
+
+    #     radius = self.radius_collision
+
+    #     return [x, y, vx, vy, radius]
 
     def omni_obs_state(self):
-        
-        x = self.state[0, 0]
-        y = self.state[1, 0]
-
-        vx = self.vel_omni[0, 0]
-        vy = self.vel_omni[1, 0]
-
-        radius = self.radius_collision
-
-        return [x, y, vx, vy, radius]
+        rc_array = self.radius * np.ones((1,1))    
+        return np.concatenate((self.state, self.vel_omni, rc_array), axis = 0)
     
     def omni_state(self):
 

@@ -41,7 +41,7 @@ class env_obs_cir:
 
     def step_wander(self, **kwargs):
 
-        ts = self.total_states()
+        ts = self.obs_total_states()
         rvo_vel_list = list(map(lambda agent_s: self.rvo.cal_vel(agent_s, nei_state_list=ts[1]), ts[0]))
         arrive_flag = False
 
@@ -157,7 +157,7 @@ class env_obs_cir:
         diff = point2[0:2] - point1[0:2]
         return np.linalg.norm(diff)
 
-    def total_states(self):
+    def obs_total_states(self):
         
         agent_state_list = list(map(lambda a: np.squeeze( a.omni_state()), self.obs_cir_list))
         nei_state_list = list(map(lambda a: np.squeeze( a.omni_obs_state()), self.obs_cir_list))

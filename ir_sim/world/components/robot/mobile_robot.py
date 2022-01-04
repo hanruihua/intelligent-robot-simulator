@@ -291,6 +291,17 @@ class mobile_robot():
                 print('collisions between obstacles')
                 return True
 
+    def omni_state(self):
+        v_des = self.cal_des_vel_omni()
+        rc_array = self.radius_collision * np.ones((1,1))
+            
+        return np.concatenate((self.state[0:2], self.vel_omni, rc_array, v_des), axis = 0)
+
+    def omni_obs_state(self):
+        rc_array = self.radius * np.ones((1,1))
+        return np.concatenate((self.state[0:2], self.vel_omni, rc_array), axis = 0) 
+
+
     def reset(self, random_bear=False):
 
         self.state[:] = self.init_state[:]
@@ -301,8 +312,6 @@ class mobile_robot():
 
         if random_bear:
             self.state[2, 0] = np.random.uniform(low = -pi, high = pi)
-
-
 
     @staticmethod
     def relative(state1, state2):
