@@ -34,7 +34,7 @@ class env_base:
                 self.offset = np.array([self.offset_x, self.offset_y])
 
                 self.robots_args = com_list.get('robots', dict())
-                self.robot_number = self.robots_args.get('robot_number', 0)
+                self.robot_number = kwargs.get('robot_number', self.robots_args.get('robot_number', 0) )
                 
                 self.cars_args = com_list.get('cars', dict())
                 self.car_number = self.cars_args.get('number', 0)
@@ -201,19 +201,6 @@ class env_base:
             # rvo
             self.components['obs_cirs'].step_wander(**kwargs)
 
-    
-    # def total_states(self, env_train=True):
-        
-    #     robot_state_list = list(map(lambda r: np.squeeze( r.omni_state(env_train)), self.robot_list))
-    #     nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state(env_train)), self.robot_list))
-    #     obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state(env_train) ), self.obs_cir_list))
-    #     obs_line_list = self.obs_line_list
-        
-    #     return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
-
-
-
-
     def render(self, time=0.05, **kwargs):
 
         if self.plot:
@@ -222,6 +209,9 @@ class env_base:
             self.world_plot.pause(time)
             
         self.time = self.time + time
+
+    # def reset(self, ):
+
 
     def on_press(self, key):
 

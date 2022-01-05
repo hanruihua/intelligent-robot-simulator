@@ -13,6 +13,7 @@ class env_robot:
         self.robot_list = []
         self.cur_mode = robot_init_mode
         self.com = components
+        self.random_bear = kwargs.get('random_bear', False)
         # init_mode: 0 manually initialize
         #            1 single row
         #            2 random
@@ -40,8 +41,7 @@ class env_robot:
         #            3 circular      
         # square area: x_min, y_min, x_max, y_max
         # circular area: x, y, radius
-    
-        self.random_bear = kwargs.get('random_bear', False)
+        
         random_radius = kwargs.get('random_radius', False)
 
         num = self.robot_num
@@ -169,7 +169,7 @@ class env_robot:
             return True
 
         # check collision with line obstacles
-        for line in components['obs_lines'].line_states:
+        for line in components['obs_lines'].obs_line_states:
             segment = [point(line[0], line[1]), point(line[2], line[3])]
             if collision_cir_seg(self_circle, segment):
                 return True

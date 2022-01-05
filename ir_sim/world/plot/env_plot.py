@@ -132,7 +132,7 @@ class env_plot:
             self.draw_dyna_obs_cir(obs_cir, **kwargs)
 
     def draw_obs_lines(self, obs_lines, **kwargs):
-        for obs_line in obs_lines.line_states:
+        for obs_line in obs_lines.obs_line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
     def draw_robot(self, robot, robot_color = 'g', goal_color='r', show_lidar=True, show_goal=True, show_text=True, **kwargs):
@@ -140,9 +140,8 @@ class env_plot:
         x = robot.state[0][0]
         y = robot.state[1][0]
         
-    
-        goal_x = int(robot.goal[0, 0])
-        goal_y = int(robot.goal[1, 0])
+        goal_x = robot.goal[0, 0]
+        goal_y = robot.goal[1, 0]
 
         robot_circle = mpl.patches.Circle(xy=(x, y), radius = robot.radius, color = robot_color)
         robot_circle.set_zorder(2)
