@@ -8,18 +8,25 @@ class env_robot:
     def __init__(self, robot_class=mobile_robot, robot_number=0, robot_mode='omni', robot_init_mode = 0, step_time=0.1, components=[], **kwargs):
 
         self.robot_class = robot_class
-        self.robot_num = robot_number
+        self.robot_number = robot_number
         self.init_mode = robot_init_mode
         self.robot_list = []
         self.cur_mode = robot_init_mode
         self.com = components
+
+        self.interval = kwargs.get('interval', 1)
+        self.square = kwargs.get('square', [0, 0, 10, 10] )
+        self.circular = kwargs.get('circular', [5, 5, 4] )
         self.random_bear = kwargs.get('random_bear', False)
+        self.random_radius = kwargs.get('random_radius', False)
+
+
         # init_mode: 0 manually initialize
         #            1 single row
         #            2 random
         #            3 circular 
         # kwargs: random_bear random radius
-        if self.robot_num > 0:
+        if self.robot_number > 0:
             if self.init_mode == 0:
                 assert 'radius_list' and 'init_state_list' and 'goal_list' in kwargs.keys()
                 radius_list = kwargs['radius_list']
@@ -27,58 +34,56 @@ class env_robot:
                 goal_list = kwargs['goal_list']
             else:
                 radius_list = kwargs.get('radius_list', [0.2])
-                init_state_list, goal_list, radius_list = self.init_state_distribute(self.init_mode, radius=radius_list[0], **kwargs)
+                init_state_list, goal_list, radius_list = self.init_state_distribute(self.init_mode, radius=radius_list[0])
 
         # robot
-        for i in range(self.robot_num):
+        for i in range(self.robot_number):
             robot = self.robot_class(id=i, mode=robot_mode, radius=radius_list[i], init_state=init_state_list[i], goal=goal_list[i], step_time=step_time, **kwargs)
             self.robot_list.append(robot)
             self.robot = robot if i == 0 else None 
         
-    def init_state_distribute(self, init_mode=1, interval=1, radius=0.2, square=[0, 0, 10, 10], circular=[5, 5, 4],  **kwargs):
+    def init_state_distribute(self, init_mode=1, radius=0.2):
         # init_mode: 1 single row
         #            2 random
         #            3 circular      
         # square area: x_min, y_min, x_max, y_max
         # circular area: x, y, radius
         
-        random_radius = kwargs.get('random_radius', False)
-
-        num = self.robot_num
+        num = self.robot_number
         state_list, goal_list = [], []
 
         if init_mode == 1:
              # single row
-            state_list = [np.array([ [i * interval], [square[1]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+num)]
-            goal_list = [np.array([ [i * interval], [square[3]] ]) for i in range(int(square[0]), int(square[0])+num)]
+            state_list = [np.array([ [i * self.interval], [self.square[1]], [pi/2] ]) for i in range(int(self.square[0]), int(self.square[0])+num)]
+            goal_list = [np.array([ [i * self.interval], [self.square[3]] ]) for i in range(int(self.square[0]), int(self.square[0])+num)]
             goal_list.reverse()
 
         elif init_mode == 2:
             # random
-            state_list, goal_list = self.random_start_goal(interval, square)
+            state_list, goal_list = self.random_start_goal()
 
         elif init_mode == 3:
             # circular
-            circle_point = np.array(circular)
+            circle_point = np.array(self.circular)
             theta_step = 2*pi / num
             theta = 0
 
             while theta < 2*pi:
-                state = circle_point + np.array([ cos(theta) * circular[2], sin(theta) * circular[2], theta + pi- circular[2] ])
-                goal = circle_point[0:2] + np.array([cos(theta+pi), sin(theta+pi)]) * circular[2]
+                state = circle_point + np.array([ cos(theta) * self.circular[2], sin(theta) * self.circular[2], theta + pi- self.circular[2] ])
+                goal = circle_point[0:2] + np.array([cos(theta+pi), sin(theta+pi)]) * self.circular[2]
                 theta = theta + theta_step
                 state_list.append(state[:, np.newaxis])
                 goal_list.append(goal[:, np.newaxis])
 
         elif init_mode == 4:
             # random 2
-            circle_point = np.array(circular)
+            circle_point = np.array(self.circular)
             theta_step = 2*pi / num
             theta = 0
 
             while theta < 2*pi:
-                state = circle_point + np.array([ cos(theta) * circular[2], sin(theta) * circular[2], theta + pi- circular[2] ])
-                goal = circle_point[0:2] + np.array([cos(theta+pi), sin(theta+pi)]) * circular[2]
+                state = circle_point + np.array([ cos(theta) * self.circular[2], sin(theta) * self.circular[2], theta + pi- self.circular[2] ])
+                goal = circle_point[0:2] + np.array([cos(theta+pi), sin(theta+pi)]) * self.circular[2]
                 theta = theta + theta_step
                 state_list.append(state[:, np.newaxis])
                 goal_list.append(goal[:, np.newaxis])
@@ -87,15 +92,15 @@ class env_robot:
             
             half_num = int(num /2)
 
-            state_list1 = [np.array([ [i * interval], [square[1]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            state_list1 = [np.array([ [i * self.interval], [self.square[1]], [pi/2] ]) for i in range(int(self.square[0]), int(self.square[0])+half_num)]
 
-            state_list2 = [np.array([ [i * interval], [square[3]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            state_list2 = [np.array([ [i * self.interval], [self.square[3]], [pi/2] ]) for i in range(int(self.square[0]), int(self.square[0])+half_num)]
             state_list2.reverse()
             
-            goal_list1 = [np.array([ [i * interval], [square[3]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            goal_list1 = [np.array([ [i * self.interval], [self.square[3]], [pi/2] ]) for i in range(int(self.square[0]), int(self.square[0])+half_num)]
             goal_list1.reverse()
 
-            goal_list2 = [np.array([ [i * interval], [square[1]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            goal_list2 = [np.array([ [i * self.interval], [self.square[1]], [pi/2] ]) for i in range(int(self.square[0]), int(self.square[0])+half_num)]
             
             state_list, goal_list = state_list1+state_list2, goal_list1+goal_list2
                     
@@ -103,23 +108,23 @@ class env_robot:
             for state in state_list:
                 state[2, 0] = np.random.uniform(low = -pi, high = pi)
 
-        if random_radius:
+        if self.random_radius:
             radius_list = np.random.uniform(low = 0.2, high = 1, size = (num,))
         else:
             radius_list = [radius for i in range(num)]
 
         return state_list, goal_list, radius_list
     
-    def random_start_goal(self, interval = 1, square=[0, 0, 10, 10], **kwargs):
+    def random_start_goal(self):
 
-        num = self.robot_num
+        num = self.robot_number
         random_list = []
         goal_list = []
         while len(random_list) < 2*num:
 
-            new_point = np.random.uniform(low = square[0:2]+[-pi], high = square[2:4]+[pi], size = (1, 3)).T
+            new_point = np.random.uniform(low = self.square[0:2]+[-pi], high = self.square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.com, interval):
+            if not self.check_collision(new_point, random_list, self.com, self.interval):
                 random_list.append(new_point)
 
         start_list = random_list[0 : num]
@@ -130,16 +135,16 @@ class env_robot:
 
         return start_list, goal_list
     
-    def random_goal(self, interval = 1, square=[0, 0, 10, 10], **kwargs):
+    def random_goal(self):
 
         num = self.robot_num
         random_list = []
         goal_list = []
         while len(random_list) < num:
 
-            new_point = np.random.uniform(low = square[0:2]+[-pi], high = square[2:4]+[pi], size = (1, 3)).T
+            new_point = np.random.uniform(low = self.square[0:2]+[-pi], high = self.square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.components, interval):
+            if not self.check_collision(new_point, random_list, self.components, self.interval):
                 random_list.append(new_point)
 
         goal_temp_list = random_list[:]
@@ -215,9 +220,9 @@ class env_robot:
                 robot.reset(self.random_bear)
         
         elif self.cur_mode != reset_mode:
-            state_list, goal_list, _ = self.init_state_distribute(init_mode = reset_mode, **kwargs)
+            state_list, goal_list, _ = self.init_state_distribute(init_mode = reset_mode)
 
-            for i in range(self.robot_num):
+            for i in range(self.robot_number):
                 self.robot_list[i].init_state = state_list[i]
                 self.robot_list[i].goal = goal_list[i]
                 self.robot_list[i].reset(self.random_bear) 
@@ -225,14 +230,14 @@ class env_robot:
             self.cur_mode = reset_mode
 
         elif reset_mode == 2:
-            state_list, goal_list = self.random_start_goal(**kwargs)
-            for i in range(self.robot_num):
+            state_list, goal_list = self.random_start_goal()
+            for i in range(self.robot_number):
                 self.robot_list[i].init_state = state_list[i]
                 self.robot_list[i].goal = goal_list[i]
                 self.robot_list[i].reset(self.random_bear) 
         
         elif reset_mode == 4:
-            goal_list = self.random_goal(**kwargs)
+            goal_list = self.random_goal()
             for i in range(self.robot_num):
                 self.robot_list[i].goal = goal_list[i]
                 self.robot_list[i].reset(self.random_bear)
