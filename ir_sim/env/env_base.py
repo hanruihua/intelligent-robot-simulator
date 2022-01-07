@@ -125,7 +125,7 @@ class env_base:
         self.robot_list = self.components['robots'].robot_list
 
         self.components['cars'] = env_car(car_class=car_class, car_num=self.car_number, step_time=self.step_time, **{**self.cars_args, **kwargs})
-        self.car_list = self.components['cars'].robot_list
+        self.car_list = self.components['cars'].car_list
 
         if self.plot:
             self.world_plot = env_plot(self.__width, self.__height, self.components, offset_x=self.offset_x, offset_y=self.offset_y, **kwargs)
