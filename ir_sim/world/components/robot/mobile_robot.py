@@ -29,10 +29,13 @@ class mobile_robot():
 
         if mode == 'diff':
             self.state = init_state
+            self.previous_state = init_state
         elif mode == 'omni':
             self.state = init_state[0:2]
+            self.previous_state = init_state[0:2]
         
         self.init_state = init_state
+        self.previous_state = init_state
         self.vel_diff = vel_diff
         self.vel_omni = vel_omni
         self.vel_max = vel_max
@@ -84,6 +87,8 @@ class mobile_robot():
                 vel = np.zeros((2, 1))
 
         assert self.mode == 'omni' or self.mode == 'diff'
+
+        self.previous_state = self.state
 
         if self.mode == 'diff':
             if vel_type == 'diff':
@@ -305,6 +310,7 @@ class mobile_robot():
     def reset(self, random_bear=False):
 
         self.state[:] = self.init_state[:]
+        self.previous_state[:] = self.init_state[:]
         self.vel_omni = np.zeros((2, 1))
         self.vel_diff = np.zeros((2, 1))
         self.arrive_flag = False
