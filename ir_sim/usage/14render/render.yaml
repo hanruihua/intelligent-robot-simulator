@@ -7,6 +7,9 @@ world:
   init_point: [0, 0, 0]
   # world_map: 'map_100_100.png'
   world_map: 'cave.png'
+  # offset_x: -10
+  # offset_y: -10
+
 
 # robots:
 #   number: 1
