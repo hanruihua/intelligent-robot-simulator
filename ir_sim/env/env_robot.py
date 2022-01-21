@@ -165,7 +165,7 @@ class env_robot:
         self_circle = circle(check_point[0, 0], check_point[1, 0], range/2)
 
         for obs_cir in components['obs_cirs'].obs_cir_list:
-            temp_circle = circle(obs_cir.pos[0, 0], obs_cir.pos[1, 0], obs_cir.radius)
+            temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             if collision_cir_cir(self_circle, temp_circle):
                 return True
         
