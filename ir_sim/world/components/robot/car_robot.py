@@ -198,7 +198,7 @@ class car_robot:
                 return True
 
         # check collision with line obstacles:
-        for line in components['obs_lines'].line_states:
+        for line in components['obs_lines'].obs_line_states:
             seg1 = [point(line[0], line[1]), point(line[2], line[3])]
             for seg2 in segment_list:
                 if collision_seg_seg(seg1, seg2):
