@@ -9,7 +9,7 @@ world:
   world_map: 'cave.png'
 
 robots:
-  number: 1
+  robot_number: 1
   robot_mode: 'diff'  # omni or diff
   init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
   init_state_list: [[2, 2.5, 0], [6, 3, 0]]

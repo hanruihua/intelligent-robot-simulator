@@ -7,7 +7,7 @@ world:
   world_map: 'map_100_100.png'
 
 robots:
-  number: 2
+  robot_number: 2
   robot_mode: 'diff'  # omni or diff
   init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
   init_state_list: [[1, 1, 0], [6, 3, 0]]
@@ -17,7 +17,7 @@ robots:
   radius_exp: 0.1
 
 obs_cirs:
-  number: 2
+  obs_number: 2
   obs_cir_mode: 0
   obs_model: 'static' # static, dynamic
   obs_state_list: [[3, 4], [5, 6]]

@@ -87,7 +87,7 @@ class lidar2d:
             min_int_point = int_point
             collision_flag = True
 
-        for line in components['obs_lines'].line_states:
+        for line in components['obs_lines'].obs_line_states:
             segment2 = [ np.array([line[0], line[1]]), np.array([line[2], line[3]]) ]
             flag, int_point, lrange = range_seg_seg(segment, segment2)
 
