@@ -142,7 +142,7 @@ class env_obs_cir:
             return True
 
         # check collision with line obstacles
-        for line in components['obs_lines'].line_states:
+        for line in components['obs_lines'].obs_line_states:
             segment = [point(line[0], line[1]), point(line[2], line[3])]
             if collision_cir_seg(self_circle, segment):
                 return True
