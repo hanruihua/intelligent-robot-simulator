@@ -130,3 +130,6 @@ dmypy.json
 
 test.py
 .vscode/settings.json
+
+# for read the docs
+_build/
