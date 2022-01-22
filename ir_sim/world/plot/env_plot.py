@@ -379,15 +379,15 @@ class env_plot:
         ani.save(name+'.gif', writer='pillow')
 
     # # animation method 2
-    def save_gif_figure(self, path, i):
+    def save_gif_figure(self, path, i, format='png'):
 
         if path.exists():
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
         else:
             path.mkdir()
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
 
     def create_animate(self, image_path, ani_path, ani_name='animated', keep_len=30, rm_fig_path=True):
 
