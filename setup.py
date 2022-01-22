@@ -4,7 +4,7 @@ import sys
 setup(
     name='ir_sim',
     py_modules=['ir_sim'],
-    version= '1.0',
+    version= '2.0',
     install_requires=[
         'matplotlib',
         'numpy',
