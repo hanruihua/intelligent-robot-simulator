@@ -8,8 +8,25 @@ Welcome to intelligent-robot-simulator's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Documentation
 
+   user/introduction
+   user/installation
+   user/test
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Demonstrated Examples:
+   examples/robot_examples
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference:
+
+   api/world_file
+   api/environment
+   api/components
+   api/world_plot
 
 
 Indices and tables
@@ -18,3 +35,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
