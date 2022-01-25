@@ -52,6 +52,9 @@ class env_plot:
                 figManager = plt.get_current_fig_manager()
                 figManager.window.showMaximized()
 
+        # plt.rcParams['pdf.fonttype'] = 42
+        # plt.rcParams['ps.fonttype'] = 42
+
     # draw ax
     def init_plot(self, **kwargs):
         self.ax.set_aspect('equal')
