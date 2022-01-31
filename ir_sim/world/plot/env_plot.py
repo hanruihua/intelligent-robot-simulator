@@ -52,6 +52,9 @@ class env_plot:
                 figManager = plt.get_current_fig_manager()
                 figManager.window.showMaximized()
 
+        # plt.rcParams['pdf.fonttype'] = 42
+        # plt.rcParams['ps.fonttype'] = 42
+
     # draw ax
     def init_plot(self, **kwargs):
         self.ax.set_aspect('equal')
@@ -379,15 +382,15 @@ class env_plot:
         ani.save(name+'.gif', writer='pillow')
 
     # # animation method 2
-    def save_gif_figure(self, path, i):
+    def save_gif_figure(self, path, i, format='png'):
 
         if path.exists():
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
         else:
             path.mkdir()
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
 
     def create_animate(self, image_path, ani_path, ani_name='animated', keep_len=30, rm_fig_path=True):
 
