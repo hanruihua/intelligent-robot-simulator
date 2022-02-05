@@ -6,6 +6,8 @@ from math import sqrt, pi, cos, sin
 ## circle:  x, y, r
 ## segment: [point1, point2]
 ## point: x, y
+## point_set: 2*n, matrix 
+# rectangle: 
 
 def collision_cir_cir(circle1, circle2):
 
@@ -91,6 +93,32 @@ def collision_seg_matrix(segment, matrix, reso, offset=np.zeros(2,)):
         if matrix[index_x, index_y]:
             return True    
 
+def collision_circle_point(circle, point_set):
+    
+    assert point_set.shape[0] == 2
+
+    center = np.array([ [circle.x], [circle.y] ]) # 2*1
+    temp = point_set - center
+
+    dis_set = np.linalg.norm(temp, axis=0)
+
+    min_dis = np.min(dis_set)
+
+    return min_dis < circle.r
+
+# def collision_rect_point(rectangle, point_set):
+    
+#     assert point_set.shape[0] == 2
+
+#     center = np.array([ [circle.x], [circle.y] ]) # 2*1
+#     temp = point_set - center
+
+#     dis_set = np.linalg.norm(temp, axis=0)
+
+#     min_dis = np.min(dis_set)
+
+#     return min_dis < circle.r
+        
 def collision_seg_seg(segment1, segment2):
     # reference https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/; https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
@@ -123,7 +151,6 @@ def collision_seg_seg(segment1, segment2):
 
     return False
 
-
 def onSegment(p, q, r):
 
     if (q.x <= max(p.x, r.x) and q.x >= min(p.x, r.x) and q.y <= max(p.y, r.y) and q.y >= min(p.y, r.y)):
@@ -147,6 +174,6 @@ def orientation(p, q, r):
         return 0
     
     
-    
+ 
    
 

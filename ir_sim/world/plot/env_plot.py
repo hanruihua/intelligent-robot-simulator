@@ -13,6 +13,7 @@ from pathlib import Path
 import inspect
 from scipy.ndimage.interpolation import rotate
 import matplotlib.transforms as mtransforms
+from matplotlib.patches import Polygon
 
 class env_plot:
     def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, offset_x = 0, offset_y=0, **kwargs):
@@ -95,6 +96,7 @@ class env_plot:
             
         self.draw_static_obs_cirs(self.components['obs_cirs'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
+        self.draw_static_obs_polygons(self.components['obs_polygons'], **kwargs)
 
     def draw_dyna_components(self, **kwargs):
         robots = self.components.get('robots', None)
@@ -129,12 +131,18 @@ class env_plot:
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_static_obs_cir(obs_cir, **kwargs)
 
+    def draw_static_obs_polygons(self, obs_polygons, **kwargs):
+
+        for obs_polygon in obs_polygons.obs_poly_list:
+            self.draw_static_obs_polygon(obs_polygon, **kwargs)
+
     def draw_dyna_obs_cirs(self, obs_cirs, **kwargs):
 
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_dyna_obs_cir(obs_cir, **kwargs)
 
     def draw_obs_lines(self, obs_lines, **kwargs):
+        
         for obs_line in obs_lines.obs_line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
@@ -286,13 +294,17 @@ class env_plot:
             self.ax.add_patch(obs_circle)
 
             self.dyna_obs_plot_list.append(obs_circle)
-        
 
-    def draw_obs_line_list(self, **kwargs):
+    def draw_static_obs_polygon(self, obs_polygon, obs_polygon_color='k', **kwargs):
         
-        for line in self.obs_line_list:
-            # self.ax.plot(   line[0:2], line[2:4], 'k-')
-            self.ax.plot( [line[0], line[2]], [line[1], line[3]], 'k-')
+        p = Polygon(obs_polygon.vertexes.T, facecolor = obs_polygon_color)
+        self.ax.add_patch(p)
+
+    # def draw_obs_line_list(self, **kwargs):
+        
+    #     for line in self.obs_line_list:
+    #         # self.ax.plot(   line[0:2], line[2:4], 'k-')
+    #         self.ax.plot( [line[0], line[2]], [line[1], line[3]], 'k-')
 
     def draw_vector(self, x, y, dx, dy, color='r'):
         arrow = mpl.patches.Arrow(x, y, dx, dy, width=0.2, color=color) 

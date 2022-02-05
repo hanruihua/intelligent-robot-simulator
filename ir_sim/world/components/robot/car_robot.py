@@ -204,6 +204,14 @@ class car_robot:
                 if collision_seg_seg(seg1, seg2):
                     print('collisions with line obstacle')
                     return True
+        
+        for polygon in components['obs_polygons'].obs_poly_list:
+            for edge in polygon.edge_list:
+                seg1 = [point(edge[0], edge[1]), point(edge[2], edge[3])]
+                for seg2 in segment_list:
+                    if collision_seg_seg(seg1, seg2):
+                        print('collisions with polygon obstacle')
+                        return True
     
     def cal_lidar_range(self, components):
         if self.lidar is not None:

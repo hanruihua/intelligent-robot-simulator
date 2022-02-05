@@ -63,6 +63,7 @@ class lidar2d:
         min_lrange = self.range_max
         min_int_point = segment[1]
         collision_flag = False
+
         for robot in components['robots'].robot_list:
             
             flag, int_point, lrange = range_cir_seg(robot.state[0:2, 0], robot.radius, segment)
@@ -95,6 +96,16 @@ class lidar2d:
                 min_lrange = lrange
                 min_int_point = int_point
                 collision_flag = True
+
+        for polygon in components['obs_polygons'].obs_poly_list:
+            for edge in polygon.edge_list:
+                segment2 = [ np.array([edge[0], edge[1]]), np.array([edge[2], edge[3]]) ]
+                flag, int_point, lrange = range_seg_seg(segment, segment2)
+
+                if flag and lrange < min_lrange:
+                    min_lrange = lrange
+                    min_int_point = int_point
+                    collision_flag = True
 
         return collision_flag, min_int_point, min_lrange
             
