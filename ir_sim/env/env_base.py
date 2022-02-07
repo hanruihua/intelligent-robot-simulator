@@ -131,6 +131,7 @@ class env_base:
         self.obs_cir_list = self.components['obs_cirs'].obs_cir_list
 
         self.components['obs_polygons'] = env_obs_poly(obs_poly_class=obs_polygon_class, vertex_list=self.vertexes_list, obs_poly_num=self.obs_poly_num, **{**self.obs_polygons_args, **kwargs})
+        self.obs_poly_list = self.components['obs_polygons'].obs_poly_list        
 
         self.components['robots'] = env_robot(robot_class=robot_class, step_time=self.step_time, components=self.components, **{**self.robots_args, **kwargs})
         self.robot_list = self.components['robots'].robot_list

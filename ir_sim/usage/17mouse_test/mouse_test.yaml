@@ -1,0 +1,41 @@
+world:
+  world_height: 50
+  world_width: 50
+  step_time: 0.1
+  xy_resolution: 0.1 # meter
+  yaw_resolution: 5 # degree
+
+# obs_lines:
+#   obs_line_states: [ [30, 20, 30, 27], [ 30, 20, 35, 20], [35, 20, 35, 27], [35, 27, 30, 27]  ]
+
+obs_polygons:
+  number: 1
+  # vertexes_list: [  [ [4, 2], [4, 4], [3, 4], [3, 2] ], ]
+  # vertexes_list: [  [ [30, 20], [30, 30], [35, 30], [35, 20] ], ]
+  vertexes_list: [  [ [30, 20], [35, 20], [35, 30], [30, 30] ], ] 
+  # vertexes_list: [  [ [7, 2], [7, 4], [1, 4], [2, 2], [4, 1], [5, 1]], ]
+  # lidar2d:
+  #   install_pos: [0, 0, 0]
+  #   range_min: 0
+  #   range_max: 10
+  #   angle_min: 0 
+  #   angle_max: 3.1415926
+  #   number: 100
+  #   scan_time: 0.1
+  #   noise: False 
+  #   std: 0.2
+  
+# obs_cirs:
+#   number: 5
+#   dist_mode: 2
+#   obs_model: 'dynamic' # static, dynamic 
+#   obs_step_mode: 'wander' # default, wander
+#   obs_state_list: [[25, 34], [35, 26]]
+#   obs_goal_list: [[45, 24], [15, 36]]
+#   obs_radius_list: [0.5, 0.4]
+#   obs_square: [10, 10, 40, 40]
+#   obs_interval: 2
+#   random_radius: False
+#   vel_max: [2.5, 2.5]
+
+
