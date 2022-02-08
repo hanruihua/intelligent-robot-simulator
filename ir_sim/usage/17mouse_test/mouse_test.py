@@ -22,10 +22,10 @@ def on_move(event):
 
         for polygon in env.obs_poly_list:
 
-            # flag, temp = polygon.inside(point)
+            flag, temp = polygon.inside(point)
             # print(temp)
-            print(point)
-            flag, temp = polygon.inside_collision(point)
+            # print(point)
+            # flag, temp = polygon.inside_collision(point)
             print(flag)
 
         # print('data coords %f %f' % (event.xdata, event.ydata))

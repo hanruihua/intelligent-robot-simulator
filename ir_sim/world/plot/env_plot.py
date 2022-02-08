@@ -310,7 +310,7 @@ class env_plot:
         arrow = mpl.patches.Arrow(x, y, dx, dy, width=0.2, color=color) 
         self.ax.add_patch(arrow)
 
-    def draw_trajectory(self, traj, style='g-', label='line', show_direction=False, refresh=False):
+    def draw_trajectory(self, traj, style='g-', label='line', show_direction=False, refresh=False, markersize=2):
 
         if isinstance(traj, list):
             path_x_list = [p[0, 0] for p in traj]
@@ -321,7 +321,7 @@ class env_plot:
             path_x_list = [p[0] for p in traj.T]
             path_y_list = [p[1] for p in traj.T]
         
-        line = self.ax.plot(path_x_list, path_y_list, style, label=label)
+        line = self.ax.plot(path_x_list, path_y_list, style, label=label, markersize=markersize)
 
         if show_direction:
 
