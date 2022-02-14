@@ -31,6 +31,10 @@ class obs_circle:
         self.radius_collision = round(radius + kwargs.get('radius_exp', 0.1), 2)
         self.arrive_flag = False
         
+        # obstacle model, generalized inequality, Ax >=_k b
+        self.A = np.array([ [1, 0], [0, 1], [0, 0] ])
+        self.b = np.row_stack((self.state, -self.radius * np.ones((1,1))))
+        self.b_collision = np.row_stack((self.state, -self.radius_collision * np.ones((1,1))))
 
     def inside(self, point):
 
@@ -38,76 +42,72 @@ class obs_circle:
         # x<=_k x_c
 
         assert point.shape == (2, 1)
-        return self.norm_cone( point - self.state,  self.radius)
 
-    # test dual 
-    def min_distance(self, point):
-        min_distance1 = np.linalg.norm(point - self.state) - self.radius
-
-        ind_t = cvxpy.Variable((2, 1))
-
-        cost = 0
-        constraints = []
-
-        cost += cvxpy.norm(ind_t) 
-        constraints +=  [  cvxpy.norm(point + ind_t - self.state) <= self.radius ]
-
-        prob = cvxpy.Problem(cvxpy.Minimize(cost), constraints)
-        prob.solve() 
-
-        if prob.status == cvxpy.OPTIMAL:
-            min_distance2 = np.linalg.norm(ind_t.value)
-        else:
-            print('can not solve')
-
-
-        cost2 = 0
-        constraints2 = []
-
-        ind_lambda = cvxpy.Variable((3, 1))
-        temp = np.zeros((3, 1))
-        temp[0:2, 0] = (point - self.state)[:, 0]
-        temp[2, 0] = self.radius
-        
-
-        # cost2 += temp.T @ ind_lambda
-        temp_A = np.array([ [1, 0], [0, 1], [0, 0] ]) 
-        temp_b = np.ones((3, 1))
-
-        temp_b[0, 0] = self.state[0, 0]
-        temp_b[1, 0] = self.state[1, 0]
-        temp_b[2, 0] = - self.radius
-
-        temp2 = temp_A @ point - temp_b
-        cost2 += (temp_A @ point - temp_b).T @ ind_lambda
-
-        constraints2 += [cvxpy.norm(temp_A.T @ ind_lambda) <= 1]
-        constraints2 += [cvxpy.norm(ind_lambda) <= self.radius]
-        # constraints2 += [ind_lambda >= 0]
-
-        prob2 = cvxpy.Problem(cvxpy.Maximize(cost2), constraints2)
-        prob2.solve() 
-        
-        if prob2.status == cvxpy.OPTIMAL:
-            min_distance3 = (temp_A @ point - temp_b).T @ ind_lambda.value
-        else:
-            print('can not solve')
-
-        return min_distance1, min_distance2, min_distance3
-        
-
-
-
-
-
-
-
-    def norm_cone(self, point, t):
+        return self.norm_cone( self.A @ point - self.b)
+    
+    def inside_collision(self, point):
 
         assert point.shape == (2, 1)
 
-        return np.linalg.norm(point) <= t
+        return self.norm_cone( self.A @ point - self.b_collision)
 
+    def norm_cone(self, matrix):
+
+        assert matrix.shape == (3, 1)
+
+        return np.linalg.norm(matrix[0:2]) <= matrix[2, 0]
+
+    # # test dual 
+    # def min_distance(self, point):
+    #     min_distance1 = np.linalg.norm(point - self.state) - self.radius
+
+    #     ind_t = cvxpy.Variable((2, 1))
+
+    #     cost = 0
+    #     constraints = []
+
+    #     cost += cvxpy.norm(ind_t) 
+    #     constraints +=  [  cvxpy.norm(point + ind_t - self.state) <= self.radius ]
+
+    #     prob = cvxpy.Problem(cvxpy.Minimize(cost), constraints)
+    #     prob.solve() 
+
+    #     if prob.status == cvxpy.OPTIMAL:
+    #         min_distance2 = np.linalg.norm(ind_t.value)
+    #     else:
+    #         print('can not solve')
+
+    #     cost2 = 0
+    #     constraints2 = []
+
+    #     ind_lambda = cvxpy.Variable((3, 1))
+    
+    #     temp_A = np.array([ [1, 0], [0, 1], [0, 0] ]) 
+    #     temp_b = np.ones((3, 1))
+
+    #     temp_b[0, 0] = self.state[0, 0]
+    #     temp_b[1, 0] = self.state[1, 0]
+    #     temp_b[2, 0] = - self.radius
+
+    #     cost2 += ind_lambda.T @ ( temp_b - temp_A @ point)
+
+    #     constraints2 += [cvxpy.norm(temp_A.T @ ind_lambda) <= 1]
+    #     # constraints2 += [cvxpy.norm(ind_lambda) <= self.radius]
+    #     constraints2 += [ cvxpy.norm(ind_lambda[0:2]) <= ind_lambda[2, 0] ]
+    #     # constraints2 += [ind_lambda >= 0]
+
+    #     prob2 = cvxpy.Problem(cvxpy.Maximize(cost2), constraints2)
+    #     prob2.solve() 
+        
+    #     if prob2.status == cvxpy.OPTIMAL:
+    #         min_distance3 = (temp_b - temp_A @ point ).T @ ind_lambda.value
+    #     else:
+    #         print('can not solve')
+
+    #     print(min_distance3 - min_distance2)
+
+    #     return min_distance1, min_distance2, min_distance3
+        
     def move_forward(self, vel, stop=True, **vel_kwargs):
         
         if isinstance(vel, list): 

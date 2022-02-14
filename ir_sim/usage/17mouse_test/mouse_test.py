@@ -26,9 +26,9 @@ def on_move(event):
         #     print(flag)
         
         for circle in env.obs_cir_list:
-            flag = circle.inside(point)
-            m1, m2, m3 = circle.min_distance(point)
-            print(flag, m1, m2, m3)
+            flag = circle.inside_collision(point)
+            # m1, m2, m3 = circle.min_distance(point)
+            print(flag)
 
         # print('data coords %f %f' % (event.xdata, event.ydata))
 
