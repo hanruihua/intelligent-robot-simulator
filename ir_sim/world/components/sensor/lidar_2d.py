@@ -73,7 +73,7 @@ class lidar2d:
                 min_int_point = int_point
                 collision_flag = True
 
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             flag, int_point, lrange = range_cir_seg(obs_cir.state[0:2, 0], obs_cir.radius, segment)
             
             if flag and lrange < min_lrange:
