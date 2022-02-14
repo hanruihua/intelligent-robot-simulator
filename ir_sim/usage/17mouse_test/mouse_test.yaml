@@ -8,9 +8,9 @@ world:
 # obs_lines:
 #   obs_line_states: [ [30, 20, 30, 27], [ 30, 20, 35, 20], [35, 20, 35, 27], [35, 27, 30, 27]  ]
 
-# obs_polygons:
-#   number: 1
-#   vertexes_list: [  [ [30, 20], [35, 20], [35, 30], [30, 30] ], ] 
+obs_polygons:
+  number: 1
+  vertexes_list: [  [ [30, 20], [35, 20], [35, 30], [30, 30] ], ] 
 
 # obs_cirs:
 #   number: 5
@@ -27,7 +27,7 @@ world:
 
 obs_cirs:
   number: 1
-  dist_mode: 2
+  dist_mode: 0
   obs_model: 'static' # static, dynamic 
   obs_step_mode: 'wander' # default, wander
   obs_state_list: [[25, 34], [35, 26]]

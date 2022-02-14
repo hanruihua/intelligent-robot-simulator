@@ -86,7 +86,7 @@ class env_plot:
             
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
-        self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_obs_cirs(self.components['obs_circles'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
     
     def draw_static_components(self, **kwargs):
@@ -94,14 +94,14 @@ class env_plot:
         if self.components['map_matrix'] is not None:
             self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
             
-        self.draw_static_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_static_obs_cirs(self.components['obs_circles'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
         self.draw_static_obs_polygons(self.components['obs_polygons'], **kwargs)
 
     def draw_dyna_components(self, **kwargs):
         robots = self.components.get('robots', None)
         cars = self.components.get('cars', None) 
-        obs_cirs = self.components.get('obs_cirs', None) 
+        obs_cirs = self.components.get('obs_circles', None) 
 
         if robots is not None:
             self.draw_robots(robots, **kwargs)

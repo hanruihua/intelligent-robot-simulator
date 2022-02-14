@@ -127,8 +127,8 @@ class env_base:
         self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
         self.obs_line_states=self.components['obs_lines'].obs_line_states
 
-        self.components['obs_cirs'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, components=self.components, **{**self.obs_cirs_args, **kwargs})
-        self.obs_cir_list = self.components['obs_cirs'].obs_cir_list
+        self.components['obs_circles'] = env_obs_cir(obs_cir_class=obs_cir_class, obs_cir_num=self.obs_cir_number, step_time=self.step_time, components=self.components, **{**self.obs_cirs_args, **kwargs})
+        self.obs_cir_list = self.components['obs_circles'].obs_cir_list
 
         self.components['obs_polygons'] = env_obs_poly(obs_poly_class=obs_polygon_class, vertex_list=self.vertexes_list, obs_poly_num=self.obs_poly_num, **{**self.obs_polygons_args, **kwargs})
         self.obs_poly_list = self.components['obs_polygons'].obs_poly_list        

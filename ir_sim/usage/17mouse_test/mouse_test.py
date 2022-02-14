@@ -20,15 +20,20 @@ def on_move(event):
 
         point = np.array( [ [x], [y] ] )
 
-        # for polygon in env.obs_poly_list:
+        for polygon in env.obs_poly_list:
 
-        #     flag, temp = polygon.inside(point)
-        #     print(flag)
+            flag, temp = polygon.inside(point)
+            if flag:
+                print(flag)
         
         for circle in env.obs_cir_list:
-            flag = circle.inside_collision(point)
-            # m1, m2, m3 = circle.min_distance(point)
-            print(flag)
+            flag = circle.inside(point)
+            m1, m2, m3 = circle.min_distance(point)
+            print(m1, m2, m3)
+            if flag:
+                print(flag)
+                
+        
 
         # print('data coords %f %f' % (event.xdata, event.ydata))
 

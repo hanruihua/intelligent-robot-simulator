@@ -24,8 +24,8 @@ class obs_polygon:
     def gen_matrix(self):
 
         self.A = np.zeros(( self.ver_num, 2))  # n * 2
-        self.C = np.zeros(( self.ver_num, 1))  # n * 1
-        self.C_collision = np.zeros(( self.ver_num, 1))  # n * 1
+        self.b = np.zeros(( self.ver_num, 1))  # n * 1
+        self.b_collision = np.zeros(( self.ver_num, 1))  # n * 1
 
         for i in range(self.ver_num):
 
@@ -44,26 +44,26 @@ class obs_polygon:
 
             self.A[i, 0] = a
             self.A[i, 1] = b
-            self.C[i, 0] = c 
+            self.b[i, 0] = c 
 
             if b != 0:
-                self.C_collision[i, 0] = c + self.collision_thick * abs(b)
+                self.b_collision[i, 0] = c + self.collision_thick * abs(b)
             else:
-                self.C_collision[i, 0] = c + self.collision_thick * abs(a)
+                self.b_collision[i, 0] = c + self.collision_thick * abs(a)
 
-        return self.A, self.C
+        return self.A, self.b
     
     def inside(self, point):
 
         assert point.shape == (2, 1)
-        temp = self.A @ point - self.C
-        return  (self.A @ point < self.C).all(), temp
+        temp = self.A @ point - self.b
+        return  (self.A @ point < self.b).all(), temp
             
     def inside_collision(self, point):
 
         assert point.shape == (2, 1)
-        temp = self.A @ point - self.C_collision
-        return  (self.A @ point < self.C_collision).all(), temp
+        temp = self.A @ point - self.b_collision
+        return  (self.A @ point < self.b_collision).all(), temp
         
         
 
