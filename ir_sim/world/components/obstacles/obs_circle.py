@@ -115,6 +115,22 @@ class obs_circle:
         self.state = motion_omni(self.state, vel, self.step_time, **vel_kwargs)
         self.vel_omni = vel
 
+        self.b[0:2, 0] = self.state[:, 0]
+        self.b_collision[0:2, 0] = self.state[:, 0]
+    
+    def state_predict_b(self, receding=5):
+        cur_state = self.state
+        pre_array = np.zeros((2, receding+1))
+        pre_array[:, 0] = cur_state[:, 0]
+        b_array = np.zeros((3, receding+1))
+        b_array[:, 0] = self.b[:, 0]
+
+        for i in range(receding):
+            cur_state = motion_omni(cur_state, self.vel_omni, self.step_time)
+            pre_array[:, i+1] = cur_state[:, 0]
+            b_array[:, i+1:i+2] = np.row_stack((cur_state, self.radius * np.ones((1,1))))
+
+        return b_array
     # def omni_obs_state(self):
         
     #     x = self.state[0, 0]

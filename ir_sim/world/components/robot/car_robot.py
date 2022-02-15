@@ -130,6 +130,10 @@ class car_robot:
         self.ang_pos = rotation_matrix @ car_point + transition_matrix
         self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
 
+    def model_matrix(self):
+        pass
+
+
     def arrive(self):
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
 

@@ -208,14 +208,14 @@ class env_base:
         
         if self.obs_step_mode == 'default':
             if obs_id == None:
-                for i, obs_cir in enumerate(self.components['obs_cirs'].obs_cir_list):
+                for i, obs_cir in enumerate(self.components['obs_circles'].obs_cir_list):
                     obs_cir.move_forward(vel_list[i], **kwargs)
             else:
-                self.components['obs_cirs'].obs_cir_list[obs_id-1].move_forward(vel_list, **kwargs)
+                self.components['obs_circles'].obs_cir_list[obs_id-1].move_forward(vel_list, **kwargs)
 
         elif self.obs_step_mode == 'wander':
             # rvo
-            self.components['obs_cirs'].step_wander(**kwargs)
+            self.components['obs_circles'].step_wander(**kwargs)
 
     def render(self, time=0.05, **kwargs):
 
