@@ -34,9 +34,11 @@ class car_robot:
         self.psi_limit = psi_limit
 
         self.min_radius= self.wheelbase / tan(psi_limit)
-    
+
+        self.init_state = init_state
         self.state=init_state
-        self.angular_pos()
+        self.init_angular_pos = self.angular_pos()
+        self.init_matrix_model()
 
         self.goal=goal
         self.goal_th = goal_threshold
@@ -130,8 +132,52 @@ class car_robot:
         self.ang_pos = rotation_matrix @ car_point + transition_matrix
         self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
 
-    def model_matrix(self):
-        pass
+        return self.ang_pos
+
+    def init_matrix_model(self):
+
+        self.G = np.zeros(( 4, 2))  # 4 * 2
+        self.g = np.zeros(( 4, 1))  # 4 * 1
+        
+        for i in range(4):
+
+            if i + 1 < 4:
+                next_point = self.ang_pos[:, i]
+                pre_point = self.ang_pos[:, i+1]
+            else:
+                next_point = self.ang_pos[:, i]
+                pre_point = self.ang_pos[:, 0]
+            
+            diff = next_point - pre_point
+            
+            a = diff[1]
+            b = -diff[0]
+            c = a * pre_point[0] + b * pre_point[1]
+
+            self.G[i, 0] = a
+            self.G[i, 1] = b
+            self.g[i, 0] = c 
+
+        return self.G, self.g
+
+    def get_rot_tran_matrix(self):
+        
+        diff_theta = self.state[2, 0] - self.init_state[2, 0]
+        # diff_trans = self.ang_pos[0:2, 2:3] - self.init_angular_pos[0:2, 2:3]
+        diff_trans = self.state[0:2, 0:1] - self.init_state[0:2, 0:1]
+
+        
+        rot_matrix = np.array([ [cos(diff_theta), -sin(diff_theta)], [sin(diff_theta), cos(diff_theta)] ])
+        trans_matrix = diff_trans
+
+        return rot_matrix, trans_matrix
+
+    def inside(self, point, rot, trans):
+        t0 = np.array( [ [ (self.length - self.wheelbase) / 2 ], [ self.width / 2 ] ] )
+        trans_point = np.linalg.inv(rot) @ ( point - trans + t0 ) - t0
+        #ddd trans_point = np.linalg.inv(rot) @ ( point - trans )
+        return (self.G @ trans_point <= self.g).all()
+
 
 
     def arrive(self):
