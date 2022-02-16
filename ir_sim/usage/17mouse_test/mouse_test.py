@@ -31,12 +31,8 @@ def on_move(event):
         #     # m1, m2, m3 = circle.min_distance(point)
         #     if flag:
         #         print(flag)
-
-        rot, trans = env.car.get_rot_tran_matrix()
-        print(env.car.inside(point, rot, trans))
+        print(env.car.inside(point))
         
-
-
     env.render(time=0.0000001)
         # print('data coords %f %f' % (event.xdata, event.ydata))
 

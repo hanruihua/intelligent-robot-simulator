@@ -196,8 +196,8 @@ class env_plot:
            
     def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', **kwargs):
 
-        x = car.ang_pos[0, 3]
-        y = car.ang_pos[1, 3]
+        x = car.ang_pos[0, 0]
+        y = car.ang_pos[1, 0]
         r_phi=car.state[2, 0]
         # r_phi_ang = 180*r_phi/pi
 

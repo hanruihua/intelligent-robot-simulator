@@ -20,7 +20,6 @@ class car_robot:
         if isinstance(goal, list): 
             goal = np.array(goal, ndmin=2).T
 
-
         self.id=id
 
         self.shape = shape
@@ -36,9 +35,10 @@ class car_robot:
         self.min_radius= self.wheelbase / tan(psi_limit)
 
         self.init_state = init_state
-        self.state=init_state
-        self.init_angular_pos = self.angular_pos()
-        self.init_matrix_model()
+        self.state=init_state    
+        
+        self.init_angular_pos()   # init car model 
+        self.init_matrix_model()    # origin of the coordinates
 
         self.goal=goal
         self.goal_th = goal_threshold
@@ -80,7 +80,6 @@ class car_robot:
         self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time, **kwargs)
         self.angular_pos()
         
-    
     def update_state(self, state):
 
         self.state = state
@@ -91,48 +90,69 @@ class car_robot:
     #     vel = self.vel[0, 0]
     #     self.pre_state = motion_acker_pre(self.state, self.wheelbase, vel, psi, self.psi_limit, pre_time, self.step_time)
 
+    # def angular_pos_old(self): 
+    #     # coordinates transform
+
+    #     x = self.state[0, 0] 
+    #     y = self.state[1, 0] 
+    #     phi = self.state[2, 0] 
+
+    #     car_x0 = - self.width / 2 
+    #     car_y0 = - (self.length-self.wheelbase)/2
+
+    #     car_x1 = car_x0 
+    #     car_y1 = car_y0 + self.length
+
+    #     car_x2 = car_x0 + self.width
+    #     car_y2 = car_y0 + self.length
+
+    #     car_x3 = car_x0 + self.width
+    #     car_y3 = car_y0
+
+    #     wheel_x0 = - self.wheelbase_w/2
+    #     wheel_y0 = 0
+
+    #     wheel_x1 = - self.wheelbase_w/2
+    #     wheel_y1 = self.wheelbase
+
+    #     wheel_x2 = self.wheelbase_w/2
+    #     wheel_y2 = self.wheelbase
+
+    #     wheel_x3 = self.wheelbase_w/2
+    #     wheel_y3 = 0
+
+    #     car_point = np.array([ [car_x0, car_x1, car_x2, car_x3], [car_y0, car_y1, car_y2, car_y3] ])
+    #     wheel_point = np.array([ [wheel_x0, wheel_x1, wheel_x2, wheel_x3], [wheel_y0, wheel_y1, wheel_y2, wheel_y3] ])
+
+    #     r_phi = phi - pi/2
+    #     rotation_matrix = np.array([[cos(r_phi), -sin(r_phi)], [sin(r_phi), cos(r_phi)]])
+    #     transition_matrix = np.array([[x], [y]])
+
+    #     self.ang_pos = rotation_matrix @ car_point + transition_matrix
+    #     self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
+
+    #     return self.ang_pos
+
     def angular_pos(self): 
         # coordinates transform
+        rotation_matrix = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0] )], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        transition_matrix = self.state[0:2, 0:1] 
 
-        x = self.state[0, 0] 
-        y = self.state[1, 0] 
-        phi = self.state[2, 0] 
+        self.ang_pos = rotation_matrix @ self.init_ang_pos + transition_matrix
 
-        car_x0 = - self.width / 2 
-        car_y0 = - (self.length-self.wheelbase)/2
+    def init_angular_pos(self): 
+        # for car in the origin point (length: x, width: y )
+        # car point 1 2 3 4 with anticlockwise
+        init_x = (self.length-self.wheelbase)/2
+        init_y = self.width/2
 
-        car_x1 = car_x0 
-        car_y1 = car_y0 + self.length
+        car_point1 = np.array( [ [ -init_x ], [-init_y] ] )
+        car_point2 = np.array( [ [ -init_x + self.length ], [-init_y] ] )
+        car_point3 = np.array( [ [ -init_x + self.length ], [-init_y + self.width ] ] )
+        car_point4 = np.array( [ [ -init_x ], [-init_y + self.width ] ] )
 
-        car_x2 = car_x0 + self.width
-        car_y2 = car_y0 + self.length
-
-        car_x3 = car_x0 + self.width
-        car_y3 = car_y0
-
-        wheel_x0 = - self.wheelbase_w/2
-        wheel_y0 = 0
-
-        wheel_x1 = - self.wheelbase_w/2
-        wheel_y1 = self.wheelbase
-
-        wheel_x2 = self.wheelbase_w/2
-        wheel_y2 = self.wheelbase
-
-        wheel_x3 = self.wheelbase_w/2
-        wheel_y3 = 0
-
-        car_point = np.array([ [car_x0, car_x1, car_x2, car_x3], [car_y0, car_y1, car_y2, car_y3] ])
-        wheel_point = np.array([ [wheel_x0, wheel_x1, wheel_x2, wheel_x3], [wheel_y0, wheel_y1, wheel_y2, wheel_y3] ])
-
-        r_phi = phi - pi/2
-        rotation_matrix = np.array([[cos(r_phi), -sin(r_phi)], [sin(r_phi), cos(r_phi)]])
-        transition_matrix = np.array([[x], [y]])
-
-        self.ang_pos = rotation_matrix @ car_point + transition_matrix
-        self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
-
-        return self.ang_pos
+        self.init_ang_pos = np.column_stack( (car_point1, car_point2, car_point3, car_point4) )
+        self.ang_pos = self.init_ang_pos
 
     def init_matrix_model(self):
 
@@ -142,11 +162,11 @@ class car_robot:
         for i in range(4):
 
             if i + 1 < 4:
-                next_point = self.ang_pos[:, i]
-                pre_point = self.ang_pos[:, i+1]
+                pre_point = self.init_ang_pos[:, i]
+                next_point = self.init_ang_pos[:, i+1]
             else:
-                next_point = self.ang_pos[:, i]
-                pre_point = self.ang_pos[:, 0]
+                pre_point = self.init_ang_pos[:, i]
+                next_point = self.init_ang_pos[:, 0]
             
             diff = next_point - pre_point
             
@@ -160,25 +180,20 @@ class car_robot:
 
         return self.G, self.g
 
-    def get_rot_tran_matrix(self):
+    def get_trans_matrix(self):
         
-        diff_theta = self.state[2, 0] - self.init_state[2, 0]
-        # diff_trans = self.ang_pos[0:2, 2:3] - self.init_angular_pos[0:2, 2:3]
-        diff_trans = self.state[0:2, 0:1] - self.init_state[0:2, 0:1]
+        rot = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0])], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        trans = self.state[0:2, 0:1]  
 
-        
-        rot_matrix = np.array([ [cos(diff_theta), -sin(diff_theta)], [sin(diff_theta), cos(diff_theta)] ])
-        trans_matrix = diff_trans
+        return rot, trans
 
-        return rot_matrix, trans_matrix
+    def inside(self, point):
 
-    def inside(self, point, rot, trans):
-        t0 = np.array( [ [ (self.length - self.wheelbase) / 2 ], [ self.width / 2 ] ] )
-        trans_point = np.linalg.inv(rot) @ ( point - trans + t0 ) - t0
-        #ddd trans_point = np.linalg.inv(rot) @ ( point - trans )
+        rot = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0])], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        trans = self.state[0:2, 0:1] 
+
+        trans_point = np.linalg.inv(rot) @ ( point - trans)
         return (self.G @ trans_point <= self.g).all()
-
-
 
     def arrive(self):
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
