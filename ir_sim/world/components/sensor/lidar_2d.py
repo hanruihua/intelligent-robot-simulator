@@ -21,6 +21,8 @@ class lidar2d:
 
         self.data_num = number
         self.range_data = range_max * np.ones(self.data_num,)
+        self.angle_list = np.linspace(self.angle_min, self.angle_max, num=self.data_num)
+
         self.inter_points = np.zeros((self.data_num, 2))
 
         self.install_pos = install_pos
@@ -28,18 +30,11 @@ class lidar2d:
 
     def cal_range(self, state, components):
 
-        theta = state[2, 0]
-
-        a_min = theta - (self.angle_min + self.angle_max) / 2
-        a_max = theta + (self.angle_min + self.angle_max) / 2
-
-        angle_list = np.linspace(a_min, a_max, num=self.data_num)
-
+        real_angle_list = state[2, 0] - np.pi / 2 + self.angle_list
         length = self.range_max
-
         start_point = state[0:2, 0]
 
-        for i, angle in enumerate(angle_list):
+        for i, angle in enumerate(real_angle_list):
             end_point = start_point + length * np.array([cos(angle), sin(angle)])
             segment = [start_point, end_point]
 

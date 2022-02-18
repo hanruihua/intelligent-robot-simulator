@@ -59,6 +59,7 @@ class car_robot:
         else:
             self.lidar = None
 
+    # for loop
     def move_forward(self, vel=np.zeros((2, 1)), stop=True, keep=False, **kwargs):
 
         if isinstance(vel, list): 
@@ -81,57 +82,8 @@ class car_robot:
         self.angular_pos()
         
     def update_state(self, state):
-
         self.state = state
         self.angular_pos()
-
-    # def state_pre(self, pre_time = 1): 
-    #     psi = self.state[3, 0]
-    #     vel = self.vel[0, 0]
-    #     self.pre_state = motion_acker_pre(self.state, self.wheelbase, vel, psi, self.psi_limit, pre_time, self.step_time)
-
-    # def angular_pos_old(self): 
-    #     # coordinates transform
-
-    #     x = self.state[0, 0] 
-    #     y = self.state[1, 0] 
-    #     phi = self.state[2, 0] 
-
-    #     car_x0 = - self.width / 2 
-    #     car_y0 = - (self.length-self.wheelbase)/2
-
-    #     car_x1 = car_x0 
-    #     car_y1 = car_y0 + self.length
-
-    #     car_x2 = car_x0 + self.width
-    #     car_y2 = car_y0 + self.length
-
-    #     car_x3 = car_x0 + self.width
-    #     car_y3 = car_y0
-
-    #     wheel_x0 = - self.wheelbase_w/2
-    #     wheel_y0 = 0
-
-    #     wheel_x1 = - self.wheelbase_w/2
-    #     wheel_y1 = self.wheelbase
-
-    #     wheel_x2 = self.wheelbase_w/2
-    #     wheel_y2 = self.wheelbase
-
-    #     wheel_x3 = self.wheelbase_w/2
-    #     wheel_y3 = 0
-
-    #     car_point = np.array([ [car_x0, car_x1, car_x2, car_x3], [car_y0, car_y1, car_y2, car_y3] ])
-    #     wheel_point = np.array([ [wheel_x0, wheel_x1, wheel_x2, wheel_x3], [wheel_y0, wheel_y1, wheel_y2, wheel_y3] ])
-
-    #     r_phi = phi - pi/2
-    #     rotation_matrix = np.array([[cos(r_phi), -sin(r_phi)], [sin(r_phi), cos(r_phi)]])
-    #     transition_matrix = np.array([[x], [y]])
-
-    #     self.ang_pos = rotation_matrix @ car_point + transition_matrix
-    #     self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
-
-    #     return self.ang_pos
 
     def angular_pos(self): 
         # coordinates transform
@@ -140,6 +92,7 @@ class car_robot:
 
         self.ang_pos = rotation_matrix @ self.init_ang_pos + transition_matrix
 
+    # initialize 
     def init_angular_pos(self): 
         # for car in the origin point (length: x, width: y )
         # car point 1 2 3 4 with anticlockwise
@@ -180,6 +133,7 @@ class car_robot:
 
         return self.G, self.g
 
+    # 
     def get_trans_matrix(self):
         
         rot = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0])], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
