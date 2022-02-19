@@ -10,7 +10,9 @@ setup(
         'numpy',
         'scipy',
         'pyyaml',
-        'pynput'
+        'pynput',
+        'imageio',
+        'pathlib'
     ],
     description="A simple 2D simulator for the intelligent mobile robots",
     author="Han Ruihua",

@@ -1,7 +1,7 @@
 import numpy as np
 from ir_sim.world import motion_omni
 from math import sin, cos, atan2
-import cvxpy
+# import cvxpy
 
 class obs_circle:
     def __init__(self, id=0, state=np.zeros((2, 1)), radius=0.2, velocity=np.zeros((2, 1)), vel_max=2 * np.ones((2, 1)), 
@@ -58,47 +58,47 @@ class obs_circle:
         return np.linalg.norm(matrix[0:2]) <= matrix[2, 0]
 
     # # test dual 
-    def min_distance(self, point):
-        min_distance1 = np.linalg.norm(point - self.state) - self.radius
+    # def min_distance(self, point):
+    #     min_distance1 = np.linalg.norm(point - self.state) - self.radius
 
-        ind_t = cvxpy.Variable((2, 1))
+    #     ind_t = cvxpy.Variable((2, 1))
 
-        cost = 0
-        constraints = []
-        constraints_p = []
+    #     cost = 0
+    #     constraints = []
+    #     constraints_p = []
 
-        cost += cvxpy.norm(ind_t) 
-        constraints +=  [  cvxpy.norm(point + ind_t - self.state) <= self.radius ]
-        prob = cvxpy.Problem(cvxpy.Minimize(cost), constraints)
-        prob.solve() 
+    #     cost += cvxpy.norm(ind_t) 
+    #     constraints +=  [  cvxpy.norm(point + ind_t - self.state) <= self.radius ]
+    #     prob = cvxpy.Problem(cvxpy.Minimize(cost), constraints)
+    #     prob.solve() 
 
-        if prob.status == cvxpy.OPTIMAL:
-            min_distance2 = np.linalg.norm(ind_t.value)
-        else:
-            print('can not solve')
+    #     if prob.status == cvxpy.OPTIMAL:
+    #         min_distance2 = np.linalg.norm(ind_t.value)
+    #     else:
+    #         print('can not solve')
 
-        cost2 = 0
-        constraints2 = []
+    #     cost2 = 0
+    #     constraints2 = []
 
-        ind_lambda = cvxpy.Variable((3, 1))
+    #     ind_lambda = cvxpy.Variable((3, 1))
     
         
-        cost2 += ind_lambda.T @ ( self.A @ point - self.b)
+    #     cost2 += ind_lambda.T @ ( self.A @ point - self.b)
 
-        constraints2 += [cvxpy.norm(self.A.T @ ind_lambda) <= 1]
-        # constraints2 += [cvxpy.norm(ind_lambda) <= self.radius]
-        constraints2 += [ cvxpy.norm(ind_lambda[0:2]) <= ind_lambda[2, 0] ]
-        # constraints2 += [ind_lambda >= 0]
+    #     constraints2 += [cvxpy.norm(self.A.T @ ind_lambda) <= 1]
+    #     # constraints2 += [cvxpy.norm(ind_lambda) <= self.radius]
+    #     constraints2 += [ cvxpy.norm(ind_lambda[0:2]) <= ind_lambda[2, 0] ]
+    #     # constraints2 += [ind_lambda >= 0]
 
-        prob2 = cvxpy.Problem(cvxpy.Maximize(cost2), constraints2)
-        prob2.solve() 
+    #     prob2 = cvxpy.Problem(cvxpy.Maximize(cost2), constraints2)
+    #     prob2.solve() 
         
-        if prob2.status == cvxpy.OPTIMAL:
-            min_distance3 = (self.A @ point -  self.b).T @ ind_lambda.value
-        else:
-            print('can not solve')
+    #     if prob2.status == cvxpy.OPTIMAL:
+    #         min_distance3 = (self.A @ point -  self.b).T @ ind_lambda.value
+    #     else:
+    #         print('can not solve')
 
-        return min_distance1, min_distance2, min_distance3
+    #     return min_distance1, min_distance2, min_distance3
         
     def move_forward(self, vel, stop=True, **vel_kwargs):
         

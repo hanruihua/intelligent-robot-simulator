@@ -6,12 +6,10 @@ import imageio
 import platform
 import shutil
 from matplotlib import image
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 from math import cos, sin, pi
 from pathlib import Path
 import inspect
-from scipy.ndimage.interpolation import rotate
 import matplotlib.transforms as mtransforms
 from matplotlib.patches import Polygon
 
