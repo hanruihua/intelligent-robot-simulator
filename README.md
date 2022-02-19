@@ -16,8 +16,6 @@ Robot             |  Car
     - Support keyboard controller;  
     - Easy to extend for your own project. 
 
-<!-- The functions are incomplete and incomprehensive now. Welcome to propose your requirement to improve this simulator. -->
-
 ## Prerequisite
 
 Test platform: Ubuntu20.04, windows10
