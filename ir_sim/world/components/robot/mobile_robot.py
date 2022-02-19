@@ -275,7 +275,7 @@ class mobile_robot():
                     return True
 
         # check collision with obstacles
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             if collision_cir_cir(self_circle, temp_circle):
                 self.collision_flag = True

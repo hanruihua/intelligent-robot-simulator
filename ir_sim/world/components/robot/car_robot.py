@@ -201,7 +201,7 @@ class car_robot:
         segment_list = [segment1, segment2, segment3, segment4]
 
         # check collision with obstacles
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             for segment in segment_list:
                 if collision_cir_seg(temp_circle, segment):
