@@ -13,6 +13,7 @@ from pathlib import Path
 import inspect
 from scipy.ndimage.interpolation import rotate
 import matplotlib.transforms as mtransforms
+from matplotlib.patches import Polygon
 
 class env_plot:
     def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, offset_x = 0, offset_y=0, **kwargs):
@@ -52,6 +53,9 @@ class env_plot:
                 figManager = plt.get_current_fig_manager()
                 figManager.window.showMaximized()
 
+        # plt.rcParams['pdf.fonttype'] = 42
+        # plt.rcParams['ps.fonttype'] = 42
+
     # draw ax
     def init_plot(self, **kwargs):
         self.ax.set_aspect('equal')
@@ -82,7 +86,7 @@ class env_plot:
             
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
-        self.draw_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_obs_cirs(self.components['obs_circles'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
     
     def draw_static_components(self, **kwargs):
@@ -90,13 +94,14 @@ class env_plot:
         if self.components['map_matrix'] is not None:
             self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
             
-        self.draw_static_obs_cirs(self.components['obs_cirs'], **kwargs)
+        self.draw_static_obs_cirs(self.components['obs_circles'], **kwargs)
         self.draw_obs_lines(self.components['obs_lines'], **kwargs)
+        self.draw_static_obs_polygons(self.components['obs_polygons'], **kwargs)
 
     def draw_dyna_components(self, **kwargs):
         robots = self.components.get('robots', None)
         cars = self.components.get('cars', None) 
-        obs_cirs = self.components.get('obs_cirs', None) 
+        obs_cirs = self.components.get('obs_circles', None) 
 
         if robots is not None:
             self.draw_robots(robots, **kwargs)
@@ -126,12 +131,18 @@ class env_plot:
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_static_obs_cir(obs_cir, **kwargs)
 
+    def draw_static_obs_polygons(self, obs_polygons, **kwargs):
+
+        for obs_polygon in obs_polygons.obs_poly_list:
+            self.draw_static_obs_polygon(obs_polygon, **kwargs)
+
     def draw_dyna_obs_cirs(self, obs_cirs, **kwargs):
 
         for obs_cir in obs_cirs.obs_cir_list:
             self.draw_dyna_obs_cir(obs_cir, **kwargs)
 
     def draw_obs_lines(self, obs_lines, **kwargs):
+        
         for obs_line in obs_lines.obs_line_states:
             self.ax.plot([obs_line[0], obs_line[2]], [obs_line[1], obs_line[3]], 'k-')
 
@@ -185,8 +196,8 @@ class env_plot:
            
     def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', **kwargs):
 
-        x = car.ang_pos[0, 3]
-        y = car.ang_pos[1, 3]
+        x = car.ang_pos[0, 0]
+        y = car.ang_pos[1, 0]
         r_phi=car.state[2, 0]
         # r_phi_ang = 180*r_phi/pi
 
@@ -283,19 +294,23 @@ class env_plot:
             self.ax.add_patch(obs_circle)
 
             self.dyna_obs_plot_list.append(obs_circle)
-        
 
-    def draw_obs_line_list(self, **kwargs):
+    def draw_static_obs_polygon(self, obs_polygon, obs_polygon_color='k', **kwargs):
         
-        for line in self.obs_line_list:
-            # self.ax.plot(   line[0:2], line[2:4], 'k-')
-            self.ax.plot( [line[0], line[2]], [line[1], line[3]], 'k-')
+        p = Polygon(obs_polygon.vertexes.T, facecolor = obs_polygon_color)
+        self.ax.add_patch(p)
+
+    # def draw_obs_line_list(self, **kwargs):
+        
+    #     for line in self.obs_line_list:
+    #         # self.ax.plot(   line[0:2], line[2:4], 'k-')
+    #         self.ax.plot( [line[0], line[2]], [line[1], line[3]], 'k-')
 
     def draw_vector(self, x, y, dx, dy, color='r'):
         arrow = mpl.patches.Arrow(x, y, dx, dy, width=0.2, color=color) 
         self.ax.add_patch(arrow)
 
-    def draw_trajectory(self, traj, style='g-', label='line', show_direction=False, refresh=False):
+    def draw_trajectory(self, traj, style='g-', label='line', show_direction=False, refresh=False, markersize=2):
 
         if isinstance(traj, list):
             path_x_list = [p[0, 0] for p in traj]
@@ -306,7 +321,7 @@ class env_plot:
             path_x_list = [p[0] for p in traj.T]
             path_y_list = [p[1] for p in traj.T]
         
-        line = self.ax.plot(path_x_list, path_y_list, style, label=label)
+        line = self.ax.plot(path_x_list, path_y_list, style, label=label, markersize=markersize)
 
         if show_direction:
 
@@ -379,15 +394,15 @@ class env_plot:
         ani.save(name+'.gif', writer='pillow')
 
     # # animation method 2
-    def save_gif_figure(self, path, i):
+    def save_gif_figure(self, path, i, format='png'):
 
         if path.exists():
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
         else:
             path.mkdir()
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order)
+            plt.savefig(str(path)+'/'+order, format=format)
 
     def create_animate(self, image_path, ani_path, ani_name='animated', keep_len=30, rm_fig_path=True):
 

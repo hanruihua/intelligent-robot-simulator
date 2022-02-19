@@ -21,6 +21,8 @@ class lidar2d:
 
         self.data_num = number
         self.range_data = range_max * np.ones(self.data_num,)
+        self.angle_list = np.linspace(self.angle_min, self.angle_max, num=self.data_num)
+
         self.inter_points = np.zeros((self.data_num, 2))
 
         self.install_pos = install_pos
@@ -28,18 +30,11 @@ class lidar2d:
 
     def cal_range(self, state, components):
 
-        theta = state[2, 0]
-
-        a_min = theta - (self.angle_min + self.angle_max) / 2
-        a_max = theta + (self.angle_min + self.angle_max) / 2
-
-        angle_list = np.linspace(a_min, a_max, num=self.data_num)
-
+        real_angle_list = state[2, 0] - np.pi / 2 + self.angle_list
         length = self.range_max
-
         start_point = state[0:2, 0]
 
-        for i, angle in enumerate(angle_list):
+        for i, angle in enumerate(real_angle_list):
             end_point = start_point + length * np.array([cos(angle), sin(angle)])
             segment = [start_point, end_point]
 
@@ -63,6 +58,7 @@ class lidar2d:
         min_lrange = self.range_max
         min_int_point = segment[1]
         collision_flag = False
+
         for robot in components['robots'].robot_list:
             
             flag, int_point, lrange = range_cir_seg(robot.state[0:2, 0], robot.radius, segment)
@@ -72,7 +68,7 @@ class lidar2d:
                 min_int_point = int_point
                 collision_flag = True
 
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             flag, int_point, lrange = range_cir_seg(obs_cir.state[0:2, 0], obs_cir.radius, segment)
             
             if flag and lrange < min_lrange:
@@ -95,6 +91,16 @@ class lidar2d:
                 min_lrange = lrange
                 min_int_point = int_point
                 collision_flag = True
+
+        for polygon in components['obs_polygons'].obs_poly_list:
+            for edge in polygon.edge_list:
+                segment2 = [ np.array([edge[0], edge[1]]), np.array([edge[2], edge[3]]) ]
+                flag, int_point, lrange = range_seg_seg(segment, segment2)
+
+                if flag and lrange < min_lrange:
+                    min_lrange = lrange
+                    min_int_point = int_point
+                    collision_flag = True
 
         return collision_flag, min_int_point, min_lrange
             

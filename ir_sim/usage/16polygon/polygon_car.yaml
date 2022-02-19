@@ -1,0 +1,58 @@
+world:
+  world_height: 50  #13
+  world_width: 50   # 13
+  step_time: 0.1
+  xy_resolution: 0.1 # 0.01 # meter
+  yaw_resolution: 5 # degree
+  init_point: [0, 0, 0]
+  # world_map: 'map_100_100.png'
+  # world_map: 'cave.png'
+
+# robots:
+#   number: 1
+#   robot_mode: 'diff'  # omni or diff
+#   init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
+#   init_state_list: [[2, 2.5, 0], [6, 3, 0]]
+#   goal_list: [[8, 9, 0], [5, 4, 0]]
+#   radius_list: [0.2, 0.2]
+#   vel_max: [1.5, 1.5]
+#   radius_exp: 0.1
+
+#   lidar2d:
+#     install_pos: [0, 0, 0]
+#     range_min: 0
+#     range_max: 4
+#     angle_min: 0 
+#     angle_max: 3.1415926
+#     # angle_inc: 0.0873
+#     # angle_inc: 0.0523
+#     number: 50
+#     scan_time: 0.1
+#     noise: True 
+#     std: 0.2
+
+cars:
+  number: 1
+  car_shape_list: [[4.6, 1.6, 3, 1.6]]  # length, width, wheelbase, wheelbase_width
+  car_state_list: [[10, 10, 0, 0]]
+  car_goal_list: [[30, 40, 0]]
+  limit: [4, 1]
+
+  lidar2d:
+    install_pos: [0, 0, 0]
+    range_min: 1
+    range_max: 10
+    angle_min: 0 
+    angle_max: 3.1415926
+    number: 100
+    scan_time: 0.1
+    noise: True 
+    std: 0.2
+
+obs_polygons:
+  number: 1
+  vertexes_list: [  [ [40, 20], [40, 40], [30, 40], [30, 20] ], ]
+  
+  
+  
+  

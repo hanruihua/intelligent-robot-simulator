@@ -1,0 +1,48 @@
+world:
+  world_height: 50
+  world_width: 50
+  step_time: 0.1
+  xy_resolution: 0.1 # meter
+  yaw_resolution: 5 # degree
+
+# obs_lines:
+#   obs_line_states: [ [30, 20, 30, 27], [ 30, 20, 35, 20], [35, 20, 35, 27], [35, 27, 30, 27]  ]
+
+cars:
+  number: 1
+  car_shape_list: [[4.6, 1.6, 3, 1.6]]  # length, width, wheelbase, wheelbase_width
+  car_state_list: [[0, 0, 0, 0]]
+  car_goal_list: [[30, 40, 0]]
+  limit: [4, 1]
+
+obs_polygons:
+  number: 1
+  vertexes_list: [  [ [30, 20], [35, 20], [35, 30], [30, 30] ], ] 
+
+# obs_cirs:
+#   number: 5
+#   dist_mode: 2
+#   obs_model: 'dynamic' # static, dynamic 
+#   obs_step_mode: 'wander' # default, wander
+#   obs_state_list: [[25, 34], [35, 26]]
+#   obs_goal_list: [[45, 24], [15, 36]]
+#   obs_radius_list: [0.5, 0.4]
+#   obs_square: [10, 10, 40, 40]
+#   obs_interval: 2
+#   random_radius: False
+#   vel_max: [2.5, 2.5]
+
+obs_cirs:
+  number: 1
+  dist_mode: 0
+  obs_model: 'static' # static, dynamic 
+  obs_step_mode: 'wander' # default, wander
+  obs_state_list: [[25, 34], [35, 26]]
+  obs_goal_list: [[45, 24], [15, 36]]
+  obs_radius_list: [5, 0.4]
+  obs_square: [10, 10, 40, 40]
+  obs_interval: 2
+  random_radius: False
+  vel_max: [2.5, 2.5]
+
+

@@ -275,7 +275,7 @@ class mobile_robot():
                     return True
 
         # check collision with obstacles
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             if collision_cir_cir(self_circle, temp_circle):
                 self.collision_flag = True
@@ -295,6 +295,14 @@ class mobile_robot():
                 self.collision_flag = True
                 print('collisions between obstacles')
                 return True
+        
+        for polygon in components['obs_polygons'].obs_poly_list:
+            for edge in polygon.edge_list:
+                segment = [ point(edge[0], edge[1]), point(edge[2], edge[3]) ]
+                if collision_cir_seg(self_circle, segment):
+                    self.collision_flag = True
+                    print('collisions between polygon obstacles')
+                    return True
 
     def omni_state(self):
         v_des = self.cal_des_vel_omni()

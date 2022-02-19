@@ -1,0 +1,36 @@
+world:
+  world_height: 10
+  world_width: 10
+  step_time: 0.1
+  xy_resolution: 0.01 # meter
+  yaw_resolution: 5 # degree
+  # world_map: 'map_100_100.png'
+
+robots:
+  robot_number: 2
+  robot_mode: 'diff'  # omni or diff
+  init_mode: 0 # 0 custom, 1 single row, 2, random, 3 circle
+  init_state_list: [[1, 1, 0], [6, 3, 0]]
+  goal_list: [[7, 7, 0], [8, 4, 0]]
+  radius_list: [0.2, 0.2]
+  vel_max: [1.5, 1.5]
+  radius_exp: 0.1
+
+  lidar2d:
+    id_list: [0]
+    install_pos: [0, 0, 0]
+    range_min: 0
+    range_max: 4
+    angle_min: 0 
+    angle_max: 3.1415926
+    # angle_inc: 0.0873
+    # angle_inc: 0.0523
+    number: 50
+    scan_time: 0.1
+    noise: True 
+    std: 0.2
+
+obs_polygons:
+  number: 1
+  vertexes_list: [  [ [4, 2], [4, 4], [3, 4], [3, 2] ], ]
+

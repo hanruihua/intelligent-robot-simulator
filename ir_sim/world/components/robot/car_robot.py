@@ -20,7 +20,6 @@ class car_robot:
         if isinstance(goal, list): 
             goal = np.array(goal, ndmin=2).T
 
-
         self.id=id
 
         self.shape = shape
@@ -34,9 +33,12 @@ class car_robot:
         self.psi_limit = psi_limit
 
         self.min_radius= self.wheelbase / tan(psi_limit)
-    
-        self.state=init_state
-        self.angular_pos()
+
+        self.init_state = init_state
+        self.state=init_state    
+        
+        self.init_angular_pos()   # init car model 
+        self.init_matrix_model()    # origin of the coordinates
 
         self.goal=goal
         self.goal_th = goal_threshold
@@ -57,6 +59,7 @@ class car_robot:
         else:
             self.lidar = None
 
+    # for loop
     def move_forward(self, vel=np.zeros((2, 1)), stop=True, keep=False, **kwargs):
 
         if isinstance(vel, list): 
@@ -78,57 +81,73 @@ class car_robot:
         self.state = motion_ackermann(self.state, self.wheelbase, self.vel, self.psi_limit, self.step_time, **kwargs)
         self.angular_pos()
         
-    
     def update_state(self, state):
-
         self.state = state
         self.angular_pos()
 
-    # def state_pre(self, pre_time = 1): 
-    #     psi = self.state[3, 0]
-    #     vel = self.vel[0, 0]
-    #     self.pre_state = motion_acker_pre(self.state, self.wheelbase, vel, psi, self.psi_limit, pre_time, self.step_time)
-
     def angular_pos(self): 
         # coordinates transform
+        rotation_matrix = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0] )], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        transition_matrix = self.state[0:2, 0:1] 
 
-        x = self.state[0, 0] 
-        y = self.state[1, 0] 
-        phi = self.state[2, 0] 
+        self.ang_pos = rotation_matrix @ self.init_ang_pos + transition_matrix
 
-        car_x0 = - self.width / 2 
-        car_y0 = - (self.length-self.wheelbase)/2
+    # initialize 
+    def init_angular_pos(self): 
+        # for car in the origin point (length: x, width: y )
+        # car point 1 2 3 4 with anticlockwise
+        init_x = (self.length-self.wheelbase)/2
+        init_y = self.width/2
 
-        car_x1 = car_x0 
-        car_y1 = car_y0 + self.length
+        car_point1 = np.array( [ [ -init_x ], [-init_y] ] )
+        car_point2 = np.array( [ [ -init_x + self.length ], [-init_y] ] )
+        car_point3 = np.array( [ [ -init_x + self.length ], [-init_y + self.width ] ] )
+        car_point4 = np.array( [ [ -init_x ], [-init_y + self.width ] ] )
 
-        car_x2 = car_x0 + self.width
-        car_y2 = car_y0 + self.length
+        self.init_ang_pos = np.column_stack( (car_point1, car_point2, car_point3, car_point4) )
+        self.ang_pos = self.init_ang_pos
 
-        car_x3 = car_x0 + self.width
-        car_y3 = car_y0
+    def init_matrix_model(self):
 
-        wheel_x0 = - self.wheelbase_w/2
-        wheel_y0 = 0
+        self.G = np.zeros(( 4, 2))  # 4 * 2
+        self.g = np.zeros(( 4, 1))  # 4 * 1
+        
+        for i in range(4):
 
-        wheel_x1 = - self.wheelbase_w/2
-        wheel_y1 = self.wheelbase
+            if i + 1 < 4:
+                pre_point = self.init_ang_pos[:, i]
+                next_point = self.init_ang_pos[:, i+1]
+            else:
+                pre_point = self.init_ang_pos[:, i]
+                next_point = self.init_ang_pos[:, 0]
+            
+            diff = next_point - pre_point
+            
+            a = diff[1]
+            b = -diff[0]
+            c = a * pre_point[0] + b * pre_point[1]
 
-        wheel_x2 = self.wheelbase_w/2
-        wheel_y2 = self.wheelbase
+            self.G[i, 0] = a
+            self.G[i, 1] = b
+            self.g[i, 0] = c 
 
-        wheel_x3 = self.wheelbase_w/2
-        wheel_y3 = 0
+        return self.G, self.g
 
-        car_point = np.array([ [car_x0, car_x1, car_x2, car_x3], [car_y0, car_y1, car_y2, car_y3] ])
-        wheel_point = np.array([ [wheel_x0, wheel_x1, wheel_x2, wheel_x3], [wheel_y0, wheel_y1, wheel_y2, wheel_y3] ])
+    # 
+    def get_trans_matrix(self):
+        
+        rot = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0])], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        trans = self.state[0:2, 0:1]  
 
-        r_phi = phi - pi/2
-        rotation_matrix = np.array([[cos(r_phi), -sin(r_phi)], [sin(r_phi), cos(r_phi)]])
-        transition_matrix = np.array([[x], [y]])
+        return rot, trans
 
-        self.ang_pos = rotation_matrix @ car_point + transition_matrix
-        self.wheel_pos = rotation_matrix @ wheel_point + transition_matrix
+    def inside(self, point):
+
+        rot = np.array([[cos(self.state[2, 0]), -sin(self.state[2, 0])], [sin(self.state[2, 0]), cos(self.state[2, 0])]])
+        trans = self.state[0:2, 0:1] 
+
+        trans_point = np.linalg.inv(rot) @ ( point - trans)
+        return (self.G @ trans_point <= self.g).all()
 
     def arrive(self):
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
@@ -182,7 +201,7 @@ class car_robot:
         segment_list = [segment1, segment2, segment3, segment4]
 
         # check collision with obstacles
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             for segment in segment_list:
                 if collision_cir_seg(temp_circle, segment):
@@ -204,6 +223,14 @@ class car_robot:
                 if collision_seg_seg(seg1, seg2):
                     print('collisions with line obstacle')
                     return True
+        
+        for polygon in components['obs_polygons'].obs_poly_list:
+            for edge in polygon.edge_list:
+                seg1 = [point(edge[0], edge[1]), point(edge[2], edge[3])]
+                for seg2 in segment_list:
+                    if collision_seg_seg(seg1, seg2):
+                        print('collisions with polygon obstacle')
+                        return True
     
     def cal_lidar_range(self, components):
         if self.lidar is not None:
