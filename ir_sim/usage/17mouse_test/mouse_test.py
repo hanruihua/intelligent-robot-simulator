@@ -10,7 +10,7 @@ env = env_base(world_name = world_name, plot=True, teleop_key=True)
 
 def on_move(event):
 
-    env.car_step(env.key_vel, env.key_id)
+    # env.car_step(env.key_vel, env.key_id)
 
     if event.inaxes:
         ax2 = event.inaxes  # the axes instance
@@ -31,7 +31,13 @@ def on_move(event):
         #     # m1, m2, m3 = circle.min_distance(point)
         #     if flag:
         #         print(flag)
-        print(env.car.inside(point))
+        # print(env.car.inside(point))
+        for line in env.obs_line_list:
+            flag = line.inside(point)
+
+            print(flag)
+
+
         
     env.render(time=0.0000001)
         # print('data coords %f %f' % (event.xdata, event.ydata))

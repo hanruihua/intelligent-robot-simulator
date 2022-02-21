@@ -48,7 +48,6 @@ class obs_circle:
     def inside_collision(self, point):
 
         assert point.shape == (2, 1)
-
         return self.norm_cone( self.b_collision - self.A @ point)
 
     def norm_cone(self, matrix):
