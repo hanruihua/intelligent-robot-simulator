@@ -10,7 +10,7 @@ env = env_base(world_name = world_name, plot=True, teleop_key=True)
 
 def on_move(event):
 
-    # env.car_step(env.key_vel, env.key_id)
+    env.car_step(env.key_vel, env.key_id)
 
     if event.inaxes:
         ax2 = event.inaxes  # the axes instance
@@ -36,9 +36,7 @@ def on_move(event):
             flag = line.inside(point)
 
             print(flag)
-
-
-        
+  
     env.render(time=0.0000001)
         # print('data coords %f %f' % (event.xdata, event.ydata))
 
