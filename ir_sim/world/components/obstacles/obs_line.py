@@ -5,7 +5,13 @@ class obs_line:
         self.line_state = line_state
         self.point1 = np.array([ [line_state[0]], [line_state[1]] ])
         self.point2 = np.array([ [line_state[2]], [line_state[3]] ])
-        
+
+        self.min_x = np.min([self.point1[0, 0], self.point2[0, 0] ])
+        self.max_x = np.max([self.point1[0, 0], self.point2[0, 0] ])
+
+        self.min_y = np.min([ self.point1[1, 0], self.point2[1, 0] ])
+        self.max_y = np.max([self.point1[1, 0], self.point2[1, 0]] )
+
         self.init_matrix()
 
     def init_matrix(self):
@@ -18,10 +24,15 @@ class obs_line:
 
         self.A = np.array( [ [a, b] ] )
         self.b = c
-        self.min_x = np.min(self.point1[0, 0], )
-
+        
     def inside(self, point):
         assert point.shape == (2, 1)
+        return np.squeeze(self.A) @ point == self.b
+    
+    def inside2(self, point):
+        assert point.shape == (2, 1)
+        # theta = 
+
         return np.squeeze(self.A) @ point == self.b
 
         

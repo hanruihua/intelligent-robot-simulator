@@ -62,6 +62,8 @@ class car_robot:
     # for loop
     def move_forward(self, vel=np.zeros((2, 1)), stop=True, keep=False, **kwargs):
 
+        # ack_mode: default, steer, simplify
+
         if isinstance(vel, list): 
             vel = np.array(vel, ndmin=2).T
         if vel.shape == (2,):
@@ -109,8 +111,8 @@ class car_robot:
 
     def init_matrix_model(self):
 
-        self.G = np.zeros(( 4, 2))  # 4 * 2
-        self.g = np.zeros(( 4, 1))  # 4 * 1
+        self.A = np.zeros(( 4, 2))  # 4 * 2
+        self.b = np.zeros(( 4, 1))  # 4 * 1
         
         for i in range(4):
 
@@ -127,11 +129,11 @@ class car_robot:
             b = -diff[0]
             c = a * pre_point[0] + b * pre_point[1]
 
-            self.G[i, 0] = a
-            self.G[i, 1] = b
-            self.g[i, 0] = c 
+            self.A[i, 0] = a
+            self.A[i, 1] = b
+            self.b[i, 0] = c 
 
-        return self.G, self.g
+        return self.A, self.b
 
     # 
     def get_trans_matrix(self):
@@ -147,7 +149,7 @@ class car_robot:
         trans = self.state[0:2, 0:1] 
 
         trans_point = np.linalg.inv(rot) @ ( point - trans)
-        return (self.G @ trans_point <= self.g).all()
+        return (self.A @ trans_point <= self.b).all()
 
     def arrive(self):
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])

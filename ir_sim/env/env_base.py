@@ -218,11 +218,16 @@ class env_base:
             # rvo
             self.components['obs_circles'].step_wander(**kwargs)
 
-    def render(self, time=0.05, **kwargs):
+    def render(self, time=0.05, draw_func_list=None, draw_kwargs_list=None, **kwargs):
 
         if self.plot:
             self.world_plot.com_cla()
             self.world_plot.draw_dyna_components(**kwargs)
+
+            if draw_func_list is not None:
+                for i, draw_func in enumerate(draw_func_list):
+                    draw_func(**draw_kwargs_list[i])
+
             self.world_plot.pause(time)
             
         self.time = self.time + time

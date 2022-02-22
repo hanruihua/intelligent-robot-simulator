@@ -309,6 +309,7 @@ class env_plot:
         self.ax.add_patch(arrow)
 
     def draw_trajectory(self, traj, style='g-', label='line', show_direction=False, refresh=False, markersize=2):
+        # a list of points
 
         if isinstance(traj, list):
             path_x_list = [p[0, 0] for p in traj]
