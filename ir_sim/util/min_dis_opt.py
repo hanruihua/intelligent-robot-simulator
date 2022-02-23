@@ -7,17 +7,17 @@ def segment_car(segment, car):
     theta = cp.Variable()
     p = cp.Variable((2, 1))
 
-    s = segment.point2 + theta * (segment.point1 - segment.point2)
-
     rot, trans = car.get_trans_matrix()
-    trans_p = np.linalg.inv(rot) @ (p - trans)
+
+    cur_s = segment.point2 + theta * (segment.point1 - segment.point2)
+    cur_p = rot @ p + trans
 
     cost = 0
     constraints = []
-    cost += cp.norm(s-p)
+    cost += cp.norm(cur_s-cur_p)
 
     # constraints += [ segment.A @ s == segment.b   ]
-    constraints += [ car.A @ trans_p <= car.b   ]
+    constraints += [ car.A @ p <= car.b   ]
 
     # constraints += [ s[0, 0] <= segment.max_x ]
     # constraints += [ s[0, 0] >= segment.min_x ]
@@ -30,7 +30,7 @@ def segment_car(segment, car):
     prob.solve() 
          
     if prob.status == cp.OPTIMAL:
-        return s.value, p.value
+        return cur_s.value, cur_p.value
     else:
         print('can not solve', prob.status)
         return None

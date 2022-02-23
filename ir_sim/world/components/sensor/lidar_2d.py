@@ -23,7 +23,7 @@ class lidar2d:
         self.range_data = range_max * np.ones(self.data_num,)
         self.angle_list = np.linspace(self.angle_min, self.angle_max, num=self.data_num)
 
-        self.inter_points = None
+        self.inter_points = 100 * np.ones((number, 2))
 
         self.install_pos = install_pos
         self.point_step_weight = kwargs.get('point_step_weight', 2)

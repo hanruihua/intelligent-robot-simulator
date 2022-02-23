@@ -12,6 +12,7 @@ from pathlib import Path
 import inspect
 import matplotlib.transforms as mtransforms
 from matplotlib.patches import Polygon
+import sys
 
 class env_plot:
     def __init__(self, width=10, height=10, components=dict(),  full=False, keep_path=False, map_matrix=None, offset_x = 0, offset_y=0, **kwargs):
@@ -65,8 +66,9 @@ class env_plot:
 
          # car image
         current_file_frame = inspect.getfile(inspect.currentframe())
+        # temp = sys.path[0]
         car_image_path = Path(current_file_frame).parent / 'car0.png'
-        self.init_car_img = image.imread(car_image_path) 
+        self.init_car_img = image.imread(str(car_image_path)) 
 
         self.draw_static_components(**kwargs)    
         
