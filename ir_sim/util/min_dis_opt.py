@@ -36,6 +36,33 @@ def segment_car(segment, car):
         return None
 
 def segment_car_dual(segment, car):
-    pass
+    lam = cp.Variable((4, 1), nonneg=True)
+    mu1 = cp.Variable(nonneg=True)
+    mu2 = cp.Variable(nonneg=True)
+
+    rot, trans = car.get_trans_matrix()
+
+    cost = 0
+    constraints = []
+
+    cost+= -lam.T @ car.b - mu1 + lam.T @ car.A @ rot.T @ (segment.point2 - trans)
+    constraints += [ cp.norm( lam.T @ car.A @ rot.T  ) <= 1 ]
+    constraints += [ cp.constraints.zero.Zero( mu1 - mu2 + lam.T @ car.A @ rot.T @ ( segment.point1 - segment.point2 ) ) ]
+
+    prob= cp.Problem(cp.Maximize(cost), constraints)  
+    prob.solve() 
+
+    if prob.status == cp.OPTIMAL:
+        dis = -lam.value.T @ car.b - mu1.value + lam.value.T @ car.A @ rot.T @ (segment.point2 - trans)
+        return dis
+    else:
+        print('can not solve', prob.status)
+        return None
+
+def segments_car(segment, car):
+    
+
+    segment.point1
+
 
     
