@@ -59,10 +59,11 @@ def segment_car_dual(segment, car):
         print('can not solve', prob.status)
         return None
 
-def segments_car(segment, car):
+# def segments_car(point1_array, point2_array, car):
     
+#     pass
 
-    segment.point1
+    
 
 
     

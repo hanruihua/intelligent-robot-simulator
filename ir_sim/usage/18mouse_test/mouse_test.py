@@ -3,7 +3,7 @@ from ir_sim.env import env_base
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
-from ir_sim.util.min_dis_opt import segment_car, segment_car_dual
+from ir_sim.util.min_dis_opt import segment_car, segment_car_dual, segments_car
 
 world_name = 'mouse_test.yaml'
 env = env_base(world_name = world_name, plot=True, teleop_key=True)
@@ -69,7 +69,9 @@ for i in range(1000):
     point1_array = np.hstack(point1_list)
     point2_array = np.hstack(point2_list)
 
+    min_dis = segments_car(point1_array, point2_array, env.car)
     
+
 
 
     dis_dual_list = []
