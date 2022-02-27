@@ -42,3 +42,5 @@ pip install -e .
 ## Usage
 
 The examples are in the ir-sim/usage
+
+If you like you can star.
