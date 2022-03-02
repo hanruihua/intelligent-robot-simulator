@@ -2,10 +2,13 @@ from re import I
 import numpy as np
 
 class obs_polygon:
-    def __init__(self, vertex = None, collision_thick=1, **kwargs):
+    def __init__(self, id=0, vertex=None, collision_thick=1, **kwargs):
         self.vertexes = np.array(vertex).T  # 2*n
         self.ver_num = self.vertexes.shape[1]
         self.collision_thick = collision_thick
+        self.cone = 'R_positive' 
+
+        self.name='polygon'+str(id)
 
         self.gen_edges()
         self.gen_matrix()

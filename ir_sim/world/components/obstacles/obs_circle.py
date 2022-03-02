@@ -33,8 +33,10 @@ class obs_circle:
         
         # obstacle model, generalized inequality, Ax >=_k b
         self.A = np.array([ [1, 0], [0, 1], [0, 0] ])
-        self.b = np.row_stack((self.state, self.radius * np.ones((1,1))))
+        self.b = np.row_stack((self.state, -self.radius * np.ones((1,1))))
         self.b_collision = np.row_stack((self.state, self.radius_collision * np.ones((1,1))))
+        self.cone='norm2'
+        self.name='circle'+str(id)
 
     def inside(self, point):
 
@@ -43,12 +45,12 @@ class obs_circle:
 
         assert point.shape == (2, 1)
 
-        return self.norm_cone( self.b - self.A @ point)
+        return self.norm_cone( self.A @ point - self.b)
     
     def inside_collision(self, point):
 
         assert point.shape == (2, 1)
-        return self.norm_cone( self.b_collision - self.A @ point)
+        return self.norm_cone( self.A @ point - self.b_collision)
 
     def norm_cone(self, matrix):
 

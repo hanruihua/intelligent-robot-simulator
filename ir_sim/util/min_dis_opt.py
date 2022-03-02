@@ -59,6 +59,60 @@ def segment_car_dual(segment, car):
         print('can not solve', prob.status)
         return None
 
+def segment_car_dual2(segment, car):
+    lam = cp.Variable((4, 1), nonneg=True)
+    mu2 = cp.Variable(nonneg=True)
+    v =  cp.Variable((2, 1))
+
+    rot, trans = car.get_trans_matrix()
+
+    cost= 0
+    constraints=[]
+
+    cost+= -lam.T @ car.b - mu2 + v.T @ trans - v.T @ segment.point2
+
+    constraints += [cp.norm(v) <= 1]
+    constraints += [lam.T @ car.A + v.T @ rot == 0]
+    constraints += [mu2 - v.T@(segment.point1 - segment.point2) >= 0]
+    
+    prob=cp.Problem(cp.Maximize(cost), constraints)  
+    prob.solve() 
+
+    if prob.status == cp.OPTIMAL:
+        dis = -lam.value.T @ car.b - mu2.value + v.value.T @ trans - v.value.T @ segment.point2
+        return dis
+    else:
+        print('can not solve', prob.status)
+        return None
+
+def segment_car_dual3(segment, car):
+    lam = cp.Variable((4, 1), nonneg=True)
+    v =  cp.Variable((2, 1))
+    mu2 = cp.Variable(nonneg=True)
+
+    rot, trans = car.get_trans_matrix()
+
+    cost= 0
+    constraints=[]
+
+    cost+= -lam.T @ car.b + v.T @ trans - v.T @ segment.point2 - mu2
+
+    constraints += [cp.norm(v) <= 1]
+    constraints += [lam.T @ car.A + v.T @ rot == 0]
+    constraints += [mu2 - v.T @ segment.point1 + v.T @ segment.point2 >= 0]
+
+    # constraints += [mu2 - v.T@(segment.point1 - segment.point2) >= 0]
+    
+    prob=cp.Problem(cp.Maximize(cost), constraints)  
+    prob.solve() 
+
+    if prob.status == cp.OPTIMAL:
+        dis = -lam.value.T @ car.b + v.value.T @ trans - v.value.T @ segment.point2 - mu2.value
+        return dis
+    else:
+        print('can not solve', prob.status)
+        return None
+
 # def segments_car(point1_array, point2_array, car):
     
 #     pass

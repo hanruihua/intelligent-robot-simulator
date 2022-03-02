@@ -3,7 +3,7 @@ from ir_sim.env import env_base
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
-from ir_sim.util.min_dis_opt import segment_car, segment_car_dual, segments_car
+from ir_sim.util.min_dis_opt import segment_car, segment_car_dual, segment_car_dual2, segment_car_dual3
 
 world_name = 'mouse_test.yaml'
 env = env_base(world_name = world_name, plot=True, teleop_key=True)
@@ -59,28 +59,25 @@ draw_func = env.world_plot.draw_trajectory
 
 for i in range(1000):
     env.car_step(env.key_vel, env.key_id, ack_mode='steer')
-    s_list = []
-    p_list = []
-    draw_kwargs_list=[]
+    # s_list = []
+    # p_list = []
+    # draw_kwargs_list=[]
 
-    point1_list = [line.point1 for line in env.obs_line_list ]
-    point2_list = [line.point2 for line in env.obs_line_list ]
+    # point1_list = [line.point1 for line in env.obs_line_list ]
+    # point2_list = [line.point2 for line in env.obs_line_list ]
 
-    point1_array = np.hstack(point1_list)
-    point2_array = np.hstack(point2_list)
+    # point1_array = np.hstack(point1_list)
+    # point2_array = np.hstack(point2_list)
 
-    min_dis = segments_car(point1_array, point2_array, env.car)
+    # min_dis = segments_car(point1_array, point2_array, env.car)
     
-
-
-
     dis_dual_list = []
     dis_list = []
 
-
     for line in env.obs_line_list:
         s, p = segment_car(line, env.car)
-        dis_dual = segment_car_dual(line, env.car)
+        # dis_dual = segment_car_dual(line, env.car)
+        dis_dual = segment_car_dual3(line, env.car)
         dis = np.linalg.norm(s-p)
         # s_list.append(s)
         # p_list.append(p)
@@ -91,8 +88,10 @@ for i in range(1000):
         # draw_kwargs_list.append( { 'traj': [s, p], 'refresh':True} )
     print('primal', min(dis_list))
     print('dual', min(dis_dual_list))
+    print('dif', min(dis_list) - min(dis_dual_list) )
     # env.render(time=0.01, draw_func_list=[draw_func, draw_func], draw_kwargs_list=draw_kwargs_list)
     env.render()
+
 
    
     
