@@ -51,6 +51,7 @@ class car_robot:
         self.step_time = step_time
 
         self.state_list = []
+        self.cone = 'R_positive' # proper cone
 
         lidar_args = kwargs.get('lidar2d', None)
 
@@ -111,8 +112,8 @@ class car_robot:
 
     def init_matrix_model(self):
 
-        self.A = np.zeros(( 4, 2))  # 4 * 2
-        self.b = np.zeros(( 4, 1))  # 4 * 1
+        self.G = np.zeros(( 4, 2))  # 4 * 2
+        self.h = np.zeros(( 4, 1))  # 4 * 1
         
         for i in range(4):
 
@@ -129,11 +130,11 @@ class car_robot:
             b = -diff[0]
             c = a * pre_point[0] + b * pre_point[1]
 
-            self.A[i, 0] = a
-            self.A[i, 1] = b
-            self.b[i, 0] = c 
+            self.G[i, 0] = a
+            self.G[i, 1] = b
+            self.h[i, 0] = c 
 
-        return self.A, self.b
+        return self.G, self.h
 
     # 
     def get_trans_matrix(self):
@@ -149,7 +150,7 @@ class car_robot:
         trans = self.state[0:2, 0:1] 
 
         trans_point = np.linalg.inv(rot) @ ( point - trans)
-        return (self.A @ trans_point <= self.b).all()
+        return (self.G @ trans_point <= self.h).all()
 
     def arrive(self):
         dis, radian = car_robot.relative(self.state[0:2], self.goal[0:2])
