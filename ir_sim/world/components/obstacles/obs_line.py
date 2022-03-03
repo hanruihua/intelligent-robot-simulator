@@ -5,12 +5,14 @@ class obs_line:
         self.line_state = line_state
         self.point1 = np.array([ [line_state[0]], [line_state[1]] ])
         self.point2 = np.array([ [line_state[2]], [line_state[3]] ])
-
+        
         self.min_x = np.min([self.point1[0, 0], self.point2[0, 0] ])
         self.max_x = np.max([self.point1[0, 0], self.point2[0, 0] ])
 
         self.min_y = np.min([ self.point1[1, 0], self.point2[1, 0] ])
         self.max_y = np.max([self.point1[1, 0], self.point2[1, 0]] )
+
+        self.cone = 'R_positive'
 
         self.init_matrix()
 
