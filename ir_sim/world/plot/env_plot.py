@@ -66,7 +66,7 @@ class env_plot:
          # car image
         current_file_frame = inspect.getfile(inspect.currentframe())
         car_image_path = Path(current_file_frame).parent / 'car0.png'
-        self.init_car_img = image.imread(car_image_path) 
+        self.init_car_img = image.imread(str(car_image_path)) 
 
         self.draw_static_components(**kwargs)    
         
