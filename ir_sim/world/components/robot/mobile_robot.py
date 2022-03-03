@@ -47,6 +47,7 @@ class mobile_robot():
         self.radius_collision = round(radius + kwargs.get('radius_exp', 0.1), 2)
         self.arrive_flag = False
         self.collision_flag = False
+        self.cone = 'norm2'
 
         lidar_args = kwargs.get('lidar2d', None)
 
