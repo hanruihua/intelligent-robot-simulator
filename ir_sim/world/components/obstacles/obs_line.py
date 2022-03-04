@@ -14,6 +14,8 @@ class obs_line:
 
         self.cone = 'R_positive'
 
+        self.name = 'segment' + str(id)
+
         self.init_matrix()
 
     def init_matrix(self):
