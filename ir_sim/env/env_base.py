@@ -111,11 +111,18 @@ class env_base:
             
             world_map_path = sys.path[0] + '/' + self.world_map
             img = Image.open(world_map_path).convert('L')
+            # img = Image.open(world_map_path)
             img = img.resize( (px, py), Image.NEAREST)
+            # img = img.resize( (px, py), Image.ANTIALIAS)
+            # img.thumbnail( (px, py))
+
             map_matrix = np.array(img)
             map_matrix = 255 - map_matrix
             map_matrix[map_matrix>255/2] = 255
             map_matrix[map_matrix<255/2] = 0
+            # map_matrix[map_matrix>0] = 255
+            # map_matrix[map_matrix==0] = 0
+
             self.map_matrix = np.fliplr(map_matrix.T)
         else:
             self.map_matrix = None

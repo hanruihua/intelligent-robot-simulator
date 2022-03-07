@@ -66,7 +66,7 @@ class env_plot:
          # car image
         current_file_frame = inspect.getfile(inspect.currentframe())
         car_image_path = Path(current_file_frame).parent / 'car0.png'
-        self.init_car_img = image.imread(car_image_path) 
+        self.init_car_img = image.imread(str(car_image_path)) 
 
         self.draw_static_components(**kwargs)    
         
@@ -396,11 +396,11 @@ class env_plot:
 
         if path.exists():
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order, format=format)
+            plt.savefig(str(path)+'/'+order+'.'+format, format=format)
         else:
             path.mkdir()
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order, format=format)
+            plt.savefig(str(path)+'/'+order+'.'+format, format=format)
 
     def create_animate(self, image_path, ani_path, ani_name='animated', keep_len=30, rm_fig_path=True):
 

@@ -80,6 +80,8 @@ class mobile_robot():
         if vel.shape == (2,):
             vel = vel[:,np.newaxis]
 
+        assert vel.shape == (2, 1)
+
         vel = np.clip(vel, -self.vel_max, self.vel_max)
         
         if stop:
