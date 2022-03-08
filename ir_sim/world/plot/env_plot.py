@@ -399,11 +399,11 @@ class env_plot:
 
         if path.exists():
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order, format=format)
+            plt.savefig(str(path)+'/'+order+'.'+format, format=format)
         else:
             path.mkdir()
             order = str(i).zfill(3)
-            plt.savefig(str(path)+'/'+order, format=format)
+            plt.savefig(str(path)+'/'+order+'.'+format, format=format)
 
     def create_animate(self, image_path, ani_path, ani_name='animated', keep_len=30, rm_fig_path=True):
 
