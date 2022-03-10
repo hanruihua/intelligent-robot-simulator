@@ -37,6 +37,7 @@ class obs_circle:
         self.b_collision = np.row_stack((self.state, self.radius_collision * np.ones((1,1))))
         self.cone='norm2'
         self.name='circle'+str(id)
+        self.type = 'interior'
 
     def inside(self, point):
 

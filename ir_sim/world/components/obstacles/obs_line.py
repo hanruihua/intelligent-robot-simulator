@@ -6,6 +6,9 @@ class obs_line:
         self.point1 = np.array([ [line_state[0]], [line_state[1]] ])
         self.point2 = np.array([ [line_state[2]], [line_state[3]] ])
         
+        self.p1 = np.array([ [line_state[0]], [line_state[1]] ])
+        self.p2 = np.array([ [line_state[2]], [line_state[3]] ])
+        
         self.min_x = np.min([self.point1[0, 0], self.point2[0, 0] ])
         self.max_x = np.max([self.point1[0, 0], self.point2[0, 0] ])
 
@@ -15,16 +18,17 @@ class obs_line:
         self.cone = 'R_positive'
 
         self.name = 'segment' + str(id)
+        self.type = 'boundary'
 
         self.init_matrix()
 
     def init_matrix(self):
         # Ax == b
-        diff = self.point2 - self.point1
+        diff = self.p2 - self.p1
 
         a = diff[1, 0]
         b = -diff[0, 0]
-        c = a * self.point1[0, 0] + b * self.point1[1, 0]
+        c = a * self.p1[0, 0] + b * self.p1[1, 0]
 
         self.A = np.array( [ [a, b] ] )
         self.b = c

@@ -9,6 +9,7 @@ class obs_polygon:
         self.cone = 'R_positive' 
 
         self.name='polygon'+str(id)
+        self.type = 'interior'
 
         self.gen_edges()
         self.gen_matrix()
