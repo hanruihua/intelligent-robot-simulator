@@ -81,7 +81,7 @@ class env_plot:
 
         if self.components['map_matrix'] is not None:
             self.ax.imshow(self.components['map_matrix'].T, cmap='Greys', origin='lower', extent=[self.offset_x, self.offset_x+self.width, self.offset_y, self.offset_y+self.height]) 
-            
+        
         self.draw_robots(self.components['robots'], **kwargs)
         self.draw_cars(self.components['cars'], **kwargs)
         self.draw_obs_cirs(self.components['obs_circles'], **kwargs)
