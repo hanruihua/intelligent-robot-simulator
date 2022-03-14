@@ -252,7 +252,7 @@ class env_robot:
     def total_states(self):
         robot_state_list = list(map(lambda r: np.squeeze( r.omni_state()), self.robot_list))
         nei_state_list = list(map(lambda r: np.squeeze( r.omni_obs_state()), self.robot_list))
-        obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state() ), self.com['obs_cirs'].obs_cir_list))
+        obs_circular_list = list(map(lambda o: np.squeeze( o.omni_obs_state() ), self.com['obs_circles'].obs_cir_list))
         obs_line_list = self.com['obs_lines'].obs_line_states
 
         return [robot_state_list, nei_state_list, obs_circular_list, obs_line_list]
