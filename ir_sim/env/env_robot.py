@@ -137,14 +137,14 @@ class env_robot:
     
     def random_goal(self):
 
-        num = self.robot_num
+        num = self.robot_number
         random_list = []
         goal_list = []
         while len(random_list) < num:
 
             new_point = np.random.uniform(low = self.square[0:2]+[-pi], high = self.square[2:4]+[pi], size = (1, 3)).T
 
-            if not self.check_collision(new_point, random_list, self.components, self.interval):
+            if not self.check_collision(new_point, random_list, self.com, self.interval):
                 random_list.append(new_point)
 
         goal_temp_list = random_list[:]
@@ -164,7 +164,7 @@ class env_robot:
         point = namedtuple('point', 'x y')
         self_circle = circle(check_point[0, 0], check_point[1, 0], range/2)
 
-        for obs_cir in components['obs_cirs'].obs_cir_list:
+        for obs_cir in components['obs_circles'].obs_cir_list:
             temp_circle = circle(obs_cir.state[0, 0], obs_cir.state[1, 0], obs_cir.radius)
             if collision_cir_cir(self_circle, temp_circle):
                 return True
@@ -238,7 +238,7 @@ class env_robot:
         
         elif reset_mode == 4:
             goal_list = self.random_goal()
-            for i in range(self.robot_num):
+            for i in range(self.robot_number):
                 self.robot_list[i].goal = goal_list[i]
                 self.robot_list[i].reset(self.random_bear)
 
