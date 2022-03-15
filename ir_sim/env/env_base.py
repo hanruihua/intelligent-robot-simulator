@@ -10,6 +10,7 @@ from ir_sim.env.env_car import env_car
 from ir_sim.env.env_obs_cir import env_obs_cir
 from ir_sim.env.env_obs_line import env_obs_line
 from ir_sim.env.env_obs_poly import env_obs_poly
+from ir_sim.env.env_grid import env_grid
 from PIL import Image
 from pynput import keyboard
 
@@ -69,6 +70,8 @@ class env_base:
             self.cars_args = kwargs.get('cars', dict())
             self.obs_lines_args = kwargs.get('obs_lines', dict())
             self.obs_polygons_args = kwargs.get('obs_polygons', dict())
+            self.vertexes_list = self.obs_polygons_args.get('vertexes_list', [])
+            self.obs_poly_num = self.obs_polygons_args.get('number', 0)
         
         self.plot = plot
         self.components = dict()
@@ -130,6 +133,8 @@ class env_base:
         self.components['map_matrix'] = self.map_matrix
         self.components['xy_reso'] = self.xy_reso
         self.components['offset'] = np.array([self.offset_x, self.offset_y])
+
+        # self.components['grid_map'] = env_grid(grid_map_matrix=kwargs.get('grid_map_matrix', None))
 
         self.components['obs_lines'] = env_obs_line(**{**self.obs_lines_args, **kwargs})
         self.obs_line_states=self.components['obs_lines'].obs_line_states
