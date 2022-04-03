@@ -43,4 +43,4 @@ pip install -e .
 
 The examples are in the ir-sim/usage
 
-If you like you can star.
+If this repository is helpful, you can star it to support.
