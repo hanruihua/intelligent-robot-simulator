@@ -69,6 +69,8 @@ class env_base:
             self.cars_args = kwargs.get('cars', dict())
             self.obs_lines_args = kwargs.get('obs_lines', dict())
             self.obs_polygons_args = kwargs.get('obs_polygons', dict())
+            self.vertexes_list = self.obs_polygons_args.get('vertexes_list', [])
+            self.obs_poly_num = self.obs_polygons_args.get('number', 0)
         
         self.plot = plot
         self.components = dict()
