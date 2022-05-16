@@ -194,15 +194,16 @@ class env_plot:
             self.robot_plot_list.append(arrow)
 
            
-    def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', **kwargs):
+    def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', show_goal=True, **kwargs):
 
         x = car.ang_pos[0, 0]
         y = car.ang_pos[1, 0]
         r_phi=car.state[2, 0]
-        # r_phi_ang = 180*r_phi/pi
 
-        # line_rad_f = car.state[3, 0] + car.state[2, 0]
-        # line_rad_b = car.state[2, 0]
+        r_phi_ang = 180*r_phi/pi
+
+        line_rad_f = car.state[3, 0] + car.state[2, 0]
+        line_rad_b = car.state[2, 0]
 
         gx = car.goal[0, 0]
         gy = car.goal[1, 0]
@@ -214,8 +215,10 @@ class env_plot:
         # for i in range(4):
 
         #     if 0 < i < 3:
-        #         wx = car.wheel_pos[0, i]
-        #         wy = car.wheel_pos[1, i]
+        #         # wx = car.wheel_pos[0, i]
+        #         # wy = car.wheel_pos[1, i]
+        #         wx = car.ang_pos[0, i]
+        #         wy = car.ang_pos[1, i]
 
         #         lx0 = wx + line_length * cos(line_rad_f) / 2
         #         ly0 = wy + line_length * sin(line_rad_f) / 2
@@ -226,8 +229,10 @@ class env_plot:
         #         self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-')) 
 
         #     else:
-        #         wx = car.wheel_pos[0, i]
-        #         wy = car.wheel_pos[1, i]
+        #         # wx = car.wheel_pos[0, i]
+        #         # wy = car.wheel_pos[1, i]
+        #         wx = car.ang_pos[0, i]
+        #         wy = car.ang_pos[1, i]
 
         #         lx0 = wx + line_length * cos(line_rad_b) / 2
         #         ly0 = wy + line_length * sin(line_rad_b) / 2
@@ -237,14 +242,15 @@ class env_plot:
 
         #         self.car_line_list.append(self.ax.plot([lx0, lx1], [ly0, ly1], 'k-'))
                 
-        # car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.length, height=car.width, angle=r_phi_ang, edgecolor=car_color, fill=False)
-        goal_arrow = mpl.patches.Arrow(x=gx, y=gy, dx=gdx, dy=gdy, color=goal_color)
+        car_rect = mpl.patches.Rectangle(xy=(x, y), width=car.length, height=car.width, angle=r_phi_ang, edgecolor='y', fill=False)
+        if show_goal:
+            goal_arrow = mpl.patches.Arrow(x=gx, y=gy, dx=gdx, dy=gdy, color=goal_color)
+            self.car_plot_list.append(goal_arrow)
+            self.ax.add_patch(goal_arrow)
 
-        # self.car_plot_list.append(car_rect)
-        self.car_plot_list.append(goal_arrow)
-
-        # self.ax.add_patch(car_rect)
-        self.ax.add_patch(goal_arrow)
+        self.car_plot_list.append(car_rect)
+        self.ax.add_patch(car_rect)
+        
         
         # car image show
         
@@ -334,6 +340,8 @@ class env_plot:
                 y_list = [sin(p[2]) for p in traj.T]
 
             self.ax.quiver(path_x_list, path_y_list, u_list, y_list)
+        
+        # self.ax.legend()
 
         if refresh:
             self.line_list.append(line)
@@ -352,8 +360,8 @@ class env_plot:
         for robot_plot in self.robot_plot_list:
             robot_plot.remove()
 
-        for car_plot in self.car_plot_list:
-            car_plot.remove()
+        # for car_plot in self.car_plot_list:
+        #     car_plot.remove()
 
         # for line in self.car_line_list:
         #     line.pop(0).remove()
@@ -369,7 +377,6 @@ class env_plot:
         for obs in self.dyna_obs_plot_list:
             obs.remove()
             
-
         self.car_plot_list = []
         self.robot_plot_list = []
         self.lidar_line_list = []
