@@ -1,5 +1,5 @@
 1. function of env reset
 2. reformulation of the framework, there are two main type, robot and obstacle
 3. collision avoidance by the cvxpy 
-4. multi process to handl the multi robot
-5 definiation of the obstacle and robot
+4. multi process to handle the multi robots and obstacles
+5. definition of the obstacle and robot by the numerical model
