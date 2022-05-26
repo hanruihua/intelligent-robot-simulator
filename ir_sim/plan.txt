@@ -3,3 +3,5 @@
 3. collision avoidance by the cvxpy 
 4. multi process to handle the multi robots and obstacles
 5. definition of the obstacle and robot by the numerical model
+6. Add the reminder when the velocity is limited.
+7. Add the functionality of the moving the obstacle with mouse
