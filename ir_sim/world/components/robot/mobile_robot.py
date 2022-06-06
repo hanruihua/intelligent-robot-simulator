@@ -104,7 +104,6 @@ class mobile_robot():
 
         self.arrive()
 
-    
     def cal_lidar_range(self, components):
         if self.lidar is not None:
             self.lidar.cal_range(self.state, components)
