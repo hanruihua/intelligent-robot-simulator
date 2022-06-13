@@ -31,7 +31,7 @@ class obs_circle:
         self.radius_collision = round(radius + kwargs.get('radius_exp', 0.1), 2)
         self.arrive_flag = False
         
-        # obstacle model, generalized inequality, Ax >=_k b
+        # obstacle model, generalized inequality, Ax <=_k b
         self.A = np.array([ [1, 0], [0, 1], [0, 0] ])
         self.b = np.row_stack((self.state, -self.radius * np.ones((1,1))))
         self.b_collision = np.row_stack((self.state, self.radius_collision * np.ones((1,1))))
