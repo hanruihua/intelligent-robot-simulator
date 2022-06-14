@@ -20,7 +20,6 @@ class env_robot:
         self.random_bear = kwargs.get('random_bear', False)
         self.random_radius = kwargs.get('random_radius', False)
 
-
         # init_mode: 0 manually initialize
         #            1 single row
         #            2 random
