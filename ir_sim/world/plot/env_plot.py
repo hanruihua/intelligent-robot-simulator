@@ -194,7 +194,7 @@ class env_plot:
             self.robot_plot_list.append(arrow)
 
            
-    def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', show_goal=True, **kwargs):
+    def draw_car(self, car, goal_color='c', goal_l=2, text=False, show_lidar=True, show_traj=False, traj_type='-g', show_goal=True, show_trail=False, **kwargs):
 
         x = car.ang_pos[0, 0]
         y = car.ang_pos[1, 0]
@@ -249,7 +249,9 @@ class env_plot:
             self.ax.add_patch(goal_arrow)
 
         self.car_plot_list.append(car_rect)
-        self.ax.add_patch(car_rect)
+
+        if show_trail:
+            self.ax.add_patch(car_rect)
         
         
         # car image show
