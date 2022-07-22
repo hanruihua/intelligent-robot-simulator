@@ -40,12 +40,9 @@ class obs_circle:
         self.type = 'interior'
 
     def inside(self, point):
-
         # generalized inequality over the norm cone
         # x<=_k x_c
-
         assert point.shape == (2, 1)
-
         return self.norm_cone( self.A @ point - self.b)
     
     def inside_collision(self, point):

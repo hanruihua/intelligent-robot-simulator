@@ -7,7 +7,7 @@ for i in range(300):
     
     des_vel = env.car.cal_des_vel()
 
-    env.car_step(des_vel)
+    env.car_step(des_vel, ack_mode = 'steer')
     env.render()
 
 env.show()
