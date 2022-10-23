@@ -11,7 +11,8 @@ for i in range(300):
     env.robot_step(env.key_vel, env.key_id)
     env.render()
     
-    env.collision_check()
+    if env.collision_check():
+        env.reset()
 
 env.show()
 

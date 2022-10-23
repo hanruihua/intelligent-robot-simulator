@@ -238,7 +238,8 @@ class env_base:
             
         self.time = self.time + time
 
-    # def reset(self, ):
+    def reset(self, **kwargs):
+        self.components['robots'].robots_reset(0)
 
 
     def on_press(self, key):
@@ -265,7 +266,7 @@ class env_base:
 
         except AttributeError:
             
-            if key == keyboard.Key.alt:
+            if  'alt' in key.name:
                 self.alt_flag = 1
     
     def on_release(self, key):
@@ -293,13 +294,16 @@ class env_base:
                 self.key_ang_max = self.key_ang_max + 0.2
                 print('current ang ', self.key_ang_max)
             
+            if key.char == 'r':
+                self.reset()
+                print('robot reset')
+            
             self.key_vel = np.array([self.key_lv, self.key_ang])
 
         except AttributeError:
-            if key == keyboard.Key.alt:
+            if 'alt' in key.name:
                 self.alt_flag = 0
-
-        
+            
     def save_fig(self, path, i):
         self.world_plot.save_gif_figure(path, i)
     
