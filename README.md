@@ -1,6 +1,6 @@
 # intelligent-robot-simulator
 
-**Note:** this repository is archived and the functionality is immigrated to the new repository [ir_sim](https://github.com/hanruihua/Intelligent-Robot-Simulator2)
+**Note:** this repository is archived and the functionality is immigrated to the new repository [ir_sim](https://github.com/hanruihua/ir_sim)
 
 A simple 2D simulator for the mobile robots to perform the robotics algorithm with Python.  
 
