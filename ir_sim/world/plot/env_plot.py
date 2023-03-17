@@ -344,7 +344,10 @@ class env_plot:
         
     def com_cla(self):
         # self.ax.patches = []
-        self.ax.texts.clear()
+        # self.ax.texts.clear()
+        # self.ax.texts.clear()
+        for text in self.ax.texts:
+            text.remove()
 
         for robot_plot in self.robot_plot_list:
             robot_plot.remove()
